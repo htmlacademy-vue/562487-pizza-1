@@ -28,6 +28,7 @@ services:
     environment:
       PORT: '8080'
       HOST: '0.0.0.0'
+      CHOKIDAR_USEPOLLING: "true"
     ports:
       - '8080:8080'
     volumes:
