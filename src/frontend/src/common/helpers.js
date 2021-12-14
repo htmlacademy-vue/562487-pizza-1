@@ -1,3 +1,5 @@
+import { uniqueId } from "lodash";
+
 export const generateAvatar = (avatarUrl) => ({
   webp: avatarUrl.replace(/.jpg/gi, ".webp"),
   webp2x: avatarUrl.replace(/.jpg/gi, "@2x.webp"),
@@ -12,3 +14,12 @@ export const findByValue = (items, value) => {
 export const findById = (items, id) => {
   return items.find((it) => it.id === id);
 };
+
+export const findIndexById = (items, id) => {
+  return items.findIndex((it) => it.id === id);
+};
+
+export const generateNewPizza = (pizza) => ({
+  id: uniqueId("pizza_"),
+  ...pizza,
+});
