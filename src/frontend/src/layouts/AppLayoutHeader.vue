@@ -11,7 +11,7 @@
       </a>
     </div>
     <div class="header__cart">
-      <a href="cart.html">0 ₽</a>
+      <a href="cart.html">{{ totalSum }} ₽</a>
     </div>
     <div v-if="!user" key="header-with-no-user" class="header__user">
       <a href="#" class="header__login">
@@ -47,6 +47,12 @@ import { generateAvatar } from "@/common/helpers";
 
 export default {
   name: "AppLayoutHeader",
+  props: {
+    totalSum: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       // not authorized
