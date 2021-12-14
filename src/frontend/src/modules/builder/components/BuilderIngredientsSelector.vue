@@ -34,9 +34,11 @@
                 :class="`filling--${ingredient.value}`"
               />
               <ItemCounter
-                :ingredient="ingredient"
-                @incrementClick="$emit('incrementClick', $event)"
-                @decrementClick="$emit('decrementClick', $event)"
+                :count="ingredient.count"
+                :min="INGREDIENT_MIN_COUNT"
+                :max="INGREDIENT_MAX_COUNT"
+                @incrementClick="$emit('ingredientIncrement', ingredient.id)"
+                @decrementClick="$emit('ingredientDecrement', ingredient.id)"
               />
             </li>
           </ul>
@@ -50,6 +52,7 @@
 import RadioButton from "@/common/components/RadioButton";
 import ItemCounter from "@/common/components/ItemCounter";
 import SelectorItem from "@/common/components/SelectorItem";
+import { INGREDIENT_MIN_COUNT, INGREDIENT_MAX_COUNT } from "@/common/constants";
 
 export default {
   name: "BuilderIngredientsSelector",
@@ -71,6 +74,12 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  data() {
+    return {
+      INGREDIENT_MIN_COUNT,
+      INGREDIENT_MAX_COUNT,
+    };
   },
 };
 </script>

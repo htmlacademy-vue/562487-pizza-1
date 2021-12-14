@@ -21,8 +21,8 @@
         :checkedSauce="checkedSauce"
         :checkedIngredients="checkedIngredients"
         @sauceChange="handleSauceChange"
-        @incrementClick="handleIncrement"
-        @decrementClick="handleDecrement"
+        @ingredientIncrement="handleIncrement"
+        @ingredientDecrement="handleDecrement"
       />
 
       <BuilderPizzaView
@@ -84,21 +84,27 @@ export default {
     checkedIngredients() {
       return this.ingredients.filter((it) => it.count);
     },
-    totalPrice() {
-      const doughPrice =
-        findById(this.doughs, this.checkedDough)?.price || MIN_PRICE;
-
-      const sizeMultiplier =
-        findById(this.sizes, this.checkedSize)?.multiplier || MIN_MULTIPLIER;
-
-      const saucePrice =
-        findById(this.sauces, this.checkedSauce)?.price || MIN_PRICE;
-
-      const ingredientsPrice = this.checkedIngredients
+    doughPrice() {
+      return findById(this.doughs, this.checkedDough)?.price || MIN_PRICE;
+    },
+    sizeMultiplier() {
+      return (
+        findById(this.sizes, this.checkedSize)?.multiplier || MIN_MULTIPLIER
+      );
+    },
+    saucePrice() {
+      return findById(this.sauces, this.checkedSauce)?.price || MIN_PRICE;
+    },
+    ingredientsPrice() {
+      return this.checkedIngredients
         .map((it) => it.price * it.count)
         .reduce((acc, it) => acc + it, 0);
-
-      return (doughPrice + saucePrice + ingredientsPrice) * sizeMultiplier;
+    },
+    totalPrice() {
+      return (
+        (this.doughPrice + this.saucePrice + this.ingredientsPrice) *
+        this.sizeMultiplier
+      );
     },
   },
   methods: {
