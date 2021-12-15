@@ -38,11 +38,10 @@
 import PizzaSauces from "@/common/enums/sauces";
 import PizzaFoundations from "@/common/enums/foundations";
 import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounter";
-import AppDrop from "@/common/components/AppDrop";
 
 export default {
   name: "BuilderPizzaView",
-  components: { BuilderPriceCounter, AppDrop },
+  components: { BuilderPriceCounter },
   props: {
     pizzaName: {
       type: String,

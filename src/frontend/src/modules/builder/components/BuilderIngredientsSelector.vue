@@ -49,14 +49,10 @@
 </template>
 
 <script>
-import RadioButton from "@/common/components/RadioButton";
-import ItemCounter from "@/common/components/ItemCounter";
-import SelectorItem from "@/common/components/SelectorItem";
 import { INGREDIENT_MIN_COUNT, INGREDIENT_MAX_COUNT } from "@/common/constants";
 
 export default {
   name: "BuilderIngredientsSelector",
-  components: { RadioButton, ItemCounter, SelectorItem },
   props: {
     sauces: {
       type: Array,
