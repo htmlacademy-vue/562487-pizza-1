@@ -1,45 +1,35 @@
 <template>
-  <div class="app-layout">
-    <AppLayoutHeader :totalSum="cart.totalSum" />
-    <main class="content">
-      <IndexHome @updateCart="addPizzaToCart" />
-    </main>
-  </div>
+  <component
+    :is="layout"
+    :user="user"
+    :cartTotalSum="cartTotalSum"
+    @logout="$emit('logout')"
+    @addNewOrder="$emit('addNewOrder', $event)"
+  >
+    <slot />
+  </component>
 </template>
 
 <script>
-import AppLayoutHeader from "@/layouts/AppLayoutHeader";
-import IndexHome from "@/views/Index";
+const defaultLayout = "AppLayoutDefault";
 
 export default {
   name: "AppLayout",
-  components: {
-    AppLayoutHeader,
-    IndexHome,
+  props: {
+    user: {
+      type: Object,
+      default: null,
+    },
+    cartTotalSum: {
+      type: Number,
+      required: true,
+    },
   },
-  data() {
-    return {
-      cart: {
-        pizzas: [],
-        addons: [],
-        delivery: "",
-        phone: "",
-        address: {
-          street: "",
-          house: "",
-          flat: "",
-        },
-        totalSum: 0,
-      },
-    };
-  },
-  methods: {
-    addPizzaToCart({ pizza, price }) {
-      this.cart.pizzas.push(pizza);
-      this.cart.totalSum += price;
+  computed: {
+    layout() {
+      const layout = this.$route.meta.layout || defaultLayout;
+      return () => import(`@/layouts/${layout}.vue`);
     },
   },
 };
 </script>
-
-<style lang="scss" scoped></style>
