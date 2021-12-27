@@ -1,5 +1,5 @@
 <template>
-  <div class="counter counter--orange ingredients__counter">
+  <div class="counter">
     <button
       type="button"
       class="counter__button counter__button--minus"
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { MIN_COUNT } from "@/common/constants";
+
 export default {
   name: "ItemCounter",
   props: {
@@ -36,7 +38,7 @@ export default {
     },
     min: {
       type: Number,
-      required: true,
+      default: MIN_COUNT,
     },
     max: {
       type: Number,
