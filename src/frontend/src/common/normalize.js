@@ -32,3 +32,6 @@ export const normalizeIngredients = (ingredients) =>
     value: PizzaIngredients[ingredient.id],
     count: 0,
   }));
+
+export const normalizeAddons = (addons) =>
+  addons.map((addon) => ({ ...addon, count: 0 }));
