@@ -1,42 +1,44 @@
 <template>
-  <form action="#" method="post">
-    <div class="content__wrapper">
-      <h1 class="title title--big">Конструктор пиццы</h1>
+  <main class="content">
+    <form action="#" method="post">
+      <div class="content__wrapper">
+        <h1 class="title title--big">Конструктор пиццы</h1>
 
-      <BuilderDoughSelector
-        :doughs="doughs"
-        :checkedDough="checkedDough"
-        @doughChange="handleDoughChange"
-      />
+        <BuilderDoughSelector
+          :doughs="doughs"
+          :checkedDough="checkedDough"
+          @doughChange="checkedDough = $event"
+        />
 
-      <BuilderSizeSelector
-        :sizes="sizes"
-        :checkedSize="checkedSize"
-        @sizeChange="handleSizeChange"
-      />
+        <BuilderSizeSelector
+          :sizes="sizes"
+          :checkedSize="checkedSize"
+          @sizeChange="checkedSize = $event"
+        />
 
-      <BuilderIngredientsSelector
-        :sauces="sauces"
-        :ingredients="ingredients"
-        :checkedSauce="checkedSauce"
-        :checkedIngredients="checkedIngredients"
-        @sauceChange="handleSauceChange"
-        @ingredientIncrement="handleIncrement"
-        @ingredientDecrement="handleDecrement"
-      />
+        <BuilderIngredientsSelector
+          :sauces="sauces"
+          :ingredients="ingredients"
+          :checkedSauce="checkedSauce"
+          :checkedIngredients="checkedIngredients"
+          @sauceChange="checkedSauce = $event"
+          @updateIngredients="updateIngredients"
+        />
 
-      <BuilderPizzaView
-        :pizzaName="pizzaName"
-        :checkedDough="checkedDough"
-        :checkedSauce="checkedSauce"
-        :checkedIngredients="checkedIngredients"
-        :totalPrice="totalPrice"
-        @nameChange="handleNameChange"
-        @incrementCount="handleIncrement"
-        @submit="handleSubmit"
-      />
-    </div>
-  </form>
+        <BuilderPizzaView
+          :pizzaName="pizzaName"
+          :checkedDough="checkedDough"
+          :checkedSauce="checkedSauce"
+          :checkedIngredients="checkedIngredients"
+          :totalPrice="totalPrice"
+          @nameChange="pizzaName = $event.target.value.trim()"
+          @updateIngredients="updateIngredients"
+          @submit="handleSubmit"
+        />
+      </div>
+    </form>
+    <router-view v-if="!user" @login="$emit('login')"></router-view>
+  </main>
 </template>
 
 <script>
@@ -68,6 +70,12 @@ export default {
     BuilderIngredientsSelector,
     BuilderPizzaView,
   },
+  props: {
+    user: {
+      type: Object,
+      default: null,
+    },
+  },
   data() {
     return {
       doughs: normalizeDoughs(pizza.dough),
@@ -78,6 +86,7 @@ export default {
       checkedDough: InitialPizzaState.dough,
       checkedSize: InitialPizzaState.size,
       checkedSauce: InitialPizzaState.sauce,
+      isLoginShowed: false,
     };
   },
   computed: {
@@ -108,29 +117,11 @@ export default {
     },
   },
   methods: {
-    handleDoughChange(id) {
-      this.checkedDough = id;
-    },
-    handleSizeChange(id) {
-      this.checkedSize = id;
-    },
-    handleSauceChange(id) {
-      this.checkedSauce = id;
-    },
-    handleIncrement(id) {
+    updateIngredients({ id, count }) {
       const index = findIndexById(this.ingredients, id);
       if (~index) {
-        this.ingredients[index].count++;
+        this.ingredients[index].count = count;
       }
-    },
-    handleDecrement(id) {
-      const index = findIndexById(this.ingredients, id);
-      if (~index) {
-        this.ingredients[index].count--;
-      }
-    },
-    handleNameChange(name) {
-      this.pizzaName = name;
     },
     handleSubmit() {
       const newPizza = generateNewPizza({
@@ -139,9 +130,10 @@ export default {
         size: this.checkedSize,
         ingredients: this.checkedIngredients,
         name: this.pizzaName,
+        price: this.totalPrice,
         count: 1,
       });
-      this.$emit("updateCart", { pizza: newPizza, price: this.totalPrice });
+      this.$emit("addNewPizza", newPizza);
       this.resetPizza();
     },
     resetPizza() {
@@ -156,5 +148,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped></style>
