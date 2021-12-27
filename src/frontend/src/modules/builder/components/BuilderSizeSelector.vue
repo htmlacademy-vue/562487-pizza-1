@@ -19,11 +19,8 @@
 </template>
 
 <script>
-import RadioButton from "@/common/components/RadioButton";
-
 export default {
   name: "BuilderSizeSelector",
-  components: { RadioButton },
   props: {
     sizes: {
       type: Array,

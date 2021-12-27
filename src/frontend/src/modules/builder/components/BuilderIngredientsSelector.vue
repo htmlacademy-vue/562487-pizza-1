@@ -34,9 +34,21 @@
                 :class="`filling--${ingredient.value}`"
               />
               <ItemCounter
-                :ingredient="ingredient"
-                @incrementClick="$emit('incrementClick', $event)"
-                @decrementClick="$emit('decrementClick', $event)"
+                class="counter--orange ingredients__counter"
+                :count="ingredient.count"
+                :max="INGREDIENT_MAX_COUNT"
+                @incrementClick="
+                  $emit('updateIngredients', {
+                    id: ingredient.id,
+                    count: ingredient.count + 1,
+                  })
+                "
+                @decrementClick="
+                  $emit('updateIngredients', {
+                    id: ingredient.id,
+                    count: ingredient.count - 1,
+                  })
+                "
               />
             </li>
           </ul>
@@ -47,13 +59,10 @@
 </template>
 
 <script>
-import RadioButton from "@/common/components/RadioButton";
-import ItemCounter from "@/common/components/ItemCounter";
-import SelectorItem from "@/common/components/SelectorItem";
+import { INGREDIENT_MAX_COUNT } from "@/common/constants";
 
 export default {
   name: "BuilderIngredientsSelector",
-  components: { RadioButton, ItemCounter, SelectorItem },
   props: {
     sauces: {
       type: Array,
@@ -71,6 +80,11 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  data() {
+    return {
+      INGREDIENT_MAX_COUNT,
+    };
   },
 };
 </script>

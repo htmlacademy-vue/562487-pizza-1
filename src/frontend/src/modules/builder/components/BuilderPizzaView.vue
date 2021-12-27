@@ -7,7 +7,7 @@
         name="pizza_name"
         placeholder="Введите название пиццы"
         :value="pizzaName"
-        @input="$emit('nameChange', $event.target.value.trim())"
+        @input="$emit('nameChange', $event)"
       />
     </label>
 
@@ -38,11 +38,10 @@
 import PizzaSauces from "@/common/enums/sauces";
 import PizzaFoundations from "@/common/enums/foundations";
 import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounter";
-import AppDrop from "@/common/components/AppDrop";
 
 export default {
   name: "BuilderPizzaView",
-  components: { BuilderPriceCounter, AppDrop },
+  components: { BuilderPriceCounter },
   props: {
     pizzaName: {
       type: String,
@@ -92,7 +91,10 @@ export default {
       return `${valueClass} ${countClass}`;
     },
     moveIngredient(active) {
-      this.$emit("incrementCount", active.id);
+      this.$emit("updateIngredients", {
+        id: active.id,
+        count: active.count + 1,
+      });
     },
   },
 };
