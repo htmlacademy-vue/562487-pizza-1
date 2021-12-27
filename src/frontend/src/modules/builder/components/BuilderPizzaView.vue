@@ -7,7 +7,7 @@
         name="pizza_name"
         placeholder="Введите название пиццы"
         :value="pizzaName"
-        @input="$emit('nameChange', $event.target.value.trim())"
+        @input="$emit('nameChange', $event)"
       />
     </label>
 
@@ -91,7 +91,10 @@ export default {
       return `${valueClass} ${countClass}`;
     },
     moveIngredient(active) {
-      this.$emit("incrementCount", active.id);
+      this.$emit("updateIngredients", {
+        id: active.id,
+        count: active.count + 1,
+      });
     },
   },
 };

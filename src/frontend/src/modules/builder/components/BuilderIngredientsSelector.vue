@@ -34,11 +34,21 @@
                 :class="`filling--${ingredient.value}`"
               />
               <ItemCounter
+                class="counter--orange ingredients__counter"
                 :count="ingredient.count"
-                :min="INGREDIENT_MIN_COUNT"
                 :max="INGREDIENT_MAX_COUNT"
-                @incrementClick="$emit('ingredientIncrement', ingredient.id)"
-                @decrementClick="$emit('ingredientDecrement', ingredient.id)"
+                @incrementClick="
+                  $emit('updateIngredients', {
+                    id: ingredient.id,
+                    count: ingredient.count + 1,
+                  })
+                "
+                @decrementClick="
+                  $emit('updateIngredients', {
+                    id: ingredient.id,
+                    count: ingredient.count - 1,
+                  })
+                "
               />
             </li>
           </ul>
@@ -49,7 +59,7 @@
 </template>
 
 <script>
-import { INGREDIENT_MIN_COUNT, INGREDIENT_MAX_COUNT } from "@/common/constants";
+import { INGREDIENT_MAX_COUNT } from "@/common/constants";
 
 export default {
   name: "BuilderIngredientsSelector",
@@ -73,7 +83,6 @@ export default {
   },
   data() {
     return {
-      INGREDIENT_MIN_COUNT,
       INGREDIENT_MAX_COUNT,
     };
   },
