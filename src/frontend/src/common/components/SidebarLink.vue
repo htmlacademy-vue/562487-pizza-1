@@ -1,7 +1,7 @@
 <template>
   <router-link
     class="layout__link"
-    :class="isActive && 'layout__link--active'"
+    active-class="layout__link--active"
     :to="link.to"
     >{{ link.title }}</router-link
   >
@@ -14,11 +14,6 @@ export default {
     link: {
       type: Object,
       required: true,
-    },
-  },
-  computed: {
-    isActive() {
-      return this.$route.name === this.link.pathName;
     },
   },
 };
