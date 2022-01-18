@@ -1,0 +1,69 @@
+<template>
+  <label class="input">
+    <span :class="labelIsHidden && 'visually-hidden'">{{ label }}</span>
+    <input
+      :class="{ 'input--error': error }"
+      :type="type"
+      :name="name"
+      :placeholder="placeholder"
+      :value="value"
+      :readonly="readonly"
+      @input="$emit('input', $event)"
+      ref="input"
+    />
+    <AppInputError v-if="error">
+      {{ error }}
+    </AppInputError>
+  </label>
+</template>
+
+<script>
+export default {
+  name: "AppInput",
+  props: {
+    type: {
+      type: String,
+      default: "text",
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    value: {
+      type: String,
+      default: "",
+    },
+    placeholder: {
+      type: String,
+      default: "",
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    labelIsHidden: {
+      type: Boolean,
+      default: false,
+    },
+    error: {
+      type: String,
+      default: null,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  methods: {
+    focus() {
+      this.$refs.input.focus();
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.input--error {
+  outline: 2px solid $red-600;
+}
+</style>

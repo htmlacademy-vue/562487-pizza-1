@@ -1,5 +1,5 @@
 <template>
-  <AppDrag :transfer-data="ingredient" :isDraggable="isDraggable">
+  <AppDrag :transfer-data="ingredientDragged" :isDraggable="isDraggable">
     <span :class="isDraggable && 'item--draggable'">
       {{ ingredient.name }}
     </span>
@@ -20,10 +20,17 @@ export default {
       type: Object,
       required: true,
     },
+    quantity: {
+      type: Number,
+      required: true,
+    },
   },
   computed: {
+    ingredientDragged() {
+      return { ...this.ingredient, quantity: this.quantity };
+    },
     isDraggable() {
-      return this.ingredient.count < INGREDIENT_MAX_COUNT;
+      return this.quantity < INGREDIENT_MAX_COUNT;
     },
   },
 };

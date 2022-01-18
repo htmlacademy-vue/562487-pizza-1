@@ -5,7 +5,7 @@
       :name="item.kind"
       :value="item.value"
       class="visually-hidden"
-      :checked="item.id === checkedItem"
+      :checked="isChecked"
       @change="$emit('change', item.id)"
     />
     <slot />
@@ -20,8 +20,8 @@ export default {
       type: Object,
       required: true,
     },
-    checkedItem: {
-      type: [Number, String],
+    isChecked: {
+      type: Boolean,
       required: true,
     },
   },
