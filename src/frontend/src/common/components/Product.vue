@@ -10,19 +10,16 @@
     <div class="product__text">
       <h2>{{ pizza.name }}</h2>
       <ul>
-        <li>
-          {{ getSizeName(pizza.size) }}, на
-          {{ getDoughName(pizza.dough) }} тесте
-        </li>
-        <li>Соус: {{ getSauceName(pizza.sauce) }}</li>
-        <li>Начинка: {{ getIngredientsNames(pizza.ingredients) }}</li>
+        <li>{{ sizeDisplayName }}, на {{ doughDisplayName }} тесте</li>
+        <li>Соус: {{ sauceDisplayName }}</li>
+        <li>Начинка: {{ ingredientsDisplayName }}</li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
-import pizza from "@/static/pizza.json";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Product",
@@ -32,23 +29,27 @@ export default {
       required: true,
     },
   },
-  methods: {
-    getSizeName(sizeId) {
-      const size = pizza.sizes.find((it) => it.id === sizeId);
-      return size.name;
+  computed: {
+    ...mapGetters("Builder", [
+      "doughById",
+      "sauceById",
+      "sizeById",
+      "ingredientById",
+    ]),
+
+    doughDisplayName() {
+      return this.doughById(this.pizza.doughId).displayName;
     },
-    getDoughName(doughId) {
-      const dough = pizza.dough.find((it) => it.id === doughId);
-      const doughName = dough.name.slice(0, -1) + "м";
-      return doughName.toLowerCase();
+    sauceDisplayName() {
+      return this.sauceById(this.pizza.sauceId).displayName;
     },
-    getSauceName(sauceId) {
-      const sauce = pizza.sauces.find((it) => it.id === sauceId);
-      return sauce.name.toLowerCase();
+    sizeDisplayName() {
+      return this.sizeById(this.pizza.sizeId).displayName;
     },
-    getIngredientsNames(ingredients) {
-      const names = ingredients.map((it) => it.name.toLowerCase());
-      return names.join(", ");
+    ingredientsDisplayName() {
+      return this.pizza.ingredients
+        .map((it) => this.ingredientById(it.ingredientId).displayName)
+        .join(", ");
     },
   },
 };

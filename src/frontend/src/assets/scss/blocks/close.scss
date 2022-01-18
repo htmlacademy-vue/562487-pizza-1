@@ -58,4 +58,14 @@
       background-color: $white;
     }
   }
+
+  &--sm {
+    width: 15px;
+    height: 15px;
+
+    &::before,
+    &::after {
+      width: 15px;
+    }
+  }
 }

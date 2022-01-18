@@ -6,98 +6,82 @@
         type="text"
         name="pizza_name"
         placeholder="Введите название пиццы"
-        :value="pizzaName"
-        @input="$emit('nameChange', $event)"
+        :value="pizza.name"
+        @input="
+          setPizzaEntity({
+            name: 'name',
+            value: $event.target.value.trim(),
+          })
+        "
       />
     </label>
 
     <AppDrop @drop="moveIngredient">
       <div class="content__constructor">
         <div class="pizza" :class="pizzaFoundationClasses">
-          <div v-if="totalPrice" class="pizza__wrapper">
+          <div class="pizza__wrapper">
             <div
-              v-for="ingredient in checkedIngredients"
+              v-for="ingredient in pizza.ingredients"
               :key="ingredient.value"
               class="pizza__filling"
-              :class="getPizzaFillingClasses(ingredient)"
+              :class="getPizzaIngredientsClasses(ingredient)"
             ></div>
           </div>
         </div>
       </div>
     </AppDrop>
 
-    <BuilderPriceCounter
-      :totalPrice="totalPrice"
-      :isDisabled="isSubmitDisabled"
-      @submit="$emit('submit', $event)"
-    />
+    <slot />
   </div>
 </template>
 
 <script>
+import { mapState, mapGetters, mapMutations } from "vuex";
 import PizzaSauces from "@/common/enums/sauces";
 import PizzaFoundations from "@/common/enums/foundations";
-import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounter";
+import {
+  SET_PIZZA_ENTITY,
+  UPDATE_PIZZA_INGREDIENTS,
+} from "@/store/mutations-types";
 
 export default {
   name: "BuilderPizzaView",
-  components: { BuilderPriceCounter },
-  props: {
-    pizzaName: {
-      type: String,
-      required: true,
-    },
-    checkedDough: {
-      type: [Number, String],
-      required: true,
-    },
-    checkedSauce: {
-      type: [Number, String],
-      required: true,
-    },
-    checkedIngredients: {
-      type: Array,
-      required: true,
-    },
-    totalPrice: {
-      type: Number,
-      required: true,
-    },
-  },
   computed: {
+    ...mapState("Builder", ["pizza"]),
+    ...mapGetters("Builder", ["ingredientById"]),
+
     pizzaFoundationClasses() {
-      const dough = PizzaFoundations[this.checkedDough];
-      const sauce = PizzaSauces[this.checkedSauce];
+      const { doughId, sauceId } = this.pizza;
+      const dough = PizzaFoundations[doughId];
+      const sauce = PizzaSauces[sauceId];
       return `pizza--foundation--${dough}-${sauce}`;
-    },
-    isSubmitDisabled() {
-      return (
-        !this.pizzaName || !this.checkedIngredients.length || !this.totalPrice
-      );
     },
   },
   methods: {
-    getPizzaFillingClasses(ingredient) {
+    ...mapMutations("Builder", {
+      setPizzaEntity: SET_PIZZA_ENTITY,
+      updatePizzaIngredients: UPDATE_PIZZA_INGREDIENTS,
+    }),
+
+    getPizzaIngredientsClasses({ ingredientId, quantity }) {
+      const ingredient = this.ingredientById(ingredientId);
       const valueClass = `pizza__filling--${ingredient.value}`;
-      const count = ingredient.count;
-      if (count === 1) {
+      if (quantity === 1) {
         return valueClass;
       }
-      const CountModifiers = {
+      const QuantityModifiers = {
         2: "second",
         3: "third",
       };
-      const countClass = `pizza__filling--${CountModifiers[count]}`;
-      return `${valueClass} ${countClass}`;
+      const quantityClass = `pizza__filling--${QuantityModifiers[quantity]}`;
+      return `${valueClass} ${quantityClass}`;
     },
     moveIngredient(active) {
-      this.$emit("updateIngredients", {
-        id: active.id,
-        count: active.count + 1,
+      this.updatePizzaIngredients({
+        ingredientId: active.id,
+        quantity: active.quantity + 1,
       });
     },
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

@@ -52,10 +52,17 @@
   text-align: center;
 
   font-size: 1.3em;
+  line-height: 1;
 }
 
 .popup__button {
+  margin-bottom: 10px;
+
   a {
     padding: 16px 32px;
+  }
+
+  &--danger a {
+    background-color: $red-500;
   }
 }

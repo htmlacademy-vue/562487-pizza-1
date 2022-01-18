@@ -1,11 +1,5 @@
 <template>
-  <component
-    :is="layout"
-    :user="user"
-    :cartTotalSum="cartTotalSum"
-    @logout="$emit('logout')"
-    @addNewOrder="$emit('addNewOrder', $event)"
-  >
+  <component :is="layout">
     <slot />
   </component>
 </template>
@@ -15,16 +9,6 @@ const defaultLayout = "AppLayoutDefault";
 
 export default {
   name: "AppLayout",
-  props: {
-    user: {
-      type: Object,
-      default: null,
-    },
-    cartTotalSum: {
-      type: Number,
-      required: true,
-    },
-  },
   computed: {
     layout() {
       const layout = this.$route.meta.layout || defaultLayout;

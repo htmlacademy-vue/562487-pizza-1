@@ -21,22 +21,16 @@ export const findIndexById = (items, id) => {
   return items.findIndex((it) => it.id === id);
 };
 
-export const generateNewPizza = (pizza) => ({
-  id: uniqueId("pizza_"),
-  ...pizza,
-});
-
-export const generateNewOrder = (order) => ({
-  id: uniqueId("order_"),
-  number: 123456,
-  ...order,
-});
-
 export const calculateSum = (items) => {
   if (!items.length) {
     return 0;
   }
   return items
-    .map((it) => it.price * it.count)
+    .map((it) => it.price * it.quantity)
     .reduce((acc, it) => acc + it, 0);
 };
+
+export const generate = (it) => ({
+  id: uniqueId(),
+  ...it,
+});

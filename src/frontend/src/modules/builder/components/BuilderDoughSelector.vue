@@ -8,8 +8,8 @@
           v-for="dough in doughs"
           :key="dough.id"
           :item="dough"
-          :checkedItem="checkedDough"
-          @change="$emit('doughChange', $event)"
+          :isChecked="dough.id === pizza.doughId"
+          @change="setPizzaEntity({ name: 'doughId', value: $event })"
         >
           <b>{{ dough.name }}</b>
           <span>{{ dough.description }}</span>
@@ -20,19 +20,18 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+import { SET_PIZZA_ENTITY } from "@/store/mutations-types";
+
 export default {
   name: "BuilderDoughSelector",
-  props: {
-    doughs: {
-      type: Array,
-      required: true,
-    },
-    checkedDough: {
-      type: [Number, String],
-      required: true,
-    },
+  computed: {
+    ...mapState("Builder", ["doughs", "pizza"]),
+  },
+  methods: {
+    ...mapMutations("Builder", {
+      setPizzaEntity: SET_PIZZA_ENTITY,
+    }),
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

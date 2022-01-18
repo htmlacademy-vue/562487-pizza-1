@@ -1,10 +1,5 @@
 <template>
-  <AppLayoutDefault
-    :user="user"
-    :cartTotalSum="cartTotalSum"
-    @login="$emit('login')"
-    @logout="$emit('logout')"
-  >
+  <AppLayoutDefault>
     <main class="layout">
       <AppLayoutMainSidebar />
       <slot />
@@ -21,16 +16,6 @@ export default {
   components: {
     AppLayoutDefault,
     AppLayoutMainSidebar,
-  },
-  props: {
-    user: {
-      type: Object,
-      default: null,
-    },
-    cartTotalSum: {
-      type: Number,
-      required: true,
-    },
   },
 };
 </script>
