@@ -11,9 +11,9 @@
             v-for="sauce in sauces"
             :key="sauce.id"
             :item="sauce"
-            :checkedItem="checkedSauce"
+            :isChecked="sauce.id === pizza.sauceId"
             class="radio ingredients__input"
-            @change="$emit('sauceChange', $event)"
+            @change="setPizzaEntity({ name: 'sauceId', value: $event })"
           >
             <span>{{ sauce.name }}</span>
           </RadioButton>
@@ -30,23 +30,24 @@
             >
               <SelectorItem
                 :ingredient="ingredient"
+                :quantity="getIngredientQuantity(ingredient.id)"
                 class="filling"
                 :class="`filling--${ingredient.value}`"
               />
               <ItemCounter
                 class="counter--orange ingredients__counter"
-                :count="ingredient.count"
+                :quantity="getIngredientQuantity(ingredient.id)"
                 :max="INGREDIENT_MAX_COUNT"
                 @incrementClick="
-                  $emit('updateIngredients', {
-                    id: ingredient.id,
-                    count: ingredient.count + 1,
+                  updatePizzaIngredients({
+                    ingredientId: ingredient.id,
+                    quantity: getIngredientQuantity(ingredient.id) + 1,
                   })
                 "
                 @decrementClick="
-                  $emit('updateIngredients', {
-                    id: ingredient.id,
-                    count: ingredient.count - 1,
+                  updatePizzaIngredients({
+                    ingredientId: ingredient.id,
+                    quantity: getIngredientQuantity(ingredient.id) - 1,
                   })
                 "
               />
@@ -59,34 +60,34 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
 import { INGREDIENT_MAX_COUNT } from "@/common/constants";
+import {
+  SET_PIZZA_ENTITY,
+  UPDATE_PIZZA_INGREDIENTS,
+} from "@/store/mutations-types";
 
 export default {
   name: "BuilderIngredientsSelector",
-  props: {
-    sauces: {
-      type: Array,
-      required: true,
-    },
-    ingredients: {
-      type: Array,
-      required: true,
-    },
-    checkedSauce: {
-      type: [Number, String],
-      required: true,
-    },
-    checkedIngredients: {
-      type: Array,
-      required: true,
-    },
-  },
   data() {
     return {
       INGREDIENT_MAX_COUNT,
     };
   },
+  computed: {
+    ...mapState("Builder", ["sauces", "ingredients", "pizza"]),
+  },
+  methods: {
+    ...mapMutations("Builder", {
+      setPizzaEntity: SET_PIZZA_ENTITY,
+      updatePizzaIngredients: UPDATE_PIZZA_INGREDIENTS,
+    }),
+    getIngredientQuantity(id) {
+      const pizzaIngredient = this.pizza.ingredients.find(
+        (it) => it.ingredientId === id
+      );
+      return pizzaIngredient?.quantity || 0;
+    },
+  },
 };
 </script>
-
-<style lang="scss" scoped></style>

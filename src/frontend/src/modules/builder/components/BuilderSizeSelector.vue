@@ -8,8 +8,8 @@
           v-for="size in sizes"
           :key="size.id"
           :item="size"
-          :checkedItem="checkedSize"
-          @change="$emit('sizeChange', $event)"
+          :isChecked="size.id === pizza.sizeId"
+          @change="setPizzaEntity({ name: 'sizeId', value: $event })"
         >
           <span>{{ size.name }}</span>
         </RadioButton>
@@ -19,19 +19,18 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
+import { SET_PIZZA_ENTITY } from "@/store/mutations-types";
+
 export default {
   name: "BuilderSizeSelector",
-  props: {
-    sizes: {
-      type: Array,
-      required: true,
-    },
-    checkedSize: {
-      type: [Number, String],
-      required: true,
-    },
+  computed: {
+    ...mapState("Builder", ["sizes", "pizza"]),
+  },
+  methods: {
+    ...mapMutations("Builder", {
+      setPizzaEntity: SET_PIZZA_ENTITY,
+    }),
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

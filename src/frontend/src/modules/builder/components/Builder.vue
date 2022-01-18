@@ -1,0 +1,83 @@
+<template>
+  <form action="#" method="post" @submit.prevent="submit">
+    <div class="content__wrapper">
+      <h1 class="title title--big">Конструктор пиццы</h1>
+      <BuilderDoughSelector />
+      <BuilderSizeSelector />
+      <BuilderIngredientsSelector />
+      <BuilderPizzaView>
+        <BuilderPriceCounter :totalPrice="totalPrice">
+          <AppButton type="submit" :disabled="isSubmitDisabled"
+            >Готовьте!</AppButton
+          >
+        </BuilderPriceCounter>
+      </BuilderPizzaView>
+    </div>
+  </form>
+</template>
+
+<script>
+import { mapState, mapMutations, mapGetters } from "vuex";
+
+import BuilderDoughSelector from "./BuilderDoughSelector";
+import BuilderSizeSelector from "./BuilderSizeSelector";
+import BuilderIngredientsSelector from "./BuilderIngredientsSelector";
+import BuilderPizzaView from "./BuilderPizzaView";
+import BuilderPriceCounter from "./BuilderPriceCounter";
+import { ADD_PIZZA, UPDATE_PIZZA, RESET_PIZZA } from "@/store/mutations-types";
+
+export default {
+  name: "Builder",
+  components: {
+    BuilderDoughSelector,
+    BuilderSizeSelector,
+    BuilderIngredientsSelector,
+    BuilderPizzaView,
+    BuilderPriceCounter,
+  },
+  props: {
+    isEditMode: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  computed: {
+    ...mapState("Builder", ["pizza"]),
+    ...mapGetters("Builder", ["totalPrice"]),
+
+    isSubmitDisabled() {
+      return !this.pizza.name || !this.pizza.ingredients.length;
+    },
+  },
+  methods: {
+    ...mapMutations("Builder", {
+      resetPizza: RESET_PIZZA,
+    }),
+    ...mapMutations("Cart", {
+      addPizza: ADD_PIZZA,
+      updatePizza: UPDATE_PIZZA,
+    }),
+
+    async submit() {
+      if (this.isEditMode) {
+        this.updatePizza({
+          ...this.pizza,
+          price: this.totalPrice,
+        });
+        this.$emit("saveEdit");
+        this.$router.push("/cart");
+      } else {
+        this.addPizza({
+          ...this.pizza,
+          price: this.totalPrice,
+          quantity: 1,
+        });
+      }
+      let message = `Пицца ${this.pizza.name}`;
+      message += this.isEditMode ? " обновлена" : " создана";
+      this.$notifier.success(message);
+      this.resetPizza();
+    },
+  },
+};
+</script>
