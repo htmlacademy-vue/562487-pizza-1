@@ -3,113 +3,99 @@
     <div class="cart-form">
       <label class="cart-form__select">
         <span class="cart-form__label">Получение заказа:</span>
-
         <select
-          name="test"
+          name="delivery"
           class="select"
-          @change="activeDelivery = +$event.target.value"
+          :value="delivery"
+          @change="updateDelivery"
         >
-          <option
-            v-for="delivery in deliveries"
-            :key="delivery.id"
-            :value="delivery.id"
-          >
-            {{ delivery.name }}
+          <option v-for="{ id, name } in deliveries" :key="id" :value="name">
+            {{ name }}
           </option>
         </select>
       </label>
 
-      <label class="input input--big-label">
-        <span>Контактный телефон:</span>
-        <input
-          type="text"
-          name="tel"
-          placeholder="+7 999-999-99-99"
-          @input="phone = $event.target.value"
-        />
-      </label>
+      <AppInput
+        class="input--big-label"
+        label="Контактный телефон:*"
+        name="phone"
+        placeholder="+7 999-999-99-99"
+        :value="phone"
+        @input="setCartEntity({ name: 'phone', value: $event.target.value })"
+      />
 
-      <div v-if="activeDelivery === 2" class="cart-form__address">
-        <span class="cart-form__label">Новый адрес:</span>
-
-        <div class="cart-form__input">
-          <label class="input">
-            <span>Улица*</span>
-            <input
-              type="text"
-              name="street"
-              @input="address.street = $event.target.value"
-            />
-          </label>
-        </div>
-
-        <div class="cart-form__input cart-form__input--small">
-          <label class="input">
-            <span>Дом*</span>
-            <input
-              type="text"
-              name="house"
-              @change="address.house = $event.target.value"
-            />
-          </label>
-        </div>
-
-        <div class="cart-form__input cart-form__input--small">
-          <label class="input">
-            <span>Квартира</span>
-            <input
-              type="text"
-              name="apartment"
-              @change="address.apartment = $event.target.value"
-            />
-          </label>
-        </div>
-      </div>
+      <CartFormAddress
+        v-if="isAddressShown"
+        :address="address"
+        :isUserAddress="isUserAddress"
+      />
     </div>
   </div>
 </template>
 
 <script>
-const basicDeliveries = [
-  {
-    id: 1,
-    name: "Заберу сам",
-  },
-  {
-    id: 2,
-    name: "Новый адрес",
-  },
-];
+import { mapState, mapMutations } from "vuex";
+import CartFormAddress from "./CartFormAddress";
+import { Deliveries } from "@/common/enums";
+import { SET_CART_ENTITY, RESET_ADDRESS } from "@/store/mutations-types";
 
 export default {
   name: "CartDelivery",
-  props: {
-    addresses: {
-      type: Array,
-      required: true,
-    },
+  components: {
+    CartFormAddress,
   },
-  data() {
-    return {
-      activeDelivery: 1,
-      phone: "",
-      address: {
-        street: "",
-        house: "",
-        apartment: "",
-      },
-    };
+  created() {
+    if (this.user) {
+      this.setCartEntity({ name: "phone", value: this.user.phone });
+    }
   },
   computed: {
+    ...mapState("Auth", ["user", "addresses"]),
+    ...mapState("Cart", ["delivery", "phone", "address"]),
+
+    isAddressShown() {
+      return this.delivery !== Deliveries[1];
+    },
+    isUserAddress() {
+      return !Object.values(Deliveries).includes(this.delivery);
+    },
+
     deliveries() {
-      if (!this.addresses.length) {
-        return basicDeliveries;
-      }
-      const userAddresses = this.addresses.map((address, index) => ({
-        id: basicDeliveries.length + index + 1,
-        name: address.name,
+      const basicDeliveries = Object.keys(Deliveries).map((key) => ({
+        id: key,
+        name: Deliveries[key],
       }));
-      return [...basicDeliveries, ...userAddresses];
+      if (!this.user) {
+        return basicDeliveries;
+      } else {
+        const length = Object.keys(Deliveries).length;
+        const userDeliveries = this.addresses.map((address, index) => ({
+          id: length + index + 1,
+          name: address.name,
+        }));
+
+        return [...basicDeliveries, ...userDeliveries];
+      }
+    },
+  },
+  methods: {
+    ...mapMutations("Cart", {
+      setCartEntity: SET_CART_ENTITY,
+      resetCartAddress: RESET_ADDRESS,
+    }),
+
+    updateDelivery(evt) {
+      const { value } = evt.target;
+      this.setCartEntity({ name: "delivery", value });
+
+      if (value === Deliveries[1]) {
+        this.setCartEntity({ name: "address", value: null });
+      } else if (value === Deliveries[2]) {
+        this.resetCartAddress();
+      } else {
+        const userAddress = this.addresses.find((it) => it.name === value);
+        this.setCartEntity({ name: "address", value: userAddress });
+      }
     },
   },
 };

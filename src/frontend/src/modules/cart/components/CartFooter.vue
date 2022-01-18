@@ -9,52 +9,31 @@
       Перейти к конструктору<br />чтоб собрать ещё одну пиццу
     </p>
     <div class="footer__price">
-      <b>Итого: {{ cartTotalSum }} ₽</b>
+      <b>Итого: {{ totalSum }} ₽</b>
     </div>
 
     <div class="footer__submit">
-      <button
-        type="submit"
-        class="button"
-        :disabled="!cartTotalSum"
-        @click.prevent="handleOrder"
-      >
+      <AppButton type="submit" :disabled="isSubmitDisabled">
         Оформить заказ
-      </button>
+      </AppButton>
     </div>
     <slot />
   </section>
 </template>
 
 <script>
-import { generateNewOrder } from "@/common/helpers";
+import { mapGetters } from "vuex";
 
 export default {
   name: "CartFooter",
   props: {
-    user: {
-      type: Object,
-      default: null,
-    },
-    cart: {
-      type: Object,
-      required: true,
-    },
-    cartTotalSum: {
-      type: Number,
+    isSubmitDisabled: {
+      type: Boolean,
       required: true,
     },
   },
-  methods: {
-    handleOrder() {
-      const newOrder = generateNewOrder({
-        pizzas: this.cart.pizzas.slice(),
-        addons: this.cart.addons.filter((addon) => addon.count > 0),
-        total: this.cartTotalSum,
-      });
-      this.$emit("addNewOrder", newOrder);
-      this.$emit("showPopup");
-    },
+  computed: {
+    ...mapGetters("Cart", ["totalSum"]),
   },
 };
 </script>

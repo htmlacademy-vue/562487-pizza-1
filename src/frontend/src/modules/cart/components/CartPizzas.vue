@@ -5,39 +5,47 @@
 
       <ItemCounter
         class="cart-list__counter"
-        :count="pizza.count"
-        :max="PIZZA_MAX_COUNT"
-        @incrementClick="
-          $emit('updatePizzas', { id: pizza.id, count: pizza.count + 1 })
-        "
-        @decrementClick="
-          $emit('updatePizzas', { id: pizza.id, count: pizza.count - 1 })
-        "
+        :quantity="pizza.quantity"
+        @incrementClick="update({ ...pizza, quantity: pizza.quantity + 1 })"
+        @decrementClick="update({ ...pizza, quantity: pizza.quantity - 1 })"
       />
 
       <div class="cart-list__price">
-        <b>{{ pizza.price * pizza.count }} ₽</b>
+        <b>{{ pizza.price * pizza.quantity }} ₽</b>
       </div>
 
       <div class="cart-list__button">
-        <button type="button" class="cart-list__edit">Изменить</button>
+        <button
+          type="button"
+          class="cart-list__edit"
+          @click="$router.push({ name: 'IndexHome', params: { id: pizza.id } })"
+        >
+          Изменить
+        </button>
       </div>
+
+      <ConfirmPopup
+        v-if="isConfirmPopupShowed"
+        @confirm="confirmDeletePizza(pizza.id)"
+        @cancel="isConfirmPopupShowed = false"
+      >
+        <h2 class="title">Удалить пиццу {{ pizza.name }}?</h2>
+        <p>После удаления пицца не сохранится.</p>
+      </ConfirmPopup>
     </li>
   </ul>
 </template>
 
 <script>
-import pizza from "@/static/pizza.json";
-import { PIZZA_MAX_COUNT } from "@/common/constants";
-import ItemCounter from "@/common/components/ItemCounter";
-import Product from "@/common/components/Product";
+import { mapMutations } from "vuex";
+import {
+  DELETE_PIZZA,
+  UPDATE_PIZZA,
+  RESET_CART,
+} from "@/store/mutations-types";
 
 export default {
   name: "CartPizzas",
-  components: {
-    ItemCounter,
-    Product,
-  },
   props: {
     pizzas: {
       type: Array,
@@ -46,26 +54,30 @@ export default {
   },
   data() {
     return {
-      PIZZA_MAX_COUNT,
+      isConfirmPopupShowed: false,
     };
   },
   methods: {
-    getSizeName(sizeId) {
-      const size = pizza.sizes.find((it) => it.id === sizeId);
-      return size.name;
+    ...mapMutations("Cart", {
+      deletePizza: DELETE_PIZZA,
+      updatePizza: UPDATE_PIZZA,
+      resetCart: RESET_CART,
+    }),
+
+    update(pizza) {
+      if (!pizza.quantity) {
+        this.isConfirmPopupShowed = true;
+        return;
+      }
+      this.updatePizza(pizza);
     },
-    getDoughName(doughId) {
-      const dough = pizza.dough.find((it) => it.id === doughId);
-      const doughName = dough.name.slice(0, -1) + "м";
-      return doughName.toLowerCase();
-    },
-    getSauceName(sauceId) {
-      const sauce = pizza.sauces.find((it) => it.id === sauceId);
-      return sauce.name.toLowerCase();
-    },
-    getIngredientsNames(ingredients) {
-      const names = ingredients.map((it) => it.name.toLowerCase());
-      return names.join(", ");
+
+    confirmDeletePizza(pizzaId) {
+      this.isConfirmPopupShowed = false;
+      this.deletePizza(pizzaId);
+      if (!this.pizzas.length) {
+        this.resetCart();
+      }
     },
   },
 };
