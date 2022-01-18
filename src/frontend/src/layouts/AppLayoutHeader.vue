@@ -4,7 +4,7 @@
       <Logo />
     </div>
     <div class="header__cart">
-      <router-link to="/cart">{{ cartTotalSum }} ₽</router-link>
+      <router-link to="/cart">{{ totalSum }} ₽</router-link>
     </div>
 
     <div v-if="!user" key="header-with-no-user" class="header__user">
@@ -18,7 +18,7 @@
         <UserPicture :user="user" width="32" height="32" />
         <span>{{ user.name }}</span>
       </router-link>
-      <a href="#" class="header__logout" @click.prevent="$emit('logout')"
+      <a href="#" class="header__logout" @click.prevent="handleLogout"
         ><span>Выйти</span></a
       >
     </div>
@@ -26,16 +26,19 @@
 </template>
 
 <script>
+import { mapState, mapGetters, mapActions } from "vuex";
+
 export default {
   name: "AppLayoutHeader",
-  props: {
-    user: {
-      type: Object,
-      default: null,
-    },
-    cartTotalSum: {
-      type: Number,
-      required: true,
+  computed: {
+    ...mapState("Auth", ["user"]),
+    ...mapGetters("Cart", ["totalSum"]),
+  },
+  methods: {
+    ...mapActions("Auth", ["logout"]),
+    async handleLogout() {
+      await this.logout();
+      this.$router.push("/login");
     },
   },
 };

@@ -1,10 +1,7 @@
 <template>
   <div class="app-layout">
-    <AppLayoutHeader
-      :user="user"
-      :cartTotalSum="cartTotalSum"
-      @logout="$emit('logout')"
-    />
+    <AppNotifications />
+    <AppLayoutHeader />
     <slot />
   </div>
 </template>
@@ -16,16 +13,6 @@ export default {
   name: "AppLayoutDefault",
   components: {
     AppLayoutHeader,
-  },
-  props: {
-    user: {
-      type: Object,
-      default: null,
-    },
-    cartTotalSum: {
-      type: Number,
-      required: true,
-    },
   },
 };
 </script>
