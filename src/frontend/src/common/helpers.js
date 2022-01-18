@@ -29,3 +29,8 @@ export const calculateSum = (items) => {
     .map((it) => it.price * it.quantity)
     .reduce((acc, it) => acc + it, 0);
 };
+
+export const generate = (it) => ({
+  id: uniqueId(),
+  ...it,
+});
