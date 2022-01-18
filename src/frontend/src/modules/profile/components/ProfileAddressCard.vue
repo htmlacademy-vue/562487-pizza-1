@@ -10,8 +10,8 @@
         </div>
       </div>
       <p>
-        {{ address.street }}, д. {{ address.house }}, кв.
-        {{ address.apartment }}
+        {{ address.street }}, д. {{ address.building }}, кв.
+        {{ address.flat }}
       </p>
       <small v-if="address.comment">{{ address.comment }}</small>
     </div>

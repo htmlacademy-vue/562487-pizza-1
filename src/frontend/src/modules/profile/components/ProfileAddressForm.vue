@@ -11,69 +11,55 @@
 
       <div class="address-form__wrapper">
         <div class="address-form__input">
-          <label class="input">
-            <span>Название адреса*</span>
-            <input
-              type="text"
-              name="addr-name"
-              placeholder="Введите название адреса"
-              required
-            />
-          </label>
+          <AppInput
+            label="Название адреса*"
+            name="addr-name"
+            placeholder="Введите название адреса"
+            @input="address.name = $event.target.name"
+          />
         </div>
         <div class="address-form__input address-form__input--size--normal">
-          <label class="input">
-            <span>Улица*</span>
-            <input
-              type="text"
-              name="addr-street"
-              placeholder="Введите название улицы"
-              required
-            />
-          </label>
+          <AppInput
+            label="Улица*"
+            name="addr-street"
+            placeholder="Введите название улицы"
+            @input="address.street = $event.target.value"
+          />
         </div>
         <div class="address-form__input address-form__input--size--small">
-          <label class="input">
-            <span>Дом*</span>
-            <input
-              type="text"
-              name="addr-house"
-              placeholder="Введите номер дома"
-              required
-            />
-          </label>
+          <AppInput
+            label="Дом*"
+            name="addr-house"
+            placeholder="Введите номер дома"
+            @input="address.house = $event.target.value"
+          />
         </div>
         <div class="address-form__input address-form__input--size--small">
-          <label class="input">
-            <span>Квартира</span>
-            <input
-              type="text"
-              name="addr-apartment"
-              placeholder="Введите № квартиры"
-            />
-          </label>
+          <AppInput
+            label="Квартира"
+            name="addr-apartment"
+            placeholder="Введите № квартиры"
+            @input="address.apartment = $event.target.value"
+          />
         </div>
         <div class="address-form__input">
-          <label class="input">
-            <span>Комментарий</span>
-            <input
-              type="text"
-              name="addr-comment"
-              placeholder="Введите комментарий"
-            />
-          </label>
+          <AppInput
+            label="Комментарий"
+            name="addr-comment"
+            placeholder="Введите комментарий"
+            @input="address.comment = $event.target.value"
+          />
         </div>
       </div>
 
       <div class="address-form__buttons">
-        <button
-          type="button"
-          class="button button--transparent"
-          @click="$emit('closeLogin', $event)"
+        <AppButton
+          class="button--transparent"
+          @click="$emit('closeForm', $event)"
         >
           Удалить
-        </button>
-        <button type="submit" class="button">Сохранить</button>
+        </AppButton>
+        <AppButton>Сохранить</AppButton>
       </div>
     </form>
   </div>

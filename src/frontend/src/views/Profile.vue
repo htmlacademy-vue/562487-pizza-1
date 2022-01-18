@@ -1,5 +1,5 @@
 <template>
-  <div class="layout__content">
+  <div v-if="user" class="layout__content">
     <div class="layout__title">
       <h1 class="title title--big">Мои данные</h1>
     </div>
@@ -10,29 +10,21 @@
       :key="address.id"
       :address="address"
     />
-    <ProfileAddressForm
-      v-if="isFormShowed"
-      @closeForm="isFormShowed = !isFormShowed"
-    />
+    <ProfileAddressForm v-if="isFormShowed" @closeForm="isFormShowed = false" />
 
     <div v-if="!isFormShowed" class="layout__button">
-      <button
-        type="button"
-        class="button button--border"
-        @click="isFormShowed = !isFormShowed"
-      >
+      <AppButton class="button--border" @click="isFormShowed = true">
         Добавить новый адрес
-      </button>
+      </AppButton>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  ProfileUser,
-  ProfileAddressCard,
-  ProfileAddressForm,
-} from "@/modules/profile/components";
+import { mapState } from "vuex";
+import ProfileUser from "@/modules/profile/components/ProfileUser";
+import ProfileAddressCard from "@/modules/profile/components/ProfileAddressCard";
+import ProfileAddressForm from "@/modules/profile/components/ProfileAddressForm";
 
 export default {
   name: "Profile",
@@ -41,20 +33,13 @@ export default {
     ProfileAddressCard,
     ProfileAddressForm,
   },
-  props: {
-    user: {
-      type: Object,
-      default: null,
-    },
-    addresses: {
-      type: Array,
-      required: true,
-    },
-  },
   data() {
     return {
       isFormShowed: false,
     };
+  },
+  computed: {
+    ...mapState("Auth", ["user", "addresses"]),
   },
 };
 </script>
