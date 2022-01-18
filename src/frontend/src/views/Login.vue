@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay">
+  <PopupOverlay @click.self="close" @keydown.esc.prevent="close">
     <div class="sign-form">
       <router-link to="/" class="close close--white">
         <span class="visually-hidden">Закрыть форму авторизации</span>
@@ -7,57 +7,30 @@
       <div class="sign-form__title">
         <h1 class="title title--small">Авторизуйтесь на сайте</h1>
       </div>
-      <form action="#" method="post" @submit.prevent="$emit('login')">
-        <div class="sign-form__input">
-          <label class="input">
-            <span>E-mail</span>
-            <input
-              type="email"
-              name="email"
-              placeholder="example@mail.ru"
-              @input="email = $event.target.value"
-            />
-          </label>
-        </div>
-
-        <div class="sign-form__input">
-          <label class="input">
-            <span>Пароль</span>
-            <input
-              type="password"
-              name="pass"
-              placeholder="***********"
-              @input="password = $event.target.value"
-            />
-          </label>
-        </div>
-        <button type="submit" class="button">Авторизоваться</button>
-      </form>
+      <LoginForm />
     </div>
-  </div>
+  </PopupOverlay>
 </template>
 
 <script>
+import { mapState } from "vuex";
+import LoginForm from "@/modules/login/components/LoginForm";
+
 export default {
   name: "Login",
-  data() {
-    return {
-      email: "",
-      password: "",
-    };
+  components: { LoginForm },
+  computed: {
+    ...mapState("Auth", ["user"]),
+  },
+  created() {
+    if (this.user) {
+      this.$router.push("/");
+    }
+  },
+  methods: {
+    close() {
+      this.$router.push("/");
+    },
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 2;
-}
-</style>
