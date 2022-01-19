@@ -5,8 +5,7 @@
         name="email"
         label="E-mail"
         placeholder="example@mail.ru"
-        :value="email"
-        @input="email = $event.target.value"
+        v-model="email"
         :error="validations.email.error"
         ref="email"
       />
@@ -18,8 +17,7 @@
         name="password"
         label="Пароль"
         placeholder="***********"
-        :value="password"
-        @input="password = $event.target.value"
+        v-model="password"
         :error="validations.password.error"
         ref="password"
       />

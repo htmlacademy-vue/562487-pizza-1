@@ -15,7 +15,7 @@
             label="Название адреса*"
             name="addr-name"
             placeholder="Введите название адреса"
-            @input="address.name = $event.target.name"
+            v-model="name"
           />
         </div>
         <div class="address-form__input address-form__input--size--normal">
@@ -23,7 +23,7 @@
             label="Улица*"
             name="addr-street"
             placeholder="Введите название улицы"
-            @input="address.street = $event.target.value"
+            v-model="street"
           />
         </div>
         <div class="address-form__input address-form__input--size--small">
@@ -31,7 +31,7 @@
             label="Дом*"
             name="addr-house"
             placeholder="Введите номер дома"
-            @input="address.house = $event.target.value"
+            v-model="building"
           />
         </div>
         <div class="address-form__input address-form__input--size--small">
@@ -39,7 +39,7 @@
             label="Квартира"
             name="addr-apartment"
             placeholder="Введите № квартиры"
-            @input="address.apartment = $event.target.value"
+            v-model="flat"
           />
         </div>
         <div class="address-form__input">
@@ -47,7 +47,7 @@
             label="Комментарий"
             name="addr-comment"
             placeholder="Введите комментарий"
-            @input="address.comment = $event.target.value"
+            v-model="comment"
           />
         </div>
       </div>
@@ -68,5 +68,14 @@
 <script>
 export default {
   name: "ProfileAddressForm",
+  data() {
+    return {
+      name: "",
+      street: "",
+      building: "",
+      flat: "",
+      comment: "",
+    };
+  },
 };
 </script>

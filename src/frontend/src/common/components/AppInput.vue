@@ -8,7 +8,7 @@
       :placeholder="placeholder"
       :value="value"
       :readonly="readonly"
-      @input="$emit('input', $event)"
+      @input="$emit('input', $event.target.value)"
       ref="input"
     />
     <AppInputError v-if="error">

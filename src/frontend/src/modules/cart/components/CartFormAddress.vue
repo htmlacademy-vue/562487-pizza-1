@@ -8,7 +8,7 @@
         name="street"
         :value="address.street"
         :readonly="isUserAddress"
-        @input="updateAddress"
+        @input="updateAddress({ name: 'street', value: $event })"
       />
     </div>
 
@@ -18,7 +18,7 @@
         name="building"
         :value="address.building"
         :readonly="isUserAddress"
-        @input="updateAddress"
+        @input="updateAddress({ name: 'building', value: $event })"
       />
     </div>
 
@@ -28,7 +28,7 @@
         name="flat"
         :value="address.flat"
         :readonly="isUserAddress"
-        @input="updateAddress"
+        @input="updateAddress({ name: 'flat', value: $event })"
       />
     </div>
   </div>
@@ -55,8 +55,7 @@ export default {
       setCartEntity: SET_CART_ENTITY,
     }),
 
-    updateAddress(evt) {
-      const { name, value } = evt.target;
+    updateAddress({ name, value }) {
       const updatedAddress = { ...this.address, [name]: value };
       this.setCartEntity({ name: "address", value: updatedAddress });
     },

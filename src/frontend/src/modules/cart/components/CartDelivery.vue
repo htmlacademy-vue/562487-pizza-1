@@ -21,7 +21,7 @@
         name="phone"
         placeholder="+7 999-999-99-99"
         :value="phone"
-        @input="setCartEntity({ name: 'phone', value: $event.target.value })"
+        @input="setCartEntity({ name: 'phone', value: $event })"
       />
 
       <CartFormAddress
