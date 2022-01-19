@@ -1,4 +1,6 @@
 import { uniqueId } from "lodash";
+import { CrudApiService, ReadOnlyApiService } from "../services/api.service";
+import { Resources } from "./enums";
 
 export const generateAvatar = (avatarUrl = "") => ({
   webp: avatarUrl.replace(/.jpg/gi, ".webp"),
@@ -34,3 +36,19 @@ export const generate = (it) => ({
   id: uniqueId(),
   ...it,
 });
+
+export const createResources = (notifier) => {
+  return {
+    [Resources.ADDRESSES]: new CrudApiService(resources.ADDRESSES, notifier),
+    [Resources.AUTH]: new AuthApiService(notifier),
+    [Resources.DOUGH]: new ReadOnlyApiService(Resources.DOUGH, notifier),
+    [Resources.INGREDIENTS]: new ReadOnlyApiService(
+      Resources.INGREDIENTS,
+      notifier
+    ),
+    [Resources.MISC]: new ReadOnlyApiService(Resources.MISC, notifier),
+    [Resources.ORDERS]: new CrudApiService(Resources.ORDERS, notifier),
+    [Resources.SAUCES]: new ReadOnlyApiService(Resources.SAUCES, notifier),
+    [Resources.SIZES]: new ReadOnlyApiService(Resources.SIZES, notifier),
+  };
+};

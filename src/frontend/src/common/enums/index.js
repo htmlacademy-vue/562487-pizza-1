@@ -5,6 +5,7 @@ import PizzaIngredients from "./ingredients";
 import PizzaFoundations from "./foundations";
 import Deliveries from "./deliveries";
 import NotificationTypes from "./notificationTypes";
+import Reasources from "./resources";
 
 export {
   PizzaDoughs,
@@ -14,4 +15,5 @@ export {
   PizzaFoundations,
   Deliveries,
   NotificationTypes,
+  Reasources,
 };
