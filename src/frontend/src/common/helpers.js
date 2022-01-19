@@ -52,3 +52,8 @@ export const createResources = (notifier) => {
     [Resources.SIZES]: new ReadOnlyApiService(Resources.SIZES, notifier),
   };
 };
+
+export const setAuth = (store) => {
+  store.$api.auth.setAuthHeader();
+  store.dispatch("Auth/fetchUser");
+};
