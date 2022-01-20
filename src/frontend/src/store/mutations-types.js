@@ -20,6 +20,3 @@ export const RESET_CART = "RESET_CART";
 export const SET_CART_ENTITY = "SET_CART_ENTITY";
 export const SET_ADDRESS = "SET_ADDRESS";
 export const RESET_ADDRESS = "RESET_ADDRESS";
-
-// Order
-export const DELETE_ORDER = "DELETE_ORDER";

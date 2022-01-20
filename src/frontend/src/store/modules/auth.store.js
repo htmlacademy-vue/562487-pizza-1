@@ -1,18 +1,21 @@
-import userJson from "@/static/user.json";
-import { SET_ENTITY } from "@/store/mutations-types";
+import {
+  SET_ENTITY,
+  ADD_ENTITY,
+  UPDATE_ENTITY,
+  DELETE_ENTITY,
+} from "@/store/mutations-types";
 import { User, Address } from "@/common/models";
 
-const mockAddresses = [
-  {
-    id: 1,
-    name: "Дом",
-    street: "Невский пр.",
-    building: "22",
-    flat: "46",
-    comment: "Позвоните, пожалуйста, от проходной",
-    userId: "uuid",
+const namespace = {
+  user: {
+    module: "Auth",
+    entity: "user",
   },
-];
+  addresses: {
+    module: "Auth",
+    entity: "addresses",
+  },
+};
 
 export default {
   namespaced: true,
@@ -21,37 +24,38 @@ export default {
     addresses: [],
   },
   actions: {
-    fetchUser({ commit }) {
-      const user = new User(userJson);
-      commit(
-        SET_ENTITY,
-        {
-          module: "Auth",
-          entity: "user",
-          value: user,
-        },
-        { root: true }
-      );
+    async fetchUser({ commit, dispatch }) {
+      try {
+        const data = await this.$api.auth.fetchUser();
+        const user = new User(data);
+        commit(
+          SET_ENTITY,
+          {
+            ...namespace.user,
+            value: user,
+          },
+          { root: true }
+        );
+      } catch {
+        dispatch("logout", false);
+      }
     },
-    login({ commit }, loginData) {
-      const user = new User({ ...userJson, email: loginData.email });
-
-      commit(
-        SET_ENTITY,
-        {
-          module: "Auth",
-          entity: "user",
-          value: user,
-        },
-        { root: true }
-      );
+    async login({ dispatch }, credentials) {
+      const data = await this.$api.auth.login(credentials);
+      this.$jwt.saveToken(data.token);
+      this.$api.auth.setAuthHeader();
+      dispatch("fetchUser");
     },
-    logout({ commit }) {
+    async logout({ commit }, sendRequest = true) {
+      if (sendRequest) {
+        await this.$api.auth.logout();
+      }
+      this.$jwt.destroyToken();
+      this.$api.auth.setAuthHeader();
       commit(
         SET_ENTITY,
         {
-          module: "Auth",
-          entity: "user",
+          ...namespace.user,
           value: null,
         },
         { root: true }
@@ -59,8 +63,7 @@ export default {
       commit(
         SET_ENTITY,
         {
-          module: "Auth",
-          entity: "addresses",
+          ...namespace.addresses,
           value: [],
         },
         { root: true }
@@ -75,14 +78,48 @@ export default {
         { root: true }
       );
     },
-    queryAddresses({ commit }) {
-      const addresses = Address.parseItems(mockAddresses);
+    async queryAddresses({ commit }) {
+      const data = await this.$api.addresses.query();
+      const addresses = Address.parseItems(data);
       commit(
         SET_ENTITY,
         {
-          module: "Auth",
-          entity: "addresses",
+          ...namespace.addresses,
           value: addresses,
+        },
+        { root: true }
+      );
+    },
+    async createAddress({ commit }, newAddress) {
+      const data = await this.$api.addresses.post(newAddress);
+      const { id } = data;
+      commit(
+        ADD_ENTITY,
+        {
+          ...namespace.addresses,
+          value: { ...newAddress, id },
+        },
+        { root: true }
+      );
+    },
+    async updateAddress({ commit }, address) {
+      await this.$api.addresses.put(address);
+      commit(
+        UPDATE_ENTITY,
+        {
+          ...namespace.addresses,
+          value: address,
+        },
+        { root: true }
+      );
+    },
+    async deleteAddress({ commit }, id) {
+      await this.$api.addresses.delete(id);
+      commit(
+        DELETE_ENTITY,
+        {
+          ...namespace.addresses,
+          id,
         },
         { root: true }
       );

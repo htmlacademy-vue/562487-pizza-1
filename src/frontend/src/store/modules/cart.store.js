@@ -1,5 +1,4 @@
 import { uniqueId } from "lodash";
-import miscJson from "@/static/misc.json";
 import {
   SET_ENTITY,
   ADD_PIZZA,
@@ -94,8 +93,9 @@ export default {
     },
   },
   actions: {
-    fetchMisc({ commit }) {
-      const misc = Misc.parseItems(miscJson);
+    async fetchMisc({ commit }) {
+      const data = await this.$api.misc.query();
+      const misc = Misc.parseItems(data);
       commit(
         SET_ENTITY,
         {

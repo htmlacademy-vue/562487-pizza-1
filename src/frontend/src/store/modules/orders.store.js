@@ -1,5 +1,5 @@
-import { uniqueId } from "lodash";
-import { SET_ENTITY, ADD_ENTITY, DELETE_ORDER } from "@/store/mutations-types";
+import { SET_ENTITY, ADD_ENTITY, DELETE_ENTITY } from "@/store/mutations-types";
+import { Order } from "@/common/models";
 
 const namespace = { module: "Orders", entity: "orders" };
 
@@ -8,27 +8,22 @@ export default {
   state: {
     orders: [],
   },
-  mutations: {
-    [DELETE_ORDER](state, id) {
-      const index = state.orders.findIndex((it) => it.id === id);
-      if (~index) {
-        state.orders.splice(index, 1);
-      }
-    },
-  },
   actions: {
-    queryOrders({ commit }) {
+    async queryOrders({ commit }) {
+      const data = await this.$api.orders.query();
+      const orders = Order.parseItems(data);
       commit(
         SET_ENTITY,
         {
           ...namespace,
-          value: [],
+          value: orders,
         },
         { root: true }
       );
     },
-    createOrder({ commit }, newOrder) {
-      const id = uniqueId("order_");
+    async createOrder({ commit }, newOrder) {
+      const data = await this.$api.orders.post(newOrder);
+      const { id } = data;
       commit(
         ADD_ENTITY,
         {
@@ -38,8 +33,16 @@ export default {
         { root: true }
       );
     },
-    deleteOrder({ commit }, id) {
-      commit(DELETE_ORDER, id);
+    async deleteOrder({ commit }, id) {
+      await this.$api.orders.delete(id);
+      commit(
+        DELETE_ENTITY,
+        {
+          ...namespace,
+          id,
+        },
+        { root: true }
+      );
     },
   },
 };

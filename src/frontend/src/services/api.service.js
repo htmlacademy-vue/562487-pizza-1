@@ -77,3 +77,21 @@ export class AuthApiService extends BaseApiService {
     return data;
   }
 }
+
+export class OrdersApiService extends ReadOnlyApiService {
+  #resource;
+  constructor(notifier) {
+    super("orders", notifier);
+    this.#resource = "orders";
+  }
+
+  async post(newOrder) {
+    const { data } = await axios.post(this.#resource, newOrder);
+    return data;
+  }
+
+  async delete(id) {
+    const { data } = await axios.delete(`${this.#resource}/${id}`);
+    return data;
+  }
+}

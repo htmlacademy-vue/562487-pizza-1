@@ -1,4 +1,3 @@
-import pizzaJson from "@/static/pizza.json";
 import { findById } from "@/common/helpers";
 import { Dough, Sauce, Size, Ingredient } from "@/common/models";
 import {
@@ -78,8 +77,9 @@ export default {
   },
 
   actions: {
-    fetchDoughs({ commit }) {
-      const doughs = Dough.parseItems(pizzaJson.dough);
+    async fetchDoughs({ commit }) {
+      const data = await this.$api.dough.query();
+      const doughs = Dough.parseItems(data);
       commit(
         SET_ENTITY,
         {
@@ -90,8 +90,9 @@ export default {
         { root: true }
       );
     },
-    fetchSizes({ commit }) {
-      const sizes = Size.parseItems(pizzaJson.sizes);
+    async fetchSizes({ commit }) {
+      const data = await this.$api.sizes.query();
+      const sizes = Size.parseItems(data);
       commit(
         SET_ENTITY,
         {
@@ -102,8 +103,9 @@ export default {
         { root: true }
       );
     },
-    fetchSauces({ commit }) {
-      const sauces = Sauce.parseItems(pizzaJson.sauces);
+    async fetchSauces({ commit }) {
+      const data = await this.$api.sauces.query();
+      const sauces = Sauce.parseItems(data);
       commit(
         SET_ENTITY,
         {
@@ -114,8 +116,9 @@ export default {
         { root: true }
       );
     },
-    fetchIngredients({ commit }) {
-      const ingredients = Ingredient.parseItems(pizzaJson.ingredients);
+    async fetchIngredients({ commit }) {
+      const data = await this.$api.ingredients.query();
+      const ingredients = Ingredient.parseItems(data);
       commit(
         SET_ENTITY,
         {
