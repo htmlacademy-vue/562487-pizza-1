@@ -14,7 +14,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const middlewares = to.meta.middlewares;
-  if (!middlewares.length) {
+  if (!middlewares?.length) {
     return next();
   }
   const context = { to, from, next, store };
