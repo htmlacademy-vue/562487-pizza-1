@@ -9,7 +9,7 @@
           :value="delivery"
           @change="updateDelivery"
         >
-          <option v-for="{ id, name } in deliveries" :key="id" :value="name">
+          <option v-for="{ id, name } in deliveries" :key="id" :value="id">
             {{ name }}
           </option>
         </select>
@@ -17,86 +17,81 @@
 
       <AppInput
         class="input--big-label"
-        label="Контактный телефон:*"
+        label="Контактный телефон:"
         name="phone"
         placeholder="+7 999-999-99-99"
         :value="phone"
-        @input="setCartEntity({ name: 'phone', value: $event })"
+        @input="setCartEntity({ entity: 'phone', value: $event })"
       />
 
       <CartFormAddress
         v-if="isAddressShown"
-        :address="address"
-        :isUserAddress="isUserAddress"
+        :address="order.address"
+        :isReadOnly="isUserAddress(order.address.id)"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
 import CartFormAddress from "./CartFormAddress";
-import { Deliveries } from "@/common/enums";
-import { SET_CART_ENTITY, RESET_ADDRESS } from "@/store/mutations-types";
+import { BASE_DELIVERIES } from "@/common/constants";
+import { Address } from "@/common/models";
+import {
+  SET_CART_ENTITY,
+  SET_CART_ORDER_ENTITY,
+} from "@/store/mutations-types";
 
 export default {
   name: "CartDelivery",
   components: {
     CartFormAddress,
   },
-  created() {
-    if (this.user) {
-      this.setCartEntity({ name: "phone", value: this.user.phone });
-    }
-  },
   computed: {
     ...mapState("Auth", ["user", "addresses"]),
-    ...mapState("Cart", ["delivery", "phone", "address"]),
+    ...mapState("Cart", ["delivery", "phone", "order", "deliveries"]),
+    ...mapGetters("Auth", ["addressById", "isUserAddress"]),
 
     isAddressShown() {
-      return this.delivery !== Deliveries[1];
-    },
-    isUserAddress() {
-      return !Object.values(Deliveries).includes(this.delivery);
-    },
-
-    deliveries() {
-      const basicDeliveries = Object.keys(Deliveries).map((key) => ({
-        id: key,
-        name: Deliveries[key],
-      }));
-      if (!this.user) {
-        return basicDeliveries;
-      } else {
-        const length = Object.keys(Deliveries).length;
-        const userDeliveries = this.addresses.map((address, index) => ({
-          id: length + index + 1,
-          name: address.name,
-        }));
-
-        return [...basicDeliveries, ...userDeliveries];
-      }
+      return this.delivery !== BASE_DELIVERIES[0].id;
     },
   },
   methods: {
     ...mapMutations("Cart", {
       setCartEntity: SET_CART_ENTITY,
-      resetCartAddress: RESET_ADDRESS,
+      setCartOrderEntity: SET_CART_ORDER_ENTITY,
     }),
+    ...mapActions("Auth", ["queryAddresses"]),
 
     updateDelivery(evt) {
       const { value } = evt.target;
-      this.setCartEntity({ name: "delivery", value });
+      this.setCartEntity({ entity: "delivery", value });
 
-      if (value === Deliveries[1]) {
-        this.setCartEntity({ name: "address", value: null });
-      } else if (value === Deliveries[2]) {
-        this.resetCartAddress();
+      if (value === BASE_DELIVERIES[0].id) {
+        this.setAddress(null);
+      } else if (value === BASE_DELIVERIES[1].id) {
+        this.setAddress(Address.createNew());
       } else {
-        const userAddress = this.addresses.find((it) => it.name === value);
-        this.setCartEntity({ name: "address", value: userAddress });
+        const userAddress = this.addressById(+value);
+        if (userAddress) {
+          this.setAddress(userAddress);
+        }
       }
+    },
+
+    setAddress(address) {
+      this.setCartOrderEntity({ entity: "address", value: address });
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.select {
+  max-width: 190px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+</style>
