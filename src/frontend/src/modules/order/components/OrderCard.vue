@@ -2,19 +2,19 @@
   <section class="sheet order">
     <div class="order__wrapper">
       <div class="order__number">
-        <b>Заказ #{{ orderNumber }}</b>
+        <b>Заказ #{{ order.id }}</b>
       </div>
 
       <div class="order__sum">
-        <span>Сумма заказа: {{ totalPrice }} ₽</span>
+        <span>Сумма заказа: {{ totalPrice(order.id) }} ₽</span>
       </div>
 
       <div class="order__button">
-        <AppButton class="button--border" @click="isConfirmPopupShowed = true">
+        <AppButton class="button--border" @click="toggleConfirmPopup">
           Удалить
         </AppButton>
       </div>
-      <div class="order__button">
+      <div class="order__button" @click="handleRepeat">
         <AppButton>Повторить</AppButton>
       </div>
     </div>
@@ -23,7 +23,9 @@
       <li v-for="pizza in order.pizzas" :key="pizza.id" class="order__item">
         <Product :pizza="pizza" />
 
-        <p class="order__price">{{ pizza.quantity }} х {{ pizza.price }} ₽</p>
+        <p class="order__price">
+          {{ pizza.quantity }} х {{ pizzaPrice(pizza) }} ₽
+        </p>
       </li>
     </ul>
 
@@ -36,27 +38,24 @@
     </ul>
 
     <p v-if="order.address" class="order__address">
-      Адрес доставки: ул. {{ order.address.street }}, д.
-      {{ order.address.building }},
-      {{ order.address.flat && `кв. ${order.address.flat}` }}
+      Адрес доставки: {{ order.address.name }}
     </p>
 
     <ConfirmPopup
       v-if="isConfirmPopupShowed"
-      :entity="order"
-      @confirm="confirmDeleteOrder"
-      @cancel="isConfirmPopupShowed = false"
+      :isSubmitting="isSubmitting"
+      @confirm="confirmDelete"
+      @cancel="toggleConfirmPopup"
     >
-      <h2 class="title">Удалить заказ #{{ orderNumber }}?</h2>
+      <h2 class="title">Удалить заказ #{{ order.id }}?</h2>
       <p>После удаления заказ не сохранится.</p>
     </ConfirmPopup>
   </section>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import OrderMisc from "./OrderMisc";
-import { calculateSum, findById } from "@/common/helpers";
 
 export default {
   name: "OrderCard",
@@ -70,34 +69,35 @@ export default {
   data() {
     return {
       isConfirmPopupShowed: false,
+      isSubmitting: false,
     };
   },
   computed: {
     ...mapState("Cart", ["misc"]),
-
-    orderNumber() {
-      return this.order.id.replace("order_", "");
-    },
-    pizzasPrice() {
-      return calculateSum(this.order.pizzas);
-    },
-    miscPrice() {
-      return this.order.misc
-        .map(({ miscId, quantity }) => {
-          const miscItem = findById(this.misc, miscId);
-          return miscItem.price * quantity;
-        })
-        .reduce((acc, it) => acc + it, 0);
-    },
-    totalPrice() {
-      return this.pizzasPrice + this.miscPrice;
-    },
+    ...mapGetters("Builder", ["pizzaPrice"]),
+    ...mapGetters("Orders", ["totalPrice"]),
   },
   methods: {
     ...mapActions("Orders", ["deleteOrder"]),
 
-    async confirmDeleteOrder() {
-      await this.deleteOrder(this.order.id);
+    toggleConfirmPopup() {
+      this.isConfirmPopupShowed = !this.isConfirmPopupShowed;
+    },
+
+    async confirmDelete() {
+      this.isSubmitting = true;
+      const id = this.order.id;
+      try {
+        await this.deleteOrder(id);
+        const message = `Заказ ${id} успешно удалён`;
+        this.$notifier.success(message);
+      } catch {
+        this.isSubmitting = false;
+      }
+    },
+
+    handleRepeat() {
+      this.$router.push({ name: "Cart", params: { id: this.order.id } });
     },
   },
 };
