@@ -1,5 +1,6 @@
-import { uniqueId } from "lodash";
-import { SET_ENTITY, ADD_ENTITY, DELETE_ORDER } from "@/store/mutations-types";
+import { SET_ENTITY, DELETE_ENTITY } from "@/store/mutations-types";
+import { Order } from "@/common/models";
+import { findById, sum } from "@/common/helpers";
 
 const namespace = { module: "Orders", entity: "orders" };
 
@@ -8,38 +9,57 @@ export default {
   state: {
     orders: [],
   },
-  mutations: {
-    [DELETE_ORDER](state, id) {
-      const index = state.orders.findIndex((it) => it.id === id);
-      if (~index) {
-        state.orders.splice(index, 1);
-      }
+  getters: {
+    getOrderById: (state) => (id) => findById(state.orders, id),
+    pizzasPrice: (state, getters, rootState, rootGetters) => (id) => {
+      const order = getters.getOrderById(id);
+      return order.pizzas
+        .map(
+          (pizza) => rootGetters["Builder/pizzaPrice"](pizza) * pizza.quantity
+        )
+        .reduce(sum, 0);
+    },
+    miscPrice: (state, getters, rootState, rootGetters) => (id) => {
+      const order = getters.getOrderById(id);
+      return order.misc
+        .map(({ miscId, quantity }) => {
+          const miscItem = rootGetters["Cart/miscById"](miscId);
+          return miscItem.price * quantity;
+        })
+        .reduce(sum, 0);
+    },
+    totalPrice: (state, getters) => (id) => {
+      const pizzasPrice = getters.pizzasPrice(id);
+      const miscPrice = getters.miscPrice(id);
+      return pizzasPrice + miscPrice;
     },
   },
   actions: {
-    queryOrders({ commit }) {
+    async queryOrders({ commit }) {
+      const data = await this.$api.orders.query();
+      const orders = Order.parseItems(data);
       commit(
         SET_ENTITY,
         {
           ...namespace,
-          value: [],
+          value: orders,
         },
         { root: true }
       );
     },
-    createOrder({ commit }, newOrder) {
-      const id = uniqueId("order_");
+    async createOrder(ctx, newOrder) {
+      await this.$api.orders.post(newOrder);
+    },
+    async deleteOrder({ commit }, id) {
+      await this.$api.orders.delete(id);
       commit(
-        ADD_ENTITY,
+        DELETE_ENTITY,
         {
           ...namespace,
-          value: { ...newOrder, id },
+          id,
         },
         { root: true }
       );
-    },
-    deleteOrder({ commit }, id) {
-      commit(DELETE_ORDER, id);
     },
   },
 };

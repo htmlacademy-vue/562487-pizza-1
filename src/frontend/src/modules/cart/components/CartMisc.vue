@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import { UPDATE_CART_ORDER_MISC } from "@/store/mutations-types";
 
 export default {
@@ -54,14 +54,8 @@ export default {
     ...mapState("Cart", ["misc"]),
     ...mapGetters("Cart", ["miscQuantityById"]),
   },
-  async created() {
-    if (!this.misc.length) {
-      await this.fetchMisc();
-    }
-  },
   methods: {
     ...mapMutations("Cart", { updateOrderMisc: UPDATE_CART_ORDER_MISC }),
-    ...mapActions("Cart", ["fetchMisc"]),
   },
 };
 </script>

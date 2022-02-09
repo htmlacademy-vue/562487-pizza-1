@@ -3,7 +3,10 @@
     <div class="popup__title">
       <slot />
     </div>
-    <PopupButton class="popup__button--danger" @click.prevent="$emit('confirm')"
+    <PopupButton
+      class="popup__button--danger"
+      :disabled="isSubmitting"
+      @click.prevent="$emit('confirm')"
       >Да, удалить!</PopupButton
     >
     <PopupButton @click.prevent="$emit('cancel')" ref="cancel"
@@ -21,6 +24,12 @@ export default {
   components: {
     PopupLayout,
     PopupButton,
+  },
+  props: {
+    isSubmitting: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
     this.$refs.cancel.focus();

@@ -1,5 +1,3 @@
-import { PizzaIngredients } from "@/common/enums";
-
 export default class Ingredient {
   constructor(ingredient) {
     this.id = ingredient.id;
@@ -7,7 +5,7 @@ export default class Ingredient {
     this.image = ingredient.image;
     this.price = ingredient.price;
     // client
-    this.value = PizzaIngredients[ingredient.id];
+    this.value = ingredient.image.slice(20, ingredient.image.length - 4);
     this.quantity = 0;
     this.displayName = ingredient.name.toLowerCase();
   }

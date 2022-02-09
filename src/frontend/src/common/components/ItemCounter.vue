@@ -40,6 +40,7 @@ export default {
     },
     max: {
       type: Number,
+      default: Infinity,
     },
   },
 };

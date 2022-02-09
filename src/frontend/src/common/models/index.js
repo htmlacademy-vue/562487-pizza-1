@@ -8,5 +8,20 @@ import Size from "./Size";
 import Ingredient from "./Ingredient";
 // Cart
 import Misc from "./Misc";
+import Pizza from "./Pizza";
+// Orders
+import Order from "./Order";
+import OrderMisc from "./OrderMisc";
 
-export { User, Address, Dough, Sauce, Size, Ingredient, Misc };
+export {
+  User,
+  Address,
+  Dough,
+  Sauce,
+  Size,
+  Ingredient,
+  Misc,
+  Pizza,
+  Order,
+  OrderMisc,
+};

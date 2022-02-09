@@ -1,4 +1,4 @@
-import { PizzaDoughs } from "@/common/enums";
+import { PizzaDoughs, PizzaFoundations } from "@/common/enums";
 
 export default class Dough {
   constructor(dough) {
@@ -9,6 +9,7 @@ export default class Dough {
     this.price = dough.price;
     // client
     this.value = PizzaDoughs[dough.id];
+    this.foundation = PizzaFoundations[dough.id];
     this.kind = "dough";
     this.displayName = dough.name.replace(/.$/, "м").toLowerCase();
   }

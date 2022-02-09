@@ -4,15 +4,17 @@
       <div class="address-form__header">
         <b>Адрес №{{ address.id }}. {{ address.name }}</b>
         <div class="address-form__edit">
-          <button type="button" class="icon">
+          <button
+            type="button"
+            class="icon"
+            :disabled="isEditDisabled"
+            @click="$emit('edit', address)"
+          >
             <span class="visually-hidden">Изменить адрес</span>
           </button>
         </div>
       </div>
-      <p>
-        {{ address.street }}, д. {{ address.building }}, кв.
-        {{ address.flat }}
-      </p>
+      <p>{{ addressToString }}</p>
       <small v-if="address.comment">{{ address.comment }}</small>
     </div>
   </div>
@@ -25,6 +27,20 @@ export default {
     address: {
       type: Object,
       required: true,
+    },
+    isEditDisabled: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  computed: {
+    addressToString() {
+      const { street, building, flat } = this.address;
+      let addressString = `${street}, д. ${building}`;
+      if (flat) {
+        addressString += `, кв. ${flat}`;
+      }
+      return addressString;
     },
   },
 };

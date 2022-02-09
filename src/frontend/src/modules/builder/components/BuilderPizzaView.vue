@@ -9,23 +9,34 @@
         :value="pizza.name"
         @input="
           setPizzaEntity({
-            name: 'name',
+            entity: 'name',
             value: $event.target.value.trim(),
           })
         "
       />
     </label>
 
-    <AppDrop @drop="moveIngredient">
+    <AppLoader v-if="isLoading" />
+    <AppDrop v-else @drop="moveIngredient">
       <div class="content__constructor">
         <div class="pizza" :class="pizzaFoundationClasses">
           <div class="pizza__wrapper">
             <div
-              v-for="ingredient in pizza.ingredients"
-              :key="ingredient.value"
-              class="pizza__filling"
-              :class="getPizzaIngredientsClasses(ingredient)"
-            ></div>
+              v-for="{ ingredientId, quantity } in pizza.ingredients"
+              :key="ingredientId"
+            >
+              <BuilderPizzaFillingItem :id="ingredientId" />
+              <BuilderPizzaFillingItem
+                v-if="quantity > 1"
+                class="pizza__filling--second"
+                :id="ingredientId"
+              />
+              <BuilderPizzaFillingItem
+                v-if="quantity > 2"
+                class="pizza__filling--third"
+                :id="ingredientId"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -37,45 +48,32 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import PizzaSauces from "@/common/enums/sauces";
-import PizzaFoundations from "@/common/enums/foundations";
 import {
-  SET_PIZZA_ENTITY,
-  UPDATE_PIZZA_INGREDIENTS,
+  SET_BUILDER_PIZZA_ENTITY,
+  UPDATE_BUILDER_PIZZA_INGREDIENTS,
 } from "@/store/mutations-types";
+import BuilderPizzaFillingItem from "./BuilderPizzaFillingItem.vue";
 
 export default {
+  components: { BuilderPizzaFillingItem },
   name: "BuilderPizzaView",
   computed: {
     ...mapState("Builder", ["pizza"]),
-    ...mapGetters("Builder", ["ingredientById"]),
+    ...mapGetters("Builder", ["doughById", "sauceById", "isLoading"]),
 
     pizzaFoundationClasses() {
       const { doughId, sauceId } = this.pizza;
-      const dough = PizzaFoundations[doughId];
-      const sauce = PizzaSauces[sauceId];
+      const dough = this.doughById(doughId).foundation;
+      const sauce = this.sauceById(sauceId).value;
       return `pizza--foundation--${dough}-${sauce}`;
     },
   },
   methods: {
     ...mapMutations("Builder", {
-      setPizzaEntity: SET_PIZZA_ENTITY,
-      updatePizzaIngredients: UPDATE_PIZZA_INGREDIENTS,
+      setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
+      updatePizzaIngredients: UPDATE_BUILDER_PIZZA_INGREDIENTS,
     }),
 
-    getPizzaIngredientsClasses({ ingredientId, quantity }) {
-      const ingredient = this.ingredientById(ingredientId);
-      const valueClass = `pizza__filling--${ingredient.value}`;
-      if (quantity === 1) {
-        return valueClass;
-      }
-      const QuantityModifiers = {
-        2: "second",
-        3: "third",
-      };
-      const quantityClass = `pizza__filling--${QuantityModifiers[quantity]}`;
-      return `${valueClass} ${quantityClass}`;
-    },
     moveIngredient(active) {
       this.updatePizzaIngredients({
         ingredientId: active.id,

@@ -3,13 +3,14 @@
     <div class="sheet">
       <h2 class="title title--small sheet__title">Выберите размер</h2>
 
-      <div class="sheet__content diameter">
+      <AppLoader v-if="isLoading" />
+      <div v-else class="sheet__content diameter">
         <RadioButton
           v-for="size in sizes"
           :key="size.id"
           :item="size"
           :isChecked="size.id === pizza.sizeId"
-          @change="setPizzaEntity({ name: 'sizeId', value: $event })"
+          @change="setPizzaEntity({ entity: 'sizeId', value: $event })"
         >
           <span>{{ size.name }}</span>
         </RadioButton>
@@ -20,16 +21,20 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { SET_PIZZA_ENTITY } from "@/store/mutations-types";
+import { SET_BUILDER_PIZZA_ENTITY } from "@/store/mutations-types";
 
 export default {
   name: "BuilderSizeSelector",
   computed: {
     ...mapState("Builder", ["sizes", "pizza"]),
+
+    isLoading() {
+      return !this.sizes.length;
+    },
   },
   methods: {
     ...mapMutations("Builder", {
-      setPizzaEntity: SET_PIZZA_ENTITY,
+      setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
     }),
   },
 };

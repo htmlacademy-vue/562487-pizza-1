@@ -1,110 +1,107 @@
-import { uniqueId } from "lodash";
-import miscJson from "@/static/misc.json";
 import {
-  SET_ENTITY,
+  SET_CART_ENTITY,
+  SET_CART_ORDER_ENTITY,
+  SET_CART_ORDER_ADDRESS_ENTITY,
   ADD_PIZZA,
   UPDATE_PIZZA,
   DELETE_PIZZA,
+  UPDATE_PIZZA_QUANTITY,
   UPDATE_CART_ORDER_MISC,
   RESET_CART,
-  SET_CART_ENTITY,
-  RESET_ADDRESS,
 } from "@/store/mutations-types";
-import { Misc } from "@/common/models";
-import { Deliveries } from "@/common/enums";
-import { calculateSum, findById } from "@/common/helpers";
-
-const MODULE = "Cart";
-
-const createNewAddress = () => ({
-  street: "",
-  building: "",
-  flat: "",
-  comment: "",
-});
+import { Misc, Pizza } from "@/common/models";
+import { findById } from "@/common/helpers";
+import { Order } from "@/common/models";
+import { BASE_DELIVERIES } from "@/common/constants";
 
 export default {
   namespaced: true,
   state: {
-    pizzas: [],
     misc: [],
-    orderMisc: [],
-    delivery: Deliveries[1],
+    deliveries: BASE_DELIVERIES,
+    delivery: BASE_DELIVERIES[0].id,
     phone: "",
-    address: null,
+    order: Order.createNew(),
   },
   getters: {
     miscById: (state) => (id) => findById(state.misc, id),
     miscQuantityById: (state) => (id) =>
-      state.orderMisc.find((it) => it.miscId === id)?.quantity || 0,
-    pizzasPrice: (state) => calculateSum(state.pizzas),
+      state.order.misc.find((it) => it.miscId === id)?.quantity || 0,
+    orderPizzaById: (state) => (id) => findById(state.order.pizzas, id),
+    pizzasPrice: (state, getters, rootState, rootGetters) => {
+      return state.order.pizzas
+        .map(
+          (pizza) => rootGetters["Builder/pizzaPrice"](pizza) * pizza.quantity
+        )
+        .reduce((acc, it) => acc + it, 0);
+    },
     miscPrice: (state) =>
-      state.orderMisc
+      state.order.misc
         .map(({ miscId, quantity }) => {
           const miscItem = findById(state.misc, miscId);
           return miscItem.price * quantity;
         })
         .reduce((acc, it) => acc + it, 0),
     totalSum: (state, getters) => getters.pizzasPrice + getters.miscPrice,
-    isEmpty: (state) => state.pizzas.length === 0,
+    isEmpty: (state) => state.order.pizzas.length === 0,
   },
   mutations: {
-    [ADD_PIZZA](state, newPizza) {
-      const id = uniqueId("pizza_");
-      state.pizzas.push({ ...newPizza, id });
+    [SET_CART_ENTITY](state, { entity, value }) {
+      state[entity] = value;
+    },
+    [SET_CART_ORDER_ENTITY](state, { entity, value }) {
+      state.order[entity] = value;
+    },
+    [ADD_PIZZA](state, pizza) {
+      const newPizza = new Pizza(pizza);
+      state.order.pizzas.push(newPizza);
     },
     [UPDATE_PIZZA](state, pizza) {
-      const index = state.pizzas.findIndex((it) => it.id === pizza.id);
+      const index = state.order.pizzas.findIndex((it) => it.id === pizza.id);
       if (~index) {
-        state.pizzas.splice(index, 1, pizza);
+        state.order.pizzas.splice(index, 1, pizza);
       }
     },
     [DELETE_PIZZA](state, id) {
-      const index = state.pizzas.findIndex((it) => it.id === id);
+      const index = state.order.pizzas.findIndex((it) => it.id === id);
       if (~index) {
-        state.pizzas.splice(index, 1);
+        state.order.pizzas.splice(index, 1);
+      }
+    },
+    [UPDATE_PIZZA_QUANTITY](state, { id, quantity }) {
+      const index = state.order.pizzas.findIndex((it) => it.id === id);
+      if (~index) {
+        state.order.pizzas[index].quantity = quantity;
       }
     },
     [UPDATE_CART_ORDER_MISC](state, misc) {
-      const index = state.orderMisc.findIndex(
+      const index = state.order.misc.findIndex(
         (it) => it.miscId === misc.miscId
       );
       if (~index) {
         if (!misc.quantity) {
-          state.orderMisc.splice(index, 1);
+          state.order.misc.splice(index, 1);
         } else {
-          state.orderMisc.splice(index, 1, misc);
+          state.order.misc.splice(index, 1, misc);
         }
       } else {
-        state.orderMisc.push(misc);
+        state.order.misc.push(misc);
       }
     },
     [RESET_CART](state) {
-      state.pizzas = [];
-      state.orderMisc = [];
-      state.delivery = Deliveries[1];
+      state.delivery = BASE_DELIVERIES[0].id;
       state.phone = "";
-      state.address = null;
+      state.order = Order.createNew();
     },
-    [SET_CART_ENTITY](state, { name, value }) {
-      state[name] = value;
-    },
-    [RESET_ADDRESS](state) {
-      state.address = createNewAddress();
+    [SET_CART_ORDER_ADDRESS_ENTITY](state, { entity, value }) {
+      state.order.address[entity] = value;
     },
   },
   actions: {
-    fetchMisc({ commit }) {
-      const misc = Misc.parseItems(miscJson);
-      commit(
-        SET_ENTITY,
-        {
-          module: MODULE,
-          entity: "misc",
-          value: misc,
-        },
-        { root: true }
-      );
+    async fetchMisc({ commit }) {
+      const data = await this.$api.misc.query();
+      const misc = Misc.parseItems(data);
+      commit(SET_CART_ENTITY, { entity: "misc", value: misc });
     },
   },
 };

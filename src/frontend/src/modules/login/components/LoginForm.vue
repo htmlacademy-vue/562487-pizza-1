@@ -5,8 +5,7 @@
         name="email"
         label="E-mail"
         placeholder="example@mail.ru"
-        :value="email"
-        @input="email = $event.target.value"
+        v-model="userData.email"
         :error="validations.email.error"
         ref="email"
       />
@@ -18,13 +17,12 @@
         name="password"
         label="Пароль"
         placeholder="***********"
-        :value="password"
-        @input="password = $event.target.value"
+        v-model="userData.password"
         :error="validations.password.error"
         ref="password"
       />
     </div>
-    <AppButton type="submit">Авторизоваться</AppButton>
+    <AppButton type="submit" :disabled="isSubmitting">Авторизоваться</AppButton>
   </form>
 </template>
 
@@ -37,8 +35,10 @@ export default {
   mixins: [validator],
   data() {
     return {
-      email: "",
-      password: "",
+      userData: {
+        email: "",
+        password: "",
+      },
       validations: {
         email: {
           error: "",
@@ -50,10 +50,11 @@ export default {
         },
       },
       isFormValid: true,
+      isSubmitting: false,
     };
   },
   watch: {
-    email: function (value) {
+    "userData.email": function (value) {
       if (!this.isFormValid) {
         this.$validateField({ name: "email", value }, this.validations);
         return;
@@ -62,7 +63,7 @@ export default {
         this.$clearValidationError("email");
       }
     },
-    password: function (value) {
+    "userData.password": function (value) {
       if (!this.isFormValid) {
         this.$validateField({ name: "password", value }, this.validations);
         return;
@@ -79,19 +80,18 @@ export default {
     ...mapActions("Auth", { login: "login" }),
 
     async submit() {
-      const appUser = {
-        email: this.email,
-        password: this.password,
-      };
-      if (!this.$validateFields(appUser, this.validations)) {
+      this.isSubmitting = true;
+      if (!this.$validateFields(this.userData, this.validations)) {
         this.isFormValid = false;
+        this.isSubmitting = false;
         return;
       }
       try {
-        await this.login(appUser);
+        await this.login(this.userData);
         this.$router.push("/");
-      } catch (err) {
-        this.$notifier.error("Failed to login: " + err.message);
+      } catch {
+        this.isFormValid = false;
+        this.isSubmitting = false;
       }
     },
   },

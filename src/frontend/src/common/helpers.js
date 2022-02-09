@@ -1,4 +1,10 @@
 import { uniqueId } from "lodash";
+import {
+  AuthApiService,
+  CrudApiService,
+  ReadOnlyApiService,
+} from "../services/api.service";
+import { Resources } from "./enums";
 
 export const generateAvatar = (avatarUrl = "") => ({
   webp: avatarUrl.replace(/.jpg/gi, ".webp"),
@@ -30,7 +36,30 @@ export const calculateSum = (items) => {
     .reduce((acc, it) => acc + it, 0);
 };
 
+export const sum = (acc, it) => acc + it;
+
 export const generate = (it) => ({
   id: uniqueId(),
   ...it,
 });
+
+export const createResources = (notifier) => {
+  return {
+    [Resources.ADDRESSES]: new CrudApiService(Resources.ADDRESSES, notifier),
+    [Resources.AUTH]: new AuthApiService(notifier),
+    [Resources.DOUGH]: new ReadOnlyApiService(Resources.DOUGH, notifier),
+    [Resources.INGREDIENTS]: new ReadOnlyApiService(
+      Resources.INGREDIENTS,
+      notifier
+    ),
+    [Resources.MISC]: new ReadOnlyApiService(Resources.MISC, notifier),
+    [Resources.ORDERS]: new CrudApiService(Resources.ORDERS, notifier),
+    [Resources.SAUCES]: new ReadOnlyApiService(Resources.SAUCES, notifier),
+    [Resources.SIZES]: new ReadOnlyApiService(Resources.SIZES, notifier),
+  };
+};
+
+export const setAuth = (store) => {
+  store.$api.auth.setAuthHeader();
+  store.dispatch("Auth/fetchUser");
+};

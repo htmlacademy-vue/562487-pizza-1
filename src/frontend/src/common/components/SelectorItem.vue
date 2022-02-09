@@ -20,17 +20,13 @@ export default {
       type: Object,
       required: true,
     },
-    quantity: {
-      type: Number,
-      required: true,
-    },
   },
   computed: {
     ingredientDragged() {
-      return { ...this.ingredient, quantity: this.quantity };
+      return this.ingredient;
     },
     isDraggable() {
-      return this.quantity < INGREDIENT_MAX_COUNT;
+      return this.ingredient.quantity < INGREDIENT_MAX_COUNT;
     },
   },
 };

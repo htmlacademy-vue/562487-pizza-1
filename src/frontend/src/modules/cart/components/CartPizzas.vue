@@ -6,12 +6,12 @@
       <ItemCounter
         class="cart-list__counter"
         :quantity="pizza.quantity"
-        @incrementClick="update({ ...pizza, quantity: pizza.quantity + 1 })"
-        @decrementClick="update({ ...pizza, quantity: pizza.quantity - 1 })"
+        @incrementClick="update({ id: pizza.id, quantity: pizza.quantity + 1 })"
+        @decrementClick="update({ id: pizza.id, quantity: pizza.quantity - 1 })"
       />
 
       <div class="cart-list__price">
-        <b>{{ pizza.price * pizza.quantity }} ₽</b>
+        <b>{{ pizzaPrice(pizza) * pizza.quantity }} ₽</b>
       </div>
 
       <div class="cart-list__button">
@@ -37,10 +37,10 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import {
   DELETE_PIZZA,
-  UPDATE_PIZZA,
+  UPDATE_PIZZA_QUANTITY,
   RESET_CART,
 } from "@/store/mutations-types";
 
@@ -57,19 +57,22 @@ export default {
       isConfirmPopupShowed: false,
     };
   },
+  computed: {
+    ...mapGetters("Builder", ["pizzaPrice"]),
+  },
   methods: {
     ...mapMutations("Cart", {
       deletePizza: DELETE_PIZZA,
-      updatePizza: UPDATE_PIZZA,
+      updatePizzaQuantity: UPDATE_PIZZA_QUANTITY,
       resetCart: RESET_CART,
     }),
 
-    update(pizza) {
-      if (!pizza.quantity) {
+    update({ id, quantity }) {
+      if (!quantity) {
         this.isConfirmPopupShowed = true;
         return;
       }
-      this.updatePizza(pizza);
+      this.updatePizzaQuantity({ id, quantity });
     },
 
     confirmDeletePizza(pizzaId) {

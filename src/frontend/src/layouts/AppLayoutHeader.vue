@@ -18,7 +18,7 @@
         <UserPicture :user="user" width="32" height="32" />
         <span>{{ user.name }}</span>
       </router-link>
-      <a href="#" class="header__logout" @click.prevent="handleLogout"
+      <a href="#" class="header__logout" @click.prevent="$logout"
         ><span>Выйти</span></a
       >
     </div>
@@ -26,20 +26,15 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from "vuex";
+import { mapState, mapGetters } from "vuex";
+import { logout } from "@/common/mixins";
 
 export default {
   name: "AppLayoutHeader",
+  mixins: [logout],
   computed: {
     ...mapState("Auth", ["user"]),
     ...mapGetters("Cart", ["totalSum"]),
-  },
-  methods: {
-    ...mapActions("Auth", ["logout"]),
-    async handleLogout() {
-      await this.logout();
-      this.$router.push("/login");
-    },
   },
 };
 </script>
