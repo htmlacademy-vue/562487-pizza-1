@@ -36,6 +36,8 @@ export const calculateSum = (items) => {
     .reduce((acc, it) => acc + it, 0);
 };
 
+export const sum = (acc, it) => acc + it;
+
 export const generate = (it) => ({
   id: uniqueId(),
   ...it,
