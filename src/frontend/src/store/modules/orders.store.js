@@ -1,5 +1,6 @@
-import { SET_ENTITY, ADD_ENTITY, DELETE_ENTITY } from "@/store/mutations-types";
+import { SET_ENTITY, DELETE_ENTITY } from "@/store/mutations-types";
 import { Order } from "@/common/models";
+import { findById, sum } from "@/common/helpers";
 
 const namespace = { module: "Orders", entity: "orders" };
 
@@ -7,6 +8,31 @@ export default {
   namespaced: true,
   state: {
     orders: [],
+  },
+  getters: {
+    getOrderById: (state) => (id) => findById(state.orders, id),
+    pizzasPrice: (state, getters, rootState, rootGetters) => (id) => {
+      const order = getters.getOrderById(id);
+      return order.pizzas
+        .map(
+          (pizza) => rootGetters["Builder/pizzaPrice"](pizza) * pizza.quantity
+        )
+        .reduce(sum, 0);
+    },
+    miscPrice: (state, getters, rootState, rootGetters) => (id) => {
+      const order = getters.getOrderById(id);
+      return order.misc
+        .map(({ miscId, quantity }) => {
+          const miscItem = rootGetters["Cart/miscById"](miscId);
+          return miscItem.price * quantity;
+        })
+        .reduce(sum, 0);
+    },
+    totalPrice: (state, getters) => (id) => {
+      const pizzasPrice = getters.pizzasPrice(id);
+      const miscPrice = getters.miscPrice(id);
+      return pizzasPrice + miscPrice;
+    },
   },
   actions: {
     async queryOrders({ commit }) {
@@ -21,17 +47,8 @@ export default {
         { root: true }
       );
     },
-    async createOrder({ commit }, newOrder) {
-      const data = await this.$api.orders.post(newOrder);
-      const { id } = data;
-      commit(
-        ADD_ENTITY,
-        {
-          ...namespace,
-          value: { ...newOrder, id },
-        },
-        { root: true }
-      );
+    async createOrder(ctx, newOrder) {
+      await this.$api.orders.post(newOrder);
     },
     async deleteOrder({ commit }, id) {
       await this.$api.orders.delete(id);

@@ -23,6 +23,11 @@ export default {
     user: null,
     addresses: [],
   },
+  getters: {
+    isUserAddress: (state) => (id) =>
+      state.addresses.some((it) => it.id === id),
+    addressById: (state) => (id) => state.addresses.find((it) => it.id === id),
+  },
   actions: {
     async fetchUser({ commit, dispatch }) {
       try {
@@ -78,6 +83,7 @@ export default {
         { root: true }
       );
     },
+
     async queryAddresses({ commit }) {
       const data = await this.$api.addresses.query();
       const addresses = Address.parseItems(data);
@@ -90,17 +96,17 @@ export default {
         { root: true }
       );
     },
-    async createAddress({ commit }, newAddress) {
+    async createNewAddress({ commit }, newAddress) {
       const data = await this.$api.addresses.post(newAddress);
-      const { id } = data;
       commit(
         ADD_ENTITY,
         {
           ...namespace.addresses,
-          value: { ...newAddress, id },
+          value: new Address(data),
         },
         { root: true }
       );
+      return data;
     },
     async updateAddress({ commit }, address) {
       await this.$api.addresses.put(address);
