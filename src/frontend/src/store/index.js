@@ -72,11 +72,11 @@ const mutations = {
 const actions = {
   async init({ dispatch }) {
     dispatch("Auth/fetchUser");
-    dispatch("Auth/queryAddresses");
     dispatch("Builder/fetchDoughs");
     dispatch("Builder/fetchSizes");
     dispatch("Builder/fetchSauces");
     dispatch("Builder/fetchIngredients");
+    dispatch("Cart/fetchMisc");
   },
   async createNotification({ commit }, { ...notification }) {
     const uniqueNotification = {
