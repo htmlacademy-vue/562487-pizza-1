@@ -1,18 +1,17 @@
 <template>
   <div class="content__result">
-    <p>Итого: {{ totalPrice }} ₽</p>
+    <p>Итого: {{ builderPizzaPrice }} ₽</p>
     <slot />
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "BuilderPriceCounter",
-  props: {
-    totalPrice: {
-      type: Number,
-      required: true,
-    },
+  computed: {
+    ...mapGetters("Builder", ["builderPizzaPrice"]),
   },
 };
 </script>

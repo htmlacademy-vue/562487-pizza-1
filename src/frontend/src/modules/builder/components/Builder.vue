@@ -6,7 +6,7 @@
       <BuilderSizeSelector />
       <BuilderIngredientsSelector />
       <BuilderPizzaView>
-        <BuilderPriceCounter :totalPrice="totalPrice">
+        <BuilderPriceCounter>
           <AppButton type="submit" :disabled="isSubmitDisabled"
             >Готовьте!</AppButton
           >
@@ -17,14 +17,18 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 import BuilderDoughSelector from "./BuilderDoughSelector";
 import BuilderSizeSelector from "./BuilderSizeSelector";
 import BuilderIngredientsSelector from "./BuilderIngredientsSelector";
 import BuilderPizzaView from "./BuilderPizzaView";
 import BuilderPriceCounter from "./BuilderPriceCounter";
-import { ADD_PIZZA, UPDATE_PIZZA, RESET_PIZZA } from "@/store/mutations-types";
+import {
+  ADD_PIZZA,
+  UPDATE_PIZZA,
+  RESET_BUILDER_PIZZA,
+} from "@/store/mutations-types";
 
 export default {
   name: "Builder",
@@ -43,7 +47,6 @@ export default {
   },
   computed: {
     ...mapState("Builder", ["pizza"]),
-    ...mapGetters("Builder", ["totalPrice"]),
 
     isSubmitDisabled() {
       return !this.pizza.name || !this.pizza.ingredients.length;
@@ -51,25 +54,21 @@ export default {
   },
   methods: {
     ...mapMutations("Builder", {
-      resetPizza: RESET_PIZZA,
+      resetPizza: RESET_BUILDER_PIZZA,
     }),
     ...mapMutations("Cart", {
       addPizza: ADD_PIZZA,
       updatePizza: UPDATE_PIZZA,
     }),
 
-    async submit() {
+    submit() {
       if (this.isEditMode) {
-        this.updatePizza({
-          ...this.pizza,
-          price: this.totalPrice,
-        });
+        this.updatePizza(this.pizza);
         this.$emit("saveEdit");
         this.$router.push("/cart");
       } else {
         this.addPizza({
           ...this.pizza,
-          price: this.totalPrice,
           quantity: 1,
         });
       }

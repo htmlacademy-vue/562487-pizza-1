@@ -11,10 +11,13 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import Builder from "@/modules/builder/components/Builder";
 import BuilderPopup from "@/modules/builder/components/BuilderPopup";
-import { SET_PIZZA, RESET_PIZZA } from "@/store/mutations-types";
+import {
+  SET_BUILDER_ENTITY,
+  RESET_BUILDER_PIZZA,
+} from "@/store/mutations-types";
 
 export default {
   name: "IndexHome",
@@ -30,19 +33,18 @@ export default {
     };
   },
   computed: {
-    ...mapState("Cart", ["pizzas"]),
+    ...mapGetters("Cart", ["orderPizzaById"]),
+    ...mapState("Cart", ["order"]),
   },
   created() {
     const pizzaId = this.$route.params.id;
     if (!pizzaId) {
       return;
     } else {
-      const pizzaToEdit = this.pizzas.find((pizza) => {
-        return pizza.id === pizzaId;
-      });
+      const pizzaToEdit = this.orderPizzaById(pizzaId);
       if (pizzaToEdit) {
         this.isEditMode = true;
-        this.setPizza(pizzaToEdit);
+        this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
       } else {
         this.$route.push("/");
       }
@@ -50,8 +52,8 @@ export default {
   },
   methods: {
     ...mapMutations("Builder", {
-      setPizza: SET_PIZZA,
-      resetPizza: RESET_PIZZA,
+      setBuilderEntity: SET_BUILDER_ENTITY,
+      resetPizza: RESET_BUILDER_PIZZA,
     }),
 
     leavePage() {

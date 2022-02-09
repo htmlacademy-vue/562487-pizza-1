@@ -9,14 +9,15 @@
         :value="pizza.name"
         @input="
           setPizzaEntity({
-            name: 'name',
+            entity: 'name',
             value: $event.target.value.trim(),
           })
         "
       />
     </label>
 
-    <AppDrop @drop="moveIngredient">
+    <AppLoader v-if="isLoading" />
+    <AppDrop v-else @drop="moveIngredient">
       <div class="content__constructor">
         <div class="pizza" :class="pizzaFoundationClasses">
           <div class="pizza__wrapper">
@@ -48,8 +49,8 @@
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
 import {
-  SET_PIZZA_ENTITY,
-  UPDATE_PIZZA_INGREDIENTS,
+  SET_BUILDER_PIZZA_ENTITY,
+  UPDATE_BUILDER_PIZZA_INGREDIENTS,
 } from "@/store/mutations-types";
 import BuilderPizzaFillingItem from "./BuilderPizzaFillingItem.vue";
 
@@ -58,7 +59,7 @@ export default {
   name: "BuilderPizzaView",
   computed: {
     ...mapState("Builder", ["pizza"]),
-    ...mapGetters("Builder", ["doughById", "sauceById"]),
+    ...mapGetters("Builder", ["doughById", "sauceById", "isLoading"]),
 
     pizzaFoundationClasses() {
       const { doughId, sauceId } = this.pizza;
@@ -69,8 +70,8 @@ export default {
   },
   methods: {
     ...mapMutations("Builder", {
-      setPizzaEntity: SET_PIZZA_ENTITY,
-      updatePizzaIngredients: UPDATE_PIZZA_INGREDIENTS,
+      setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
+      updatePizzaIngredients: UPDATE_BUILDER_PIZZA_INGREDIENTS,
     }),
 
     moveIngredient(active) {
