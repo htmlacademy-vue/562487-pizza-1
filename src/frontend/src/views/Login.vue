@@ -1,5 +1,5 @@
 <template>
-  <PopupOverlay @click.self="close" @keydown.esc.prevent="close">
+  <PopupOverlay @keydown.esc.prevent="close">
     <div class="sign-form">
       <router-link to="/" class="close close--white">
         <span class="visually-hidden">Закрыть форму авторизации</span>
@@ -13,20 +13,11 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import LoginForm from "@/modules/login/components/LoginForm";
 
 export default {
   name: "Login",
   components: { LoginForm },
-  computed: {
-    ...mapState("Auth", ["user"]),
-  },
-  created() {
-    if (this.user) {
-      this.$router.push("/");
-    }
-  },
   methods: {
     close() {
       this.$router.push("/");
