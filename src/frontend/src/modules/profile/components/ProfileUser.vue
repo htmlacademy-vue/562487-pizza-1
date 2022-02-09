@@ -11,13 +11,12 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "ProfileUser",
-  props: {
-    user: {
-      type: Object,
-      default: null,
-    },
+  computed: {
+    ...mapState("Auth", ["user"]),
   },
 };
 </script>
