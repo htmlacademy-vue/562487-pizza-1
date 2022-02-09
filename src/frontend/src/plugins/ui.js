@@ -14,6 +14,7 @@ import UserPicture from "@/common/components/UserPicture";
 import PopupOverlay from "@/common/components/PopupOverlay";
 import ConfirmPopup from "@/common/components/ConfirmPopup";
 import Product from "@/common/components/Product";
+import AppLoader from "@/common/components/AppLoader";
 
 Vue.component("AppLayout", AppLayout);
 Vue.component("AppNotifications", AppNotifications);
@@ -30,3 +31,4 @@ Vue.component("UserPicture", UserPicture);
 Vue.component("PopupOverlay", PopupOverlay);
 Vue.component("ConfirmPopup", ConfirmPopup);
 Vue.component("Product", Product);
+Vue.component("AppLoader", AppLoader);

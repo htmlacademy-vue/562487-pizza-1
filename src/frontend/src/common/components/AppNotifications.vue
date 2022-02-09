@@ -35,6 +35,7 @@ export default {
 
 <style lang="scss" scoped>
 .notification {
+  position: relative;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
