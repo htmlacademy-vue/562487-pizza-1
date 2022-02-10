@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import OrderCard from "@/modules/order/components/OrderCard";
 
 export default {
@@ -18,6 +18,12 @@ export default {
   components: { OrderCard },
   computed: {
     ...mapState("Orders", ["orders"]),
+  },
+  async created() {
+    await this.queryOrders();
+  },
+  methods: {
+    ...mapActions("Orders", ["queryOrders"]),
   },
 };
 </script>

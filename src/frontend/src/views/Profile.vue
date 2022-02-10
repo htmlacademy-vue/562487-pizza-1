@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 import ProfileUser from "@/modules/profile/components/ProfileUser";
 import ProfileAddressCard from "@/modules/profile/components/ProfileAddressCard";
 import ProfileAddressForm from "@/modules/profile/components/ProfileAddressForm";
@@ -49,7 +49,12 @@ export default {
   computed: {
     ...mapState("Auth", ["user", "addresses"]),
   },
+  async created() {
+    await this.queryAddresses();
+  },
   methods: {
+    ...mapActions("Auth", ["queryAddresses"]),
+
     edit(address) {
       this.isFormShowed = true;
       this.addressToEdit = Object.assign({}, address);

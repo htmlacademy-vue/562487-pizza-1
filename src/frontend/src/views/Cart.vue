@@ -79,7 +79,7 @@ export default {
   },
 
   async created() {
-    if (this.user) {
+    if (this.user && this.order.pizzas.length) {
       await this.queryAddresses();
     }
     const orderId = this.$route.params.id;

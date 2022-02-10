@@ -71,7 +71,6 @@ const mutations = {
 
 const actions = {
   async init({ dispatch }) {
-    dispatch("Auth/fetchUser");
     dispatch("Builder/fetchDoughs");
     dispatch("Builder/fetchSizes");
     dispatch("Builder/fetchSauces");
