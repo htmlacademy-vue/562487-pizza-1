@@ -21,22 +21,29 @@
       <div class="content__constructor">
         <div class="pizza" :class="pizzaFoundationClasses">
           <div class="pizza__wrapper">
-            <div
-              v-for="{ ingredientId, quantity } in pizza.ingredients"
-              :key="ingredientId"
-            >
-              <BuilderPizzaFillingItem :id="ingredientId" />
-              <BuilderPizzaFillingItem
-                v-if="quantity > 1"
-                class="pizza__filling--second"
-                :id="ingredientId"
-              />
-              <BuilderPizzaFillingItem
-                v-if="quantity > 2"
-                class="pizza__filling--third"
-                :id="ingredientId"
-              />
-            </div>
+            <transition-group name="ingredients">
+              <div
+                v-for="{ ingredientId, quantity } in pizza.ingredients"
+                :key="ingredientId"
+                class="ingredients"
+              >
+                <BuilderPizzaFillingItem :id="ingredientId" />
+                <transition name="ingredient-second">
+                  <BuilderPizzaFillingItem
+                    v-if="quantity > 1"
+                    class="pizza__filling--second ingredient-second"
+                    :id="ingredientId"
+                  />
+                </transition>
+                <transition name="ingredient-third">
+                  <BuilderPizzaFillingItem
+                    v-if="quantity > 2"
+                    class="pizza__filling--third ingredient-third"
+                    :id="ingredientId"
+                  />
+                </transition>
+              </div>
+            </transition-group>
           </div>
         </div>
       </div>
@@ -83,3 +90,38 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.ingredient-second,
+.ingredient-third,
+.ingredients {
+  transition: all 0.5s;
+}
+
+.ingredient-second-enter,
+.ingredient-second-leave-to {
+  transform: rotate(45deg) scale(0);
+}
+
+.ingredient-second-enter-to {
+  transform: rotate(45deg) scale(1);
+}
+
+.ingredient-third-enter,
+.ingredient-third-leave-to {
+  transform: rotate(-45deg) scale(0);
+}
+
+.ingredient-third-enter-to {
+  transform: rotate(-45deg) scale(1);
+}
+
+.ingredients-enter,
+.ingredients-leave-to {
+  opacity: 0;
+}
+
+.ingredients-enter-to {
+  opacity: 1;
+}
+</style>
