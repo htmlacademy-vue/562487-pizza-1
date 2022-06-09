@@ -1,6 +1,5 @@
 import {
   SET_CART_ENTITY,
-  SET_CART_ORDER_ENTITY,
   SET_CART_ORDER_ADDRESS_ENTITY,
   ADD_PIZZA,
   UPDATE_PIZZA,
@@ -10,91 +9,94 @@ import {
   RESET_CART,
 } from "@/store/mutations-types";
 import { Misc, Pizza } from "@/common/models";
-import { findById } from "@/common/helpers";
-import { Order } from "@/common/models";
+import { findById, sum } from "@/common/helpers";
 import { BASE_DELIVERIES } from "@/common/constants";
 
 export default {
   namespaced: true,
   state: {
     misc: [],
-    deliveries: BASE_DELIVERIES,
     delivery: BASE_DELIVERIES[0].id,
     phone: "",
-    order: Order.createNew(),
+    orderPizzas: [],
+    orderMisc: [],
+    orderAddress: null,
   },
   getters: {
-    miscById: (state) => (id) => findById(state.misc, id),
-    miscQuantityById: (state) => (id) =>
-      state.order.misc.find((it) => it.miscId === id)?.quantity || 0,
-    orderPizzaById: (state) => (id) => findById(state.order.pizzas, id),
-    pizzasPrice: (state, getters, rootState, rootGetters) => {
-      return state.order.pizzas
-        .map(
-          (pizza) => rootGetters["Builder/pizzaPrice"](pizza) * pizza.quantity
-        )
-        .reduce((acc, it) => acc + it, 0);
+    miscById: (state) => (id) => state.misc.find((it) => it.miscId === id),
+    orderMiscById: (state) => (id) =>
+      state.orderMisc.find((it) => it.miscId === id),
+    miscPriceById: (state, getters) => (id) => getters.miscById(id).price,
+    orderMiscQuantityById: (state, getters) => (id) => {
+      const miscItem = getters.orderMiscById(id);
+      if (!miscItem) {
+        return 0;
+      }
+      return miscItem.quantity;
     },
-    miscPrice: (state) =>
-      state.order.misc
-        .map(({ miscId, quantity }) => {
-          const miscItem = findById(state.misc, miscId);
-          return miscItem.price * quantity;
-        })
-        .reduce((acc, it) => acc + it, 0),
-    totalSum: (state, getters) => getters.pizzasPrice + getters.miscPrice,
-    isEmpty: (state) => state.order.pizzas.length === 0,
+    orderPizzaById: (state) => (id) => findById(state.orderPizzas, id),
+    orderPizzaNameById: (state, getters) => (id) =>
+      getters.orderPizzaById(id).name,
+    cartPizzasPrice: (state, getters, rootState, rootGetters) =>
+      rootGetters["Builder/pizzasPrice"](state.orderPizzas),
+    miscPrice: (state, getters) => (miscItems) =>
+      miscItems
+        .map(({ miscId, quantity }) => getters.miscPriceById(miscId) * quantity)
+        .reduce(sum, 0),
+    cartMiscPrice: (state, getters) => getters.miscPrice(state.orderMisc),
+    totalSum: (state, getters) => {
+      return getters.cartPizzasPrice + getters.cartMiscPrice;
+    },
+    isEmpty: (state) => state.orderPizzas.length === 0,
   },
   mutations: {
     [SET_CART_ENTITY](state, { entity, value }) {
       state[entity] = value;
     },
-    [SET_CART_ORDER_ENTITY](state, { entity, value }) {
-      state.order[entity] = value;
-    },
     [ADD_PIZZA](state, pizza) {
       const newPizza = new Pizza(pizza);
-      state.order.pizzas.push(newPizza);
+      state.orderPizzas.push(newPizza);
     },
     [UPDATE_PIZZA](state, pizza) {
-      const index = state.order.pizzas.findIndex((it) => it.id === pizza.id);
+      const index = state.orderPizzas.findIndex((it) => it.id === pizza.id);
       if (~index) {
-        state.order.pizzas.splice(index, 1, pizza);
+        state.orderPizzas.splice(index, 1, pizza);
       }
     },
     [DELETE_PIZZA](state, id) {
-      const index = state.order.pizzas.findIndex((it) => it.id === id);
+      const index = state.orderPizzas.findIndex((it) => it.id === id);
       if (~index) {
-        state.order.pizzas.splice(index, 1);
+        state.orderPizzas.splice(index, 1);
       }
     },
     [UPDATE_PIZZA_QUANTITY](state, { id, quantity }) {
-      const index = state.order.pizzas.findIndex((it) => it.id === id);
+      const index = state.orderPizzas.findIndex((it) => it.id === id);
       if (~index) {
-        state.order.pizzas[index].quantity = quantity;
+        state.orderPizzas[index].quantity = quantity;
       }
     },
-    [UPDATE_CART_ORDER_MISC](state, misc) {
-      const index = state.order.misc.findIndex(
-        (it) => it.miscId === misc.miscId
-      );
+    [UPDATE_CART_ORDER_MISC](state, miscItem) {
+      const { miscId, quantity } = miscItem;
+      const index = state.orderMisc.findIndex((it) => it.miscId === miscId);
       if (~index) {
-        if (!misc.quantity) {
-          state.order.misc.splice(index, 1);
+        if (!quantity) {
+          state.orderMisc.splice(index, 1);
         } else {
-          state.order.misc.splice(index, 1, misc);
+          state.orderMisc.splice(index, 1, miscItem);
         }
-      } else {
-        state.order.misc.push(misc);
+        return;
       }
+      state.orderMisc.push(miscItem);
     },
     [RESET_CART](state) {
       state.delivery = BASE_DELIVERIES[0].id;
       state.phone = "";
-      state.order = Order.createNew();
+      state.orderPizzas = [];
+      state.orderMisc = [];
+      state.orderAddress = null;
     },
     [SET_CART_ORDER_ADDRESS_ENTITY](state, { entity, value }) {
-      state.order.address[entity] = value;
+      state.orderAddress[entity] = value;
     },
   },
   actions: {

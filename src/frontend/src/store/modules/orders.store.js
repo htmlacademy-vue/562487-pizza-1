@@ -1,6 +1,6 @@
 import { SET_ENTITY, DELETE_ENTITY } from "@/store/mutations-types";
 import { Order } from "@/common/models";
-import { findById, sum } from "@/common/helpers";
+import { findById } from "@/common/helpers";
 
 const namespace = { module: "Orders", entity: "orders" };
 
@@ -11,26 +11,10 @@ export default {
   },
   getters: {
     getOrderById: (state) => (id) => findById(state.orders, id),
-    pizzasPrice: (state, getters, rootState, rootGetters) => (id) => {
-      const order = getters.getOrderById(id);
-      return order.pizzas
-        .map(
-          (pizza) => rootGetters["Builder/pizzaPrice"](pizza) * pizza.quantity
-        )
-        .reduce(sum, 0);
-    },
-    miscPrice: (state, getters, rootState, rootGetters) => (id) => {
-      const order = getters.getOrderById(id);
-      return order.misc
-        .map(({ miscId, quantity }) => {
-          const miscItem = rootGetters["Cart/miscById"](miscId);
-          return miscItem.price * quantity;
-        })
-        .reduce(sum, 0);
-    },
-    totalPrice: (state, getters) => (id) => {
-      const pizzasPrice = getters.pizzasPrice(id);
-      const miscPrice = getters.miscPrice(id);
+    totalPrice: (state, getters, rootState, rootGetters) => (order) => {
+      const { orderPizzas, orderMisc } = order;
+      const pizzasPrice = rootGetters["Builder/pizzasPrice"](orderPizzas);
+      const miscPrice = rootGetters["Cart/miscPrice"](orderMisc);
       return pizzasPrice + miscPrice;
     },
   },
