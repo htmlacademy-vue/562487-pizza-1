@@ -16,15 +16,8 @@
 </template>
 
 <script>
-import PopupLayout from "@/modules/popup/components/PopupLayout";
-import PopupButton from "@/modules/popup/components/PopupButton";
-
 export default {
   name: "ConfirmPopup",
-  components: {
-    PopupLayout,
-    PopupButton,
-  },
   props: {
     isSubmitting: {
       type: Boolean,

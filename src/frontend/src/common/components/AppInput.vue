@@ -2,7 +2,7 @@
   <label class="input">
     <span :class="labelIsHidden && 'visually-hidden'">{{ label }}</span>
     <input
-      :class="{ 'input--error': error }"
+      :class="{ 'input__input--error': error }"
       :type="type"
       :name="name"
       :placeholder="placeholder"
@@ -61,9 +61,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.input--error {
-  outline: 2px solid $red-600;
-}
-</style>
