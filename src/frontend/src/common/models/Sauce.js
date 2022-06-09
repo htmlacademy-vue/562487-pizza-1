@@ -6,7 +6,7 @@ export default class Sauce {
     this.name = sauce.name;
     this.price = sauce.price;
     // client
-    this.value = PizzaSauces[sauce.id];
+    this.value = PizzaSauces[sauce.name];
     this.kind = "sauce";
     this.displayName = sauce.name.toLowerCase();
   }

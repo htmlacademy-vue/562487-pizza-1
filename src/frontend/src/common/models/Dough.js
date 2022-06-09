@@ -8,8 +8,8 @@ export default class Dough {
     this.description = dough.description;
     this.price = dough.price;
     // client
-    this.value = PizzaDoughs[dough.id];
-    this.foundation = PizzaFoundations[dough.id];
+    this.value = PizzaDoughs[dough.name];
+    this.foundation = PizzaFoundations[dough.name];
     this.kind = "dough";
     this.displayName = dough.name.replace(/.$/, "м").toLowerCase();
   }

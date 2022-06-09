@@ -20,15 +20,6 @@ export default class Address {
     };
   }
 
-  toOrderRaw() {
-    return {
-      street: this.street,
-      building: this.building,
-      flat: this.flat,
-      comment: this.comment,
-    };
-  }
-
   static parseItem(it) {
     return new Address(it);
   }
