@@ -88,7 +88,7 @@ export default {
       }
       try {
         await this.login(this.userData);
-        this.$router.push("/");
+        this.$emit("close");
       } catch {
         this.isFormValid = false;
         this.isSubmitting = false;

@@ -1,12 +1,18 @@
 <template>
   <main class="content">
     <Builder :isEditMode="isEditMode" @saveEdit="isEditMode = false" />
-    <BuilderPopup
-      v-if="isPopupShowed"
-      @cancel="leavePage"
-      @close="isPopupShowed = false"
-    />
-    <router-view />
+    <PopupTransition>
+      <BuilderPopup
+        v-if="isPopupShowed"
+        key="builder"
+        @save="savePizza"
+        @cancel="leavePage"
+        @close="isPopupShowed = false"
+      />
+    </PopupTransition>
+    <PopupTransition>
+      <router-view />
+    </PopupTransition>
   </main>
 </template>
 
@@ -17,10 +23,11 @@ import BuilderPopup from "@/modules/builder/components/BuilderPopup";
 import {
   SET_BUILDER_ENTITY,
   RESET_BUILDER_PIZZA,
+  UPDATE_PIZZA,
 } from "@/store/mutations-types";
 
 export default {
-  name: "IndexHome",
+  name: "Index",
   components: {
     Builder,
     BuilderPopup,
@@ -35,19 +42,19 @@ export default {
   computed: {
     ...mapGetters("Cart", ["orderPizzaById"]),
     ...mapState("Cart", ["order"]),
+    ...mapState("Builder", ["pizza"]),
   },
   created() {
     const pizzaId = this.$route.params.id;
     if (!pizzaId) {
       return;
+    }
+    const pizzaToEdit = this.orderPizzaById(pizzaId);
+    if (pizzaToEdit) {
+      this.isEditMode = true;
+      this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
     } else {
-      const pizzaToEdit = this.orderPizzaById(pizzaId);
-      if (pizzaToEdit) {
-        this.isEditMode = true;
-        this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
-      } else {
-        this.$route.push("/");
-      }
+      this.$route.push("/");
     }
   },
   methods: {
@@ -55,11 +62,26 @@ export default {
       setBuilderEntity: SET_BUILDER_ENTITY,
       resetPizza: RESET_BUILDER_PIZZA,
     }),
+    ...mapMutations("Cart", {
+      updatePizza: UPDATE_PIZZA,
+    }),
+
+    savePizza() {
+      this.updatePizza(this.pizza);
+      this.pushNextRoute();
+    },
 
     leavePage() {
-      this.isEditMode = false;
       this.resetPizza();
-      this.$router.push(this.routeToLeave);
+      this.pushNextRoute();
+    },
+
+    pushNextRoute() {
+      this.isPopupShowed = false;
+      this.isEditMode = false;
+      setTimeout(() => {
+        this.$router.push(this.routeToLeave);
+      }, 500);
     },
   },
   beforeRouteUpdate(to, from, next) {
