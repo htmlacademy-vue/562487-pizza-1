@@ -38,3 +38,11 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.header {
+  position: fixed;
+  width: 100%;
+  box-sizing: border-box;
+}
+</style>

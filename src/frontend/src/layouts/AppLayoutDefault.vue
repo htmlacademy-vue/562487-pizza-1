@@ -17,7 +17,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 .app-layout {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -28,5 +28,6 @@ export default {
   flex-direction: column;
   min-width: 960px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 </style>
