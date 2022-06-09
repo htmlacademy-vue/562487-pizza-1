@@ -7,7 +7,7 @@
       @submit.prevent="submit"
     >
       <div class="address-form__header">
-        <b>Новый адрес</b>
+        <b>{{ addressFormTitle }}</b>
       </div>
 
       <div class="address-form__wrapper">
@@ -61,7 +61,7 @@
           v-if="!isSubmitting"
           class="button--transparent"
           :disabled="isDeleting || isSubmitting"
-          @click="toggleConfirmPopup"
+          @click="startDeleteAddress"
         >
           Удалить
         </AppButton>
@@ -70,40 +70,39 @@
         >
       </div>
     </form>
-    <ConfirmPopup
-      v-if="isConfirmPopupShowed"
-      :isSubmitting="isSubmitting"
-      @confirm="confirmDelete"
-      @cancel="toggleConfirmPopup"
-    >
-      <h2 class="title">Удалить адрес #{{ address.id }}?</h2>
-      <p>После удаления aдрес не сохранится.</p>
-    </ConfirmPopup>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import { Address } from "@/common/models";
 
 export default {
   name: "ProfileAddressForm",
   props: {
+    isEditMode: {
+      type: Boolean,
+      required: true,
+    },
     addressToEdit: {
-      type: Object,
+      type: Number,
       default: null,
+    },
+    isDeleting: {
+      type: Boolean,
+      required: true,
     },
   },
   data() {
     return {
       address: null,
-      isDeleting: false,
       isSubmitting: false,
-      isConfirmPopupShowed: false,
     };
   },
   computed: {
     ...mapState("Auth", ["user"]),
+    ...mapGetters("Auth", ["addressById"]),
+
     isSubmitDisabled() {
       return (
         !this.address.name ||
@@ -112,10 +111,14 @@ export default {
         this.isSubmitting
       );
     },
+
+    addressFormTitle() {
+      return this.addressToEdit ? "Редактировать адрес" : "Новый адрес";
+    },
   },
   created() {
     if (this.addressToEdit) {
-      this.address = Object.assign({}, this.addressToEdit);
+      this.address = this.addressById(this.addressToEdit);
     } else {
       this.address = Address.createNew();
     }
@@ -124,28 +127,11 @@ export default {
     this.$refs.name.focus();
   },
   methods: {
-    ...mapActions("Auth", [
-      "createNewAddress",
-      "updateAddress",
-      "deleteAddress",
-    ]),
+    ...mapActions("Auth", ["createNewAddress", "updateAddress"]),
 
-    toggleConfirmPopup() {
-      this.isConfirmPopupShowed = !this.isConfirmPopupShowed;
-    },
-
-    async confirmDelete() {
-      this.isDeleting = true;
-      if (this.addressToEdit) {
-        const id = this.addressToEdit.id;
-        try {
-          await this.deleteAddress(id);
-          const message = `Адрес ${id} успешно удалён`;
-          this.$notifier.success(message);
-          this.$emit("close");
-        } catch {
-          this.isDeleting = false;
-        }
+    startDeleteAddress() {
+      if (this.isEditMode) {
+        this.$emit("deleteAddress");
       } else {
         this.$emit("close");
       }
@@ -154,28 +140,28 @@ export default {
     async create() {
       this.isSubmitting = true;
       try {
+        const addressData = this.address.toRaw();
         const data = await this.createNewAddress({
-          ...this.address.toRaw(),
+          ...addressData,
           userId: this.user.id,
         });
         const message = `Адрес ${data.id} успешно создан`;
         this.$notifier.success(message);
         this.$emit("close");
-      } catch {
+      } catch (err) {
+        console.log(err);
         this.isSubmitting = false;
       }
     },
 
     async update() {
       this.isSubmitting = true;
-      const { id } = this.addressToEdit;
       try {
         await this.updateAddress({
           ...this.address,
           userId: this.user.id,
-          id,
         });
-        const message = `Адрес ${id} успешно обновлён`;
+        const message = `Адрес ${this.addressToEdit} успешно обновлён`;
         this.$notifier.success(message);
         this.$emit("close");
       } catch {
