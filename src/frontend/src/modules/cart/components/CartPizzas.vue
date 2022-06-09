@@ -6,8 +6,8 @@
       <ItemCounter
         class="cart-list__counter"
         :quantity="pizza.quantity"
-        @incrementClick="update({ id: pizza.id, quantity: pizza.quantity + 1 })"
-        @decrementClick="update({ id: pizza.id, quantity: pizza.quantity - 1 })"
+        @incrementClick="incrementPizza(pizza)"
+        @decrementClick="decrementPizza(pizza)"
       />
 
       <div class="cart-list__price">
@@ -23,26 +23,13 @@
           Изменить
         </button>
       </div>
-
-      <ConfirmPopup
-        v-if="isConfirmPopupShowed"
-        @confirm="confirmDeletePizza(pizza.id)"
-        @cancel="isConfirmPopupShowed = false"
-      >
-        <h2 class="title">Удалить пиццу {{ pizza.name }}?</h2>
-        <p>После удаления пицца не сохранится.</p>
-      </ConfirmPopup>
     </li>
   </ul>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
-import {
-  DELETE_PIZZA,
-  UPDATE_PIZZA_QUANTITY,
-  RESET_CART,
-} from "@/store/mutations-types";
+import { UPDATE_PIZZA_QUANTITY, RESET_CART } from "@/store/mutations-types";
 
 export default {
   name: "CartPizzas",
@@ -52,35 +39,25 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      isConfirmPopupShowed: false,
-    };
-  },
   computed: {
     ...mapGetters("Builder", ["pizzaPrice"]),
   },
   methods: {
     ...mapMutations("Cart", {
-      deletePizza: DELETE_PIZZA,
       updatePizzaQuantity: UPDATE_PIZZA_QUANTITY,
       resetCart: RESET_CART,
     }),
 
-    update({ id, quantity }) {
-      if (!quantity) {
-        this.isConfirmPopupShowed = true;
-        return;
-      }
-      this.updatePizzaQuantity({ id, quantity });
+    incrementPizza({ id, quantity }) {
+      this.updatePizzaQuantity({ id, quantity: quantity + 1 });
     },
 
-    confirmDeletePizza(pizzaId) {
-      this.isConfirmPopupShowed = false;
-      this.deletePizza(pizzaId);
-      if (!this.pizzas.length) {
-        this.resetCart();
+    decrementPizza({ id, quantity }) {
+      if (quantity < 2) {
+        this.$emit("deletePizza", id);
+        return;
       }
+      this.updatePizzaQuantity({ id, quantity: quantity - 1 });
     },
   },
 };

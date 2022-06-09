@@ -2,8 +2,8 @@
   <div class="cart__additional">
     <ul class="additional-list">
       <li
-        v-for="{ id, name, image, price } in misc"
-        :key="id"
+        v-for="{ miscId, name, image, price } in misc"
+        :key="miscId"
         class="additional-list__item sheet"
       >
         <p class="additional-list__description">
@@ -14,23 +14,23 @@
         <div class="additional-list__wrapper">
           <ItemCounter
             class="additional-list__counter"
-            :quantity="miscQuantityById(id)"
+            :quantity="orderMiscQuantityById(miscId)"
             @incrementClick="
               updateOrderMisc({
-                miscId: id,
-                quantity: miscQuantityById(id) + 1,
+                miscId,
+                quantity: orderMiscQuantityById(miscId) + 1,
               })
             "
             @decrementClick="
               updateOrderMisc({
-                miscId: id,
-                quantity: miscQuantityById(id) - 1,
+                miscId,
+                quantity: orderMiscQuantityById(miscId) - 1,
               })
             "
           />
 
           <div class="additional-list__price">
-            <b>× {{ price * miscQuantityById(id) }} ₽</b>
+            <b>× {{ price * orderMiscQuantityById(miscId) }} ₽</b>
           </div>
         </div>
       </li>
@@ -44,15 +44,9 @@ import { UPDATE_CART_ORDER_MISC } from "@/store/mutations-types";
 
 export default {
   name: "CartMisc",
-  props: {
-    orderMisc: {
-      type: Array,
-      required: true,
-    },
-  },
   computed: {
     ...mapState("Cart", ["misc"]),
-    ...mapGetters("Cart", ["miscQuantityById"]),
+    ...mapGetters("Cart", ["orderMiscQuantityById"]),
   },
   methods: {
     ...mapMutations("Cart", { updateOrderMisc: UPDATE_CART_ORDER_MISC }),

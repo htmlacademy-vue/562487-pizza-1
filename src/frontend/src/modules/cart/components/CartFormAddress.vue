@@ -6,7 +6,7 @@
       <AppInput
         label="Улица*"
         name="street"
-        :value="address.street"
+        :value="orderAddress.street"
         :readonly="isReadOnly"
         @input="updateAddress({ entity: 'street', value: $event })"
       />
@@ -16,7 +16,7 @@
       <AppInput
         label="Дом*"
         name="building"
-        :value="address.building"
+        :value="orderAddress.building"
         :readonly="isReadOnly"
         @input="updateAddress({ entity: 'building', value: $event })"
       />
@@ -26,7 +26,7 @@
       <AppInput
         label="Квартира"
         name="flat"
-        :value="address.flat"
+        :value="orderAddress.flat"
         :readonly="isReadOnly"
         @input="updateAddress({ entity: 'flat', value: $event })"
       />
@@ -35,19 +35,20 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapMutations, mapGetters } from "vuex";
 import { SET_CART_ORDER_ADDRESS_ENTITY } from "@/store/mutations-types";
 
 export default {
   name: "CartFormAddress",
-  props: {
-    address: {
-      type: Object,
-      default: null,
-    },
-    isReadOnly: {
-      type: Boolean,
-      required: true,
+  computed: {
+    ...mapState("Cart", ["orderAddress"]),
+    ...mapGetters("Auth", ["isUserAddress"]),
+
+    isReadOnly() {
+      if (this.orderAddress?.id) {
+        return this.isUserAddress(this.orderAddress.id);
+      }
+      return false;
     },
   },
   methods: {
