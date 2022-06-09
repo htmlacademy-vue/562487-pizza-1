@@ -33,6 +33,10 @@
     &:focus {
       border-color: $green-500;
     }
+
+    &.input__input--error {
+      outline: 2px solid $red-600;
+    }
   }
 
   &:hover {
@@ -52,5 +56,13 @@
 
       white-space: nowrap;
     }
+  }
+
+  &__error-text {
+    position: absolute;
+    top: -18px;
+    left: 0;
+    z-index: 2;
+    color: $red-600;
   }
 }
