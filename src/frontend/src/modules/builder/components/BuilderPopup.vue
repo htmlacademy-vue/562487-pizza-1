@@ -1,33 +1,26 @@
 <template>
   <PopupLayout @close="$emit('close')" ref="close">
     <div class="popup__title">
-      <h2 class="title">Вы хотите перейти без сохранения?</h2>
-      <p>
-        Чтобы сохранить изменения, закройте попап и нажмите на кнопку
-        "Готовьте!"
-      </p>
+      <h2 class="title">Сохранить изменения?</h2>
+      <p>Вы редактировали пиццу.</p>
     </div>
+    <PopupButton @click.prevent="$emit('save')" ref="save"
+      >Сохранить</PopupButton
+    >
     <PopupButton
       class="popup__button--danger"
       @click.prevent="$emit('cancel')"
       ref="cancel"
-      >Не сохранять изменения</PopupButton
+      >Продолжить без сохранения</PopupButton
     >
   </PopupLayout>
 </template>
 
 <script>
-import PopupLayout from "@/modules/popup/components/PopupLayout";
-import PopupButton from "@/modules/popup/components/PopupButton";
-
 export default {
   name: "BuilderPopup",
-  components: {
-    PopupLayout,
-    PopupButton,
-  },
   mounted() {
-    this.$refs.close.focus();
+    this.$refs.save.focus();
   },
 };
 </script>

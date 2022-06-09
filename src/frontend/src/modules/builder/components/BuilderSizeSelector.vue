@@ -3,8 +3,7 @@
     <div class="sheet">
       <h2 class="title title--small sheet__title">Выберите размер</h2>
 
-      <AppLoader v-if="isLoading" />
-      <div v-else class="sheet__content diameter">
+      <div class="sheet__content diameter">
         <RadioButton
           v-for="size in sizes"
           :key="size.id"
@@ -27,10 +26,6 @@ export default {
   name: "BuilderSizeSelector",
   computed: {
     ...mapState("Builder", ["sizes", "pizza"]),
-
-    isLoading() {
-      return !this.sizes.length;
-    },
   },
   methods: {
     ...mapMutations("Builder", {

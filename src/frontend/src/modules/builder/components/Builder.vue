@@ -5,13 +5,11 @@
       <BuilderDoughSelector />
       <BuilderSizeSelector />
       <BuilderIngredientsSelector />
-      <BuilderPizzaView>
-        <BuilderPriceCounter>
-          <AppButton type="submit" :disabled="isSubmitDisabled"
-            >Готовьте!</AppButton
-          >
-        </BuilderPriceCounter>
-      </BuilderPizzaView>
+      <div class="content__pizza">
+        <BuilderPizzaNameInput />
+        <BuilderPizzaView />
+        <BuilderPizzaResult />
+      </div>
     </div>
   </form>
 </template>
@@ -22,8 +20,9 @@ import { mapState, mapMutations } from "vuex";
 import BuilderDoughSelector from "./BuilderDoughSelector";
 import BuilderSizeSelector from "./BuilderSizeSelector";
 import BuilderIngredientsSelector from "./BuilderIngredientsSelector";
+import BuilderPizzaNameInput from "./BuilderPizzaNameInput";
 import BuilderPizzaView from "./BuilderPizzaView";
-import BuilderPriceCounter from "./BuilderPriceCounter";
+import BuilderPizzaResult from "./BuilderPizzaResult";
 import {
   ADD_PIZZA,
   UPDATE_PIZZA,
@@ -36,8 +35,9 @@ export default {
     BuilderDoughSelector,
     BuilderSizeSelector,
     BuilderIngredientsSelector,
+    BuilderPizzaNameInput,
     BuilderPizzaView,
-    BuilderPriceCounter,
+    BuilderPizzaResult,
   },
   props: {
     isEditMode: {
@@ -47,10 +47,6 @@ export default {
   },
   computed: {
     ...mapState("Builder", ["pizza"]),
-
-    isSubmitDisabled() {
-      return !this.pizza.name || !this.pizza.ingredients.length;
-    },
   },
   methods: {
     ...mapMutations("Builder", {
