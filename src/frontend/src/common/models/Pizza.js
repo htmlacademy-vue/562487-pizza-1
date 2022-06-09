@@ -1,16 +1,14 @@
 import { uniqueId } from "lodash";
+import PizzaIngredient from "./PizzaIngredient";
 
 export default class Pizza {
   constructor(pizza) {
-    this.id = pizza?.id || uniqueId();
+    this.id = pizza?.id || uniqueId("pizza_");
     this.name = pizza.name;
     this.doughId = pizza.doughId;
     this.sauceId = pizza.sauceId;
     this.sizeId = pizza.sizeId;
-    this.ingredients = pizza.ingredients.map((it) => ({
-      ingredientId: it.ingredientId,
-      quantity: it.quantity,
-    }));
+    this.ingredients = PizzaIngredient.parseItems(pizza.ingredients);
     this.quantity = pizza.quantity;
   }
 

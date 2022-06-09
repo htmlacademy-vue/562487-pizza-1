@@ -1,13 +1,13 @@
 <template>
-  <PopupOverlay @keydown.esc.prevent="close">
-    <div class="sign-form">
+  <PopupOverlay @click.self="closeLogin" @keydown.esc="closeLogin">
+    <div class="sign-form" ref="login">
       <router-link to="/" class="close close--white">
         <span class="visually-hidden">Закрыть форму авторизации</span>
       </router-link>
       <div class="sign-form__title">
         <h1 class="title title--small">Авторизуйтесь на сайте</h1>
       </div>
-      <LoginForm />
+      <LoginForm @close="closeLogin" />
     </div>
   </PopupOverlay>
 </template>
@@ -19,7 +19,7 @@ export default {
   name: "Login",
   components: { LoginForm },
   methods: {
-    close() {
+    closeLogin() {
       this.$router.push("/");
     },
   },

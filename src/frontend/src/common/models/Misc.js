@@ -1,16 +1,14 @@
 export default class Misc {
   constructor(misc) {
-    this.id = misc.id;
+    this.miscId = misc.id;
     this.name = misc.name;
     this.image = misc.image;
     this.price = misc.price;
-    // client
-    this.quantity = 0;
   }
 
   toRaw() {
     return {
-      miscId: this.id,
+      miscId: this.miscId,
       quantity: this.quantity,
     };
   }

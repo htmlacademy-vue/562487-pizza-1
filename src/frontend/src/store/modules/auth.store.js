@@ -110,11 +110,12 @@ export default {
     },
     async updateAddress({ commit }, address) {
       await this.$api.addresses.put(address);
+      const updatedAddress = new Address(address);
       commit(
         UPDATE_ENTITY,
         {
           ...namespace.addresses,
-          value: address,
+          value: updatedAddress,
         },
         { root: true }
       );

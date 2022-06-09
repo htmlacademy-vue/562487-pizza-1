@@ -1,26 +1,21 @@
 <template>
   <li class="ingredients__item">
     <SelectorItem
-      :ingredient="pizzaIngredient"
+      :ingredient="ingredient"
       class="filling"
-      :class="`filling--${pizzaIngredient.value}`"
+      :class="`filling--${ingredientValue}`"
     />
     <ItemCounter
       class="counter--orange ingredients__counter"
-      :quantity="pizzaIngredient.quantity"
+      :quantity="quantity"
       :max="INGREDIENT_MAX_COUNT"
       @incrementClick="
-        updatePizzaIngredients({
-          ingredientId: pizzaIngredient.id,
-          quantity: pizzaIngredient.quantity + 1,
+        addPizzaIngredient({
+          ingredientId: ingredient.ingredientId,
+          quantity: quantity + 1,
         })
       "
-      @decrementClick="
-        updatePizzaIngredients({
-          ingredientId: pizzaIngredient.id,
-          quantity: pizzaIngredient.quantity - 1,
-        })
-      "
+      @decrementClick="removePizzaIngredient(ingredient)"
     />
   </li>
 </template>
@@ -28,7 +23,10 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import { INGREDIENT_MAX_COUNT } from "@/common/constants";
-import { UPDATE_BUILDER_PIZZA_INGREDIENTS } from "@/store/mutations-types";
+import {
+  ADD_BUILDER_PIZZA_INGREDIENT,
+  REMOVE_BUILDER_PIZZA_INGREDIENT,
+} from "@/store/mutations-types";
 
 export default {
   name: "BuilderIngredient",
@@ -44,21 +42,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("Builder", ["pizzaIngredientById"]),
+    ...mapGetters("Builder", ["ingredientQuantityById", "ingredientById"]),
 
-    pizzaIngredient() {
-      const quantity =
-        this.pizzaIngredientById(this.ingredient.id)?.quantity || 0;
+    ingredientValue() {
+      return this.ingredientById(this.ingredient.ingredientId).value;
+    },
 
-      return {
-        ...this.ingredient,
-        quantity,
-      };
+    quantity() {
+      return this.ingredientQuantityById(this.ingredient.ingredientId);
     },
   },
   methods: {
     ...mapMutations("Builder", {
-      updatePizzaIngredients: UPDATE_BUILDER_PIZZA_INGREDIENTS,
+      addPizzaIngredient: ADD_BUILDER_PIZZA_INGREDIENT,
+      removePizzaIngredient: REMOVE_BUILDER_PIZZA_INGREDIENT,
     }),
   },
 };

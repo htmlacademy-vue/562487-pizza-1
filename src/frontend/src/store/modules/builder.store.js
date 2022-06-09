@@ -3,7 +3,8 @@ import { Dough, Sauce, Size, Ingredient } from "@/common/models";
 import {
   SET_BUILDER_ENTITY,
   SET_BUILDER_PIZZA_ENTITY,
-  UPDATE_BUILDER_PIZZA_INGREDIENTS,
+  ADD_BUILDER_PIZZA_INGREDIENT,
+  REMOVE_BUILDER_PIZZA_INGREDIENT,
   RESET_BUILDER_PIZZA,
 } from "@/store/mutations-types";
 import { Pizza } from "@/common/models";
@@ -21,48 +22,52 @@ export default {
     doughById: (state) => (id) => findById(state.doughs, id),
     sauceById: (state) => (id) => findById(state.sauces, id),
     sizeById: (state) => (id) => findById(state.sizes, id),
-    ingredientById: (state) => (id) => findById(state.ingredients, id),
-    doughPrice: (state) => findById(state.doughs, state.pizza.doughId).price,
-    saucePrice: (state) => findById(state.sauces, state.pizza.sauceId).price,
-    sizeMultiplier: (state) =>
-      findById(state.sizes, state.pizza.sizeId).multiplier,
-    ingredientsPrice: (state) =>
-      state.pizza.ingredients
-        .map(({ ingredientId, quantity }) => {
-          const ingredient = findById(state.ingredients, ingredientId);
-          return ingredient.price * quantity;
-        })
-        .reduce(sum, 0),
-    pizzaIngredientById: (state) => (id) =>
-      state.pizza.ingredients.find((it) => it.ingredientId === id),
-    totalPrice: (state, getters) =>
+    ingredientById: (state) => (id) =>
+      state.ingredients.find((it) => it.ingredientId === id),
+    doughPriceById: (state, getters) => (id) => getters.doughById(id).price,
+    doughPrice: (state, getters) => getters.doughPriceById(state.pizza.doughId),
+    saucePriceById: (state, getters) => (id) => getters.sauceById(id).price,
+    saucePrice: (state, getters) => getters.saucePriceById(state.pizza.sauceId),
+    sizeMultiplierById: (state, getters) => (id) =>
+      getters.sizeById(id).multiplier,
+    sizeMultiplier: (state, getters) =>
+      getters.sizeMultiplierById(state.pizza.sizeId),
+    ingredientPriceById:
+      (state, getters) =>
+      ({ ingredientId }) =>
+        getters.ingredientById(ingredientId).price,
+    ingredientsPrice: (state, getters) => (ingredients) =>
+      ingredients.map(getters.ingredientPriceById).reduce(sum, 0),
+    ingredientQuantityById: (state) => (id) =>
+      state.pizza.ingredients.filter((it) => it.ingredientId === id).length,
+    pizzaPrice: (state, getters) => (pizza) => {
+      if (getters.isLoading) {
+        return 0;
+      }
+      const { doughId, sauceId, sizeId, ingredients } = pizza;
+      const doughPrice = getters.doughPriceById(doughId);
+      const saucePrice = getters.saucePriceById(sauceId);
+      const sizeMultiplier = getters.sizeMultiplierById(sizeId);
+      const ingredientsPrice = getters.ingredientsPrice(ingredients);
+      return (doughPrice + saucePrice + ingredientsPrice) * sizeMultiplier;
+    },
+    builderPizzaPrice: (state, getters) =>
       getters.isLoading
         ? 0
         : (getters.doughPrice + getters.saucePrice + getters.ingredientsPrice) *
-            getters.sizeMultiplier || 0,
-    builderPizzaPrice: (state, getters) => {
-      return getters.isLoading ? 0 : getters.pizzaPrice(state.pizza);
+          getters.sizeMultiplier,
+    pizzasPrice: (state, getters) => (pizzas) =>
+      pizzas
+        .map((pizza) => getters.pizzaPrice(pizza) * pizza.quantity)
+        .reduce(sum, 0),
+    isLoading: (state) => {
+      return (
+        !state.doughs.length ||
+        !state.sizes.length ||
+        !state.sauces.length ||
+        !state.ingredients.length
+      );
     },
-    pizzaPrice: (state) => (pizza) => {
-      const { doughId, sauceId, sizeId, ingredients } = pizza;
-      const doughPrice = findById(state.doughs, doughId).price;
-      const saucePrice = findById(state.sauces, sauceId).price;
-      const sizeMultiplier = findById(state.sizes, sizeId).multiplier;
-      const ingredientsPrice = ingredients
-        .map(({ ingredientId, quantity }) => {
-          const ingredient = findById(state.ingredients, ingredientId);
-          return ingredient.price * quantity;
-        })
-        .reduce(sum, 0);
-      const totalPrice =
-        (doughPrice + saucePrice + ingredientsPrice) * sizeMultiplier;
-      return totalPrice;
-    },
-    isLoading: (state) =>
-      !state.doughs.length ||
-      !state.sizes.length ||
-      !state.sauces.length ||
-      !state.ingredients.length,
   },
 
   mutations: {
@@ -76,18 +81,16 @@ export default {
     [SET_BUILDER_PIZZA_ENTITY](state, { entity, value }) {
       state.pizza[entity] = value;
     },
-    [UPDATE_BUILDER_PIZZA_INGREDIENTS](state, ingredient) {
-      const index = state.pizza.ingredients.findIndex(
-        (it) => it.ingredientId === ingredient.ingredientId
-      );
-      if (~index) {
-        if (!ingredient.quantity) {
-          state.pizza.ingredients.splice(index, 1);
-        } else {
-          state.pizza.ingredients.splice(index, 1, ingredient);
-        }
-      } else {
-        state.pizza.ingredients.push(ingredient);
+    [ADD_BUILDER_PIZZA_INGREDIENT](state, { ingredientId, quantity }) {
+      state.pizza.ingredients.push({ ingredientId, quantity });
+    },
+    [REMOVE_BUILDER_PIZZA_INGREDIENT](state, ingredient) {
+      const lastIndex = state.pizza.ingredients
+        .map((it) => it.ingredientId)
+        .lastIndexOf(ingredient.ingredientId);
+
+      if (~lastIndex) {
+        state.pizza.ingredients.splice(lastIndex, 1);
       }
     },
     [RESET_BUILDER_PIZZA](state) {
@@ -107,9 +110,12 @@ export default {
     async fetchSizes({ commit }) {
       const data = await this.$api.sizes.query();
       const sizes = Size.parseItems(data);
+      const sortedSizes = sizes
+        .slice()
+        .sort((size1, size2) => size1.multiplier - size2.multiplier);
       commit(SET_BUILDER_ENTITY, {
         entity: "sizes",
-        value: sizes,
+        value: sortedSizes,
       });
     },
     async fetchSauces({ commit }) {

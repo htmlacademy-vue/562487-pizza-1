@@ -1,5 +1,5 @@
 <template>
-  <AppDrag :transfer-data="ingredientDragged" :isDraggable="isDraggable">
+  <AppDrag :transfer-data="ingredient" :isDraggable="isDraggable">
     <span :class="isDraggable && 'item--draggable'">
       {{ ingredient.name }}
     </span>
@@ -7,6 +7,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import AppDrag from "@/common/components/AppDrag";
 import { INGREDIENT_MAX_COUNT } from "@/common/constants";
 
@@ -22,11 +23,15 @@ export default {
     },
   },
   computed: {
-    ingredientDragged() {
-      return this.ingredient;
+    ...mapGetters("Builder", ["ingredientQuantityById"]),
+
+    quantity() {
+      const id = this.ingredient.ingredientId;
+      return this.ingredientQuantityById(id);
     },
+
     isDraggable() {
-      return this.ingredient.quantity < INGREDIENT_MAX_COUNT;
+      return this.quantity < INGREDIENT_MAX_COUNT;
     },
   },
 };

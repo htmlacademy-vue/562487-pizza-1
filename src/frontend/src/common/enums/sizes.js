@@ -1,5 +1,5 @@
 export default {
-  1: "small",
-  2: "normal",
-  3: "big",
+  "23 см": "small",
+  "32 см": "normal",
+  "45 см": "big",
 };

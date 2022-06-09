@@ -47,9 +47,11 @@ export default {
       return this.sizeById(this.pizza.sizeId).displayName;
     },
     ingredientsDisplayName() {
-      return this.pizza.ingredients
-        .map((it) => this.ingredientById(it.ingredientId).displayName)
-        .join(", ");
+      const displayNames = this.pizza.ingredients.map((it) => {
+        const ingredient = this.ingredientById(it.ingredientId);
+        return ingredient.displayName;
+      });
+      return Array.from(new Set(displayNames)).join(", ");
     },
   },
 };

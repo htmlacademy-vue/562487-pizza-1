@@ -8,7 +8,7 @@
             type="button"
             class="icon"
             :disabled="isEditDisabled"
-            @click="$emit('edit', address)"
+            @click="$emit('edit', address.id)"
           >
             <span class="visually-hidden">Изменить адрес</span>
           </button>

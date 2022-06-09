@@ -7,7 +7,7 @@ export default class Size {
     this.image = size.image;
     this.multiplier = size.multiplier;
     // client
-    this.value = PizzaSizes[size.id];
+    this.value = PizzaSizes[size.name];
     this.kind = "diameter";
     this.displayName = size.name;
   }

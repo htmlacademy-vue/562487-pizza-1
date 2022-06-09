@@ -1,4 +1,4 @@
-import { auth, isLoggedIn, queryOrders, queryAddresses } from "@/middlewares";
+import { auth, isLoggedIn } from "@/middlewares";
 
 export default [
   {
@@ -25,13 +25,13 @@ export default [
     component: () => import("../views/Orders.vue"),
     meta: {
       layout: "AppLayoutMain",
-      middlewares: [auth, queryOrders],
+      middlewares: [auth],
     },
   },
   {
     path: "/profile",
     name: "Profile",
     component: () => import("../views/Profile.vue"),
-    meta: { layout: "AppLayoutMain", middlewares: [auth, queryAddresses] },
+    meta: { layout: "AppLayoutMain", middlewares: [auth] },
   },
 ];

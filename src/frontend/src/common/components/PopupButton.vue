@@ -18,8 +18,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.popup__button a:focus {
-  opacity: 1;
+.popup__button .button:focus {
   outline: 2px solid $blue-500;
+}
+.popup__button--danger .button {
+  background-color: $red-500;
+}
+.popup__button--danger .button:hover:not(:active):not(:disabled) {
+  background-color: $red-400;
+}
+.popup__button--danger .button:focus:not(:disabled) {
+  opacity: 0.8;
+}
+.popup__button--danger .button:active:not(:disabled) {
+  background-color: $red-800;
 }
 </style>

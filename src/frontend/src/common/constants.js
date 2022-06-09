@@ -21,3 +21,14 @@ export const BASE_DELIVERIES = [
     name: "Новый адрес",
   },
 ];
+
+export const Animations = {
+  SIDEBAR: "sidebar-slide 0.5s",
+  SIDEBAR_REVERSE: "sidebar-slide 0.5s reverse",
+  SLIDE: "slide 0.5s",
+  SLIDE_REVERSE: "slide 0.5s reverse",
+  ZOOM: "zoom-in 0.5s",
+  ZOOM_REVERSE: "zoom-in 0.5s reverse",
+  FADE: "fade-in 0.5",
+  FADE_REVERSE: "fade-in 0.5 reverse",
+};

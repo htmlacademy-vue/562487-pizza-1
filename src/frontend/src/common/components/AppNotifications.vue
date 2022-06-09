@@ -1,20 +1,22 @@
 <template>
-  <div v-if="notifications.length" class="notification__wrapper">
-    <div
-      v-for="{ id, text, type } in notifications"
-      :key="id"
-      :class="`notification notification--${type}`"
-    >
-      <span>{{ text }}</span>
-      <a
-        href="#"
-        class="close close--white close--sm"
-        @click.prevent="close(id)"
+  <transition name="notifications" appear>
+    <div v-if="notifications.length" class="notification__wrapper">
+      <div
+        v-for="{ id, text, type } in notifications"
+        :key="id"
+        :class="`notification notification--${type}`"
       >
-        <span class="visually-hidden">Закрыть</span>
-      </a>
+        <span>{{ text }}</span>
+        <a
+          href="#"
+          class="close close--white close--sm"
+          @click.prevent="close(id)"
+        >
+          <span class="visually-hidden">Закрыть</span>
+        </a>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -34,6 +36,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.notifications-enter-active {
+  animation: fade-in 0.3s;
+}
+.notifications-leave-active {
+  animation: fade-in 0.3s reverse;
+}
+
 .notification {
   position: relative;
   box-sizing: border-box;

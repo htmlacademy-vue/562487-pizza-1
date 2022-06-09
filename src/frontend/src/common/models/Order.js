@@ -1,16 +1,17 @@
-import { uniqueId } from "lodash";
-import { Pizza, OrderMisc, Address } from ".";
+import Address from "./Address";
+import OrderMisc from "./OrderMisc";
 
 export default class Order {
   constructor(order) {
-    this.id = order?.id || uniqueId();
-    this.userId = order?.userId || null;
-    this.addressId = order?.addressId || null;
-    this.phone = order.phone;
-    this.pizzas = Pizza.parseItems(order.orderPizzas);
-    this.misc = order?.orderMisc ? OrderMisc.parseItems(order.orderMisc) : [];
-    this.address = order?.orderAddress
-      ? new Address(order?.orderAddress)
+    this.id = order.id;
+    this.userId = order.userId;
+    this.phone = order?.phone || "";
+    this.orderPizzas = order.orderPizzas;
+    this.orderMisc = order?.orderMisc
+      ? OrderMisc.parseItems(order.orderMisc)
+      : [];
+    this.orderAddress = order?.orderAddress
+      ? new Address(order.orderAddress)
       : null;
   }
 
@@ -20,13 +21,5 @@ export default class Order {
 
   static parseItems(items) {
     return items.map(Order.parseItem);
-  }
-
-  static createNew() {
-    return new Order({
-      orderPizzas: [],
-      orderMisc: [],
-      orderAddress: null,
-    });
   }
 }

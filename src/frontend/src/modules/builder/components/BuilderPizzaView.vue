@@ -1,85 +1,129 @@
 <template>
-  <div class="content__pizza">
-    <label class="input">
-      <span class="visually-hidden">Название пиццы</span>
-      <input
-        type="text"
-        name="pizza_name"
-        placeholder="Введите название пиццы"
-        :value="pizza.name"
-        @input="
-          setPizzaEntity({
-            entity: 'name',
-            value: $event.target.value.trim(),
-          })
-        "
-      />
-    </label>
-
-    <AppLoader v-if="isLoading" />
-    <AppDrop v-else @drop="moveIngredient">
-      <div class="content__constructor">
-        <div class="pizza" :class="pizzaFoundationClasses">
-          <div class="pizza__wrapper">
-            <div
-              v-for="{ ingredientId, quantity } in pizza.ingredients"
-              :key="ingredientId"
-            >
-              <BuilderPizzaFillingItem :id="ingredientId" />
-              <BuilderPizzaFillingItem
-                v-if="quantity > 1"
-                class="pizza__filling--second"
-                :id="ingredientId"
-              />
-              <BuilderPizzaFillingItem
-                v-if="quantity > 2"
-                class="pizza__filling--third"
-                :id="ingredientId"
-              />
-            </div>
-          </div>
-        </div>
+  <AppDrop @drop="moveIngredient">
+    <div class="content__constructor">
+      <div class="pizza" :class="pizzaFoundationClasses">
+        <transition-group
+          name="fillings"
+          tag="div"
+          class="pizza__wrapper"
+          appear
+        >
+          <div
+            v-for="{ ingredientId, quantity } in pizza.ingredients"
+            :key="`${ingredientId}-${quantity}`"
+            :class="calcIngredientClasses({ ingredientId, quantity })"
+            :data-quantity="quantity"
+          />
+        </transition-group>
       </div>
-    </AppDrop>
-
-    <slot />
-  </div>
+    </div>
+  </AppDrop>
 </template>
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import {
-  SET_BUILDER_PIZZA_ENTITY,
-  UPDATE_BUILDER_PIZZA_INGREDIENTS,
-} from "@/store/mutations-types";
-import BuilderPizzaFillingItem from "./BuilderPizzaFillingItem.vue";
+import { ADD_BUILDER_PIZZA_INGREDIENT } from "../../../store/mutations-types";
 
 export default {
-  components: { BuilderPizzaFillingItem },
   name: "BuilderPizzaView",
   computed: {
     ...mapState("Builder", ["pizza"]),
-    ...mapGetters("Builder", ["doughById", "sauceById", "isLoading"]),
+    ...mapGetters("Builder", [
+      "isLoading",
+      "doughById",
+      "sauceById",
+      "ingredientById",
+      "ingredientQuantityById",
+    ]),
 
     pizzaFoundationClasses() {
+      if (this.isLoading) {
+        return "";
+      }
       const { doughId, sauceId } = this.pizza;
-      const dough = this.doughById(doughId).foundation;
-      const sauce = this.sauceById(sauceId).value;
+      const dough = this.doughById(doughId).foundation || "";
+      const sauce = this.sauceById(sauceId).value || "";
       return `pizza--foundation--${dough}-${sauce}`;
     },
   },
   methods: {
     ...mapMutations("Builder", {
-      setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
-      updatePizzaIngredients: UPDATE_BUILDER_PIZZA_INGREDIENTS,
+      addPizzaIngredient: ADD_BUILDER_PIZZA_INGREDIENT,
     }),
 
+    calcIngredientClasses({ ingredientId, quantity }) {
+      if (this.isLoading) {
+        return "";
+      }
+      const { value } = this.ingredientById(ingredientId);
+      const baseClass = "pizza__filling";
+      const valueClass = baseClass + `--${value}`;
+      if (quantity === 1) {
+        return `${baseClass} ${valueClass}`;
+      }
+      const modifiers = {
+        2: "second",
+        3: "third",
+      };
+      const quantityClass = baseClass + `--${modifiers[quantity]}`;
+      return `${baseClass} ${valueClass} ${quantityClass}`;
+    },
+
     moveIngredient(active) {
-      this.updatePizzaIngredients({
-        ingredientId: active.id,
-        quantity: active.quantity + 1,
+      const { ingredientId } = active;
+      const quantity = this.ingredientQuantityById(ingredientId);
+      this.addPizzaIngredient({
+        ingredientId,
+        quantity: quantity + 1,
       });
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+@for $i from 1 through 3 {
+  .fillings-enter-active[data-quantity="#{$i}"] {
+    animation: bounce-in-#{$i} 0.5s;
+  }
+  .fillings-leave-active[data-quantity="#{$i}"] {
+    animation: bounce-in-#{$i} 0.5s reverse;
+  }
+}
+
+@keyframes bounce-in-1 {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce-in-2 {
+  0% {
+    transform: rotate(45deg) scale(0);
+  }
+  50% {
+    transform: rotate(45deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+@keyframes bounce-in-3 {
+  0% {
+    transform: rotate(-45deg) scale(0);
+  }
+  50% {
+    transform: rotate(-45deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(-45deg) scale(1);
+  }
+}
+</style>

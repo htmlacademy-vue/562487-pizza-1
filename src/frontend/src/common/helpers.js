@@ -63,3 +63,21 @@ export const setAuth = (store) => {
   store.$api.auth.setAuthHeader();
   store.dispatch("Auth/fetchUser");
 };
+
+export const clearAnimations = (el, done) => {
+  el.addEventListener(
+    "animationend",
+    () => {
+      el.style = "";
+      done();
+    },
+    { once: true }
+  );
+};
+
+export const createDeliveries = (items) => {
+  return items.map((it) => ({
+    id: it.id,
+    name: it.name,
+  }));
+};

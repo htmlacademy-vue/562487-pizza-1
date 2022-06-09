@@ -1,7 +1,7 @@
 export default class OrderMisc {
-  constructor(orderMisc) {
-    this.miscId = orderMisc?.miscId;
-    this.quantity = orderMisc.quantity;
+  constructor(misc) {
+    this.miscId = misc.miscId;
+    this.quantity = misc.quantity;
   }
 
   static parseItem(it) {
