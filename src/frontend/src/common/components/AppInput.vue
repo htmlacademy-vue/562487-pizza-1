@@ -11,9 +11,9 @@
       @input="$emit('input', $event.target.value)"
       ref="input"
     />
-    <AppInputError v-if="error">
+    <span v-if="error" class="input__error-text">
       {{ error }}
-    </AppInputError>
+    </span>
   </label>
 </template>
 
