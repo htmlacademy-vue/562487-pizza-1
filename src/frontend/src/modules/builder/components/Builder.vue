@@ -6,7 +6,14 @@
       <BuilderSizeSelector />
       <BuilderIngredientsSelector />
       <div class="content__pizza">
-        <BuilderPizzaNameInput />
+        <AppInput
+          name="pizza_name"
+          label="Название пиццы"
+          labelIsHidden
+          placeholder="Введите название пиццы"
+          :value="pizza.name"
+          @input="setName"
+        />
         <BuilderPizzaView />
         <BuilderPizzaResult />
       </div>
@@ -20,7 +27,6 @@ import { mapState, mapMutations } from "vuex";
 import BuilderDoughSelector from "./BuilderDoughSelector";
 import BuilderSizeSelector from "./BuilderSizeSelector";
 import BuilderIngredientsSelector from "./BuilderIngredientsSelector";
-import BuilderPizzaNameInput from "./BuilderPizzaNameInput";
 import BuilderPizzaView from "./BuilderPizzaView";
 import BuilderPizzaResult from "./BuilderPizzaResult";
 import {
@@ -28,6 +34,7 @@ import {
   UPDATE_PIZZA,
   RESET_BUILDER_PIZZA,
 } from "@/store/mutations-types";
+import { SET_BUILDER_PIZZA_ENTITY } from "../../../store/mutations-types";
 
 export default {
   name: "Builder",
@@ -35,7 +42,6 @@ export default {
     BuilderDoughSelector,
     BuilderSizeSelector,
     BuilderIngredientsSelector,
-    BuilderPizzaNameInput,
     BuilderPizzaView,
     BuilderPizzaResult,
   },
@@ -50,12 +56,20 @@ export default {
   },
   methods: {
     ...mapMutations("Builder", {
+      setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
       resetPizza: RESET_BUILDER_PIZZA,
     }),
     ...mapMutations("Cart", {
       addPizza: ADD_PIZZA,
       updatePizza: UPDATE_PIZZA,
     }),
+
+    setName(value) {
+      this.setPizzaEntity({
+        entity: "name",
+        value: value.trim(),
+      });
+    },
 
     submit() {
       if (this.isEditMode) {
