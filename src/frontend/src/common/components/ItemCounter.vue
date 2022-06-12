@@ -5,6 +5,7 @@
       class="counter__button counter__button--minus"
       :disabled="quantity === min"
       @click="$emit('decrementClick', $event)"
+      data-test="button-minus"
     >
       <span class="visually-hidden">Меньше</span>
     </button>
@@ -14,12 +15,14 @@
       class="counter__input"
       :value="quantity"
       readonly
+      data-test="counter-input"
     />
     <button
       type="button"
       class="counter__button counter__button--plus"
       :disabled="quantity === max"
       @click="$emit('incrementClick', $event)"
+      data-test="button-plus"
     >
       <span class="visually-hidden">Больше</span>
     </button>
