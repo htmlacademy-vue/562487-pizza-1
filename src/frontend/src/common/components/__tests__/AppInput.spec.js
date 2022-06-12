@@ -17,8 +17,9 @@ describe("AppInput", () => {
   };
   const inputError = "Email is not correct";
   const inputErrorClass = "input__input--error";
-  const inputErrorTextClass = "input__error-text";
-  const inputErrorTextSelector = "." + inputErrorTextClass;
+  const inputErrorTextSelector = "[data-test='input-error']";
+  const inputLabelSelector = "[data-test='input-label']";
+  const hiddenClass = "visually-hidden";
 
   let wrapper;
   const createComponent = (options) => {
@@ -29,28 +30,31 @@ describe("AppInput", () => {
     wrapper.destroy();
   });
 
-  it("it renders label that contains span and input", () => {
+  it("it renders label and input", () => {
     createComponent({ propsData });
-    const wrapperEl = wrapper.element;
-    const childrenEls = wrapperEl.children;
-    expect(wrapperEl.tagName.toLowerCase()).toBe("label");
-    expect(childrenEls[0].tagName.toLowerCase()).toBe("span");
-    expect(childrenEls[1].tagName.toLowerCase()).toBe("input");
+    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.find(inputLabelSelector).exists()).toBe(true);
+    expect(wrapper.find("input").exists()).toBe(true);
   });
 
   it("input label text is prop label", () => {
     createComponent({ propsData });
-    const labelEl = wrapper.find("span");
-    expect(labelEl.exists()).toBe(true);
+    const labelEl = wrapper.find(inputLabelSelector);
     expect(labelEl.text()).toBe(propsData.label);
+  });
+
+  it("default input label without visually-hidden class", () => {
+    createComponent({ propsData });
+    const labelEl = wrapper.find(inputLabelSelector);
+    expect(labelEl.classes(hiddenClass)).toBe(false);
   });
 
   it("input label with visually-hidden class", () => {
     createComponent({
       propsData: { ...propsData, labelIsHidden: true },
     });
-    const hiddenLabel = wrapper.find(".visually-hidden");
-    expect(hiddenLabel.exists()).toBe(true);
+    const hiddenLabel = wrapper.find(inputLabelSelector);
+    expect(hiddenLabel.classes(hiddenClass)).toBe(true);
     expect(hiddenLabel.text()).toBe(propsData.label);
   });
 
@@ -118,7 +122,7 @@ describe("AppInput", () => {
     expect(input.classes(inputErrorClass)).toBe(true);
   });
 
-  it("input without error does not have error class", () => {
+  it("input without error has not error class", () => {
     createComponent({ propsData });
     const input = wrapper.find("input");
     expect(input.classes(inputErrorClass)).toBe(false);

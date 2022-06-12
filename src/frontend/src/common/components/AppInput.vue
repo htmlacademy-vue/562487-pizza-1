@@ -1,6 +1,6 @@
 <template>
   <label class="input">
-    <span :class="labelIsHidden && 'visually-hidden'">{{ label }}</span>
+    <span :class="labelIsHidden && 'visually-hidden'" data-test="input-label">{{ label }}</span>
     <input
       :class="{ 'input__input--error': error }"
       :type="type"
@@ -11,7 +11,7 @@
       @input="$emit('input', $event.target.value)"
       ref="input"
     />
-    <span v-if="error" class="input__error-text">
+    <span v-if="error" class="input__error-text" data-test="input-error">
       {{ error }}
     </span>
   </label>
