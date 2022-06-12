@@ -15,7 +15,6 @@ import PopupOverlay from "@/common/components/PopupOverlay";
 import PopupButton from "@/common/components/PopupButton";
 import ConfirmPopup from "@/common/components/ConfirmPopup";
 import Product from "@/common/components/Product";
-import AppLoader from "@/common/components/AppLoader";
 import PopupTransition from "@/common/components/PopupTransition";
 import SlideTransitionGroup from "@/common/components/SlideTransitionGroup";
 
@@ -35,6 +34,5 @@ Vue.component("PopupOverlay", PopupOverlay);
 Vue.component("PopupButton", PopupButton);
 Vue.component("ConfirmPopup", ConfirmPopup);
 Vue.component("Product", Product);
-Vue.component("AppLoader", AppLoader);
 Vue.component("PopupTransition", PopupTransition);
 Vue.component("SlideTransitionGroup", SlideTransitionGroup);
