@@ -5,11 +5,11 @@
       class="product__img"
       width="56"
       height="56"
-      alt="pizza.name"
+      :alt="pizza.name"
     />
-    <div class="product__text">
-      <h2>{{ pizza.name }}</h2>
-      <ul>
+    <div class="product__text" data-test="product-text">
+      <h2 data-test="product-text-title">{{ pizza.name }}</h2>
+      <ul data-test="product-text-list">
         <li>{{ sizeDisplayName }}, на {{ doughDisplayName }} тесте</li>
         <li>Соус: {{ sauceDisplayName }}</li>
         <li>Начинка: {{ ingredientsDisplayName }}</li>
