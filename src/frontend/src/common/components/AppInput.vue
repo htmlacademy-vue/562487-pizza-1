@@ -1,6 +1,8 @@
 <template>
   <label class="input">
-    <span :class="labelIsHidden && 'visually-hidden'" data-test="input-label">{{ label }}</span>
+    <span :class="labelIsHidden && 'visually-hidden'" data-test="input-label">{{
+      label
+    }}</span>
     <input
       :class="{ 'input__input--error': error }"
       :type="type"
