@@ -1,6 +1,10 @@
 <template>
-  <AppDrag :transfer-data="ingredient" :isDraggable="isDraggable">
-    <span :class="isDraggable && 'item--draggable'">
+  <AppDrag
+    :transfer-data="ingredient"
+    :isDraggable="isDraggable"
+    data-test="app-drag"
+  >
+    <span :class="isDraggable && 'item--draggable'" data-test="selector-item">
       {{ ingredient.name }}
     </span>
   </AppDrag>
@@ -25,13 +29,10 @@ export default {
   computed: {
     ...mapGetters("Builder", ["ingredientQuantityById"]),
 
-    quantity() {
-      const id = this.ingredient.ingredientId;
-      return this.ingredientQuantityById(id);
-    },
-
     isDraggable() {
-      return this.quantity < INGREDIENT_MAX_COUNT;
+      const id = this.ingredient.ingredientId;
+      const quantity = this.ingredientQuantityById(id);
+      return quantity < INGREDIENT_MAX_COUNT;
     },
   },
 };
