@@ -30,22 +30,19 @@ describe("PopupLayout", () => {
 
   it("emits close on close button click", async () => {
     createComponent({ stubs });
-    const closeBtn = wrapper.find(".close");
-    await closeBtn.trigger("click");
+    await wrapper.find(".close").trigger("click");
     expect(wrapper.emitted().close.length).toBe(1);
   });
 
   it("emits close on overlay click", async () => {
     createComponent({ stubs });
-    const overlay = wrapper.find(".overlay");
-    await overlay.trigger("click");
+    await wrapper.find(".overlay").trigger("click");
     expect(wrapper.emitted().close.length).toBe(1);
   });
 
   it("emits close on escape keydown", async () => {
     createComponent({ stubs });
-    const overlay = wrapper.find(".overlay");
-    await overlay.trigger("keydown", { key: "Escape" });
+    await wrapper.find(".overlay").trigger("keydown.esc");
     expect(wrapper.emitted().close.length).toBe(1);
   });
 });

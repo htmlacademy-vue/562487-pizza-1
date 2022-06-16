@@ -30,9 +30,9 @@ describe("PopupOverlay", () => {
     expect(listeners.click).toHaveBeenCalled();
   });
 
-  it("raises the keydown event on keydown", async () => {
+  it("raises the keydown event on escape keydown", async () => {
     createComponent({ listeners });
-    await wrapper.find(".overlay").trigger("keydown");
+    await wrapper.find(".overlay").trigger("keydown.esc");
     expect(listeners.keydown).toHaveBeenCalled();
   });
 });
