@@ -1,14 +1,9 @@
 <template>
   <picture>
-    <source
-      type="image/webp"
-      :srcset="`${userAvatar.webp} 1x,
-        ${userAvatar.webp2x} 2x,
-        ${userAvatar.webp4x} 4x`"
-    />
+    <source type="image/webp" :srcset="webpSrcset" />
     <img
-      :src="userAvatar.jpg"
-      :srcset="`${userAvatar.jpg}, ${userAvatar.jpg2x} 2x, ${userAvatar.jpg4x} 4x`"
+      :src="avatarsSet.jpg"
+      :srcset="jpgSrcset"
       :alt="user.name"
       :width="width"
       :height="height"
@@ -36,8 +31,24 @@ export default {
     },
   },
   computed: {
-    userAvatar() {
+    isBigSize() {
+      const bigSize = "72";
+      return this.width.toString() === bigSize;
+    },
+    avatarsSet() {
       return generateAvatar(this.user.avatar);
+    },
+    webpSrcset() {
+      const avatars = this.avatarsSet;
+      return this.isBigSize
+        ? `${avatars.webp2x} 2x, ${avatars.webp4x} 4x`
+        : `${avatars.webp} 1x, ${avatars.webp2x} 2x`;
+    },
+    jpgSrcset() {
+      const avatars = this.avatarsSet;
+      return this.isBigSize
+        ? `${avatars.jpg2x} 2x, ${avatars.jpg4x} 4x`
+        : `${avatars.jpg} 1x, ${avatars.jpg2x} 2x`;
     },
   },
 };
