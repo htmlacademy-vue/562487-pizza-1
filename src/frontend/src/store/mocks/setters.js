@@ -33,3 +33,7 @@ export const setIngredients = (store) => {
     value: Ingredient.parseItems(pizzaData.ingredients),
   });
 };
+
+export const addIngredient = (store, ingredient) => {
+  store.commit("Builder/ADD_BUILDER_PIZZA_INGREDIENT", ingredient);
+};
