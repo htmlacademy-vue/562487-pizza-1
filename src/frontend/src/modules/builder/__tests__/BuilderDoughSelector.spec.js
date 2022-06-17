@@ -9,8 +9,6 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("BuilderDoughSelector", () => {
-  const doughItemSelector = "[data-test='dough-selector']";
-  const doughInputSelector = doughItemSelector + " input";
   const stubs = {
     RadioButton,
   };
@@ -31,7 +29,7 @@ describe("BuilderDoughSelector", () => {
 
   it("renders out dough content", () => {
     createComponent({ localVue, stubs, store });
-    const doughItems = wrapper.findAll(doughInputSelector);
+    const doughItems = wrapper.findAll("input");
     expect(wrapper.exists()).toBe(true);
     expect(doughItems.length).toBe(store.state.Builder.doughs.length);
   });
@@ -39,7 +37,7 @@ describe("BuilderDoughSelector", () => {
   it("dough selector item contains dough name and description", () => {
     createComponent({ localVue, stubs, store });
     const { name, description } = store.state.Builder.doughs[0];
-    const doughItems = wrapper.findAll(doughItemSelector);
+    const doughItems = wrapper.findAll("label");
     expect(doughItems.at(0).text()).toContain(name);
     expect(doughItems.at(0).text()).toContain(description);
   });

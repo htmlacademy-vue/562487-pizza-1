@@ -1,5 +1,5 @@
 <template>
-  <label :class="radioButtonClasses" data-test="dough-selector">
+  <label :class="radioButtonClasses">
     <input
       type="radio"
       :name="item.kind"
