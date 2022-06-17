@@ -1,5 +1,5 @@
 <template>
-  <label :class="radioButtonClasses">
+  <label :class="radioButtonClasses" data-test="dough-selector">
     <input
       type="radio"
       :name="item.kind"
@@ -7,6 +7,7 @@
       class="visually-hidden"
       :checked="isChecked"
       @change="$emit('change', item.id)"
+      :data-test-id="item.id"
     />
     <slot />
   </label>
