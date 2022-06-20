@@ -77,10 +77,7 @@ export default {
         this.$emit("saveEdit");
         this.$router.push("/cart");
       } else {
-        this.addPizza({
-          ...this.pizza,
-          quantity: 1,
-        });
+        this.addPizza(this.pizza);
       }
       let message = `Пицца ${this.pizza.name}`;
       message += this.isEditMode ? " обновлена" : " создана";
