@@ -1,5 +1,11 @@
 import { findById, sum } from "@/common/helpers";
-import { Dough, Sauce, Size, Ingredient } from "@/common/models";
+import {
+  Dough,
+  Sauce,
+  Size,
+  Ingredient,
+  PizzaIngredient,
+} from "@/common/models";
 import {
   SET_BUILDER_ENTITY,
   SET_BUILDER_PIZZA_ENTITY,
@@ -8,6 +14,7 @@ import {
   RESET_BUILDER_PIZZA,
 } from "@/store/mutations-types";
 import { Pizza } from "@/common/models";
+import { INGREDIENT_MAX_COUNT } from "@/common/constants";
 
 export default {
   namespaced: true,
@@ -51,11 +58,6 @@ export default {
       const ingredientsPrice = getters.ingredientsPrice(ingredients);
       return (doughPrice + saucePrice + ingredientsPrice) * sizeMultiplier;
     },
-    builderPizzaPrice: (state, getters) =>
-      getters.isLoading
-        ? 0
-        : (getters.doughPrice + getters.saucePrice + getters.ingredientsPrice) *
-          getters.sizeMultiplier,
     pizzasPrice: (state, getters) => (pizzas) =>
       pizzas
         .map((pizza) => getters.pizzaPrice(pizza) * pizza.quantity)
@@ -82,7 +84,10 @@ export default {
       state.pizza[entity] = value;
     },
     [ADD_BUILDER_PIZZA_INGREDIENT](state, { ingredientId, quantity }) {
-      state.pizza.ingredients.push({ ingredientId, quantity });
+      const newIngredient = new PizzaIngredient({ ingredientId, quantity });
+      if (quantity <= INGREDIENT_MAX_COUNT) {
+        state.pizza.ingredients.push(newIngredient);
+      }
     },
     [REMOVE_BUILDER_PIZZA_INGREDIENT](state, ingredient) {
       const lastIndex = state.pizza.ingredients
