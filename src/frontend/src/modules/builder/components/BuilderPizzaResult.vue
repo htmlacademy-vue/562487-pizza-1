@@ -1,6 +1,6 @@
 <template>
   <div class="content__result">
-    <p>Итого: {{ pizzaPrice(pizza) }} ₽</p>
+    <p data-test="pizza-price">Итого: {{ pizzaPrice(pizza) }} ₽</p>
     <AppButton type="submit" :disabled="isSubmitDisabled">Готовьте!</AppButton>
   </div>
 </template>
