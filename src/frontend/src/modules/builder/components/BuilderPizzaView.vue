@@ -1,7 +1,7 @@
 <template>
   <AppDrop @drop="moveIngredient">
     <div class="content__constructor">
-      <div class="pizza" :class="pizzaFoundationClasses">
+      <div class="pizza" :class="pizzaFoundationClasses" data-test="pizza-view">
         <transition-group
           name="fillings"
           tag="div"
@@ -9,10 +9,16 @@
           appear
         >
           <div
-            v-for="{ ingredientId, quantity } in pizza.ingredients"
+            v-for="{ ingredientId, quantity, value } in pizzaIngredients"
             :key="`${ingredientId}-${quantity}`"
-            :class="calcIngredientClasses({ ingredientId, quantity })"
+            class="pizza__filling"
+            :class="{
+              [`pizza__filling--${value}`]: true,
+              'pizza__filling--second': quantity === 2,
+              'pizza__filling--third': quantity === 3,
+            }"
             :data-quantity="quantity"
+            data-test="filling-item"
           />
         </transition-group>
       </div>
@@ -29,20 +35,26 @@ export default {
   computed: {
     ...mapState("Builder", ["pizza"]),
     ...mapGetters("Builder", [
-      "isLoading",
       "doughById",
       "sauceById",
       "ingredientById",
       "ingredientQuantityById",
     ]),
 
+    pizzaIngredients() {
+      return this.pizza.ingredients.map(({ ingredientId, quantity }) => {
+        const ingredient = this.ingredientById(ingredientId);
+        return {
+          ...ingredient,
+          quantity,
+        };
+      });
+    },
+
     pizzaFoundationClasses() {
-      if (this.isLoading) {
-        return "";
-      }
       const { doughId, sauceId } = this.pizza;
-      const dough = this.doughById(doughId).foundation || "";
-      const sauce = this.sauceById(sauceId).value || "";
+      const dough = this.doughById(doughId)?.foundation || "";
+      const sauce = this.sauceById(sauceId)?.value || "";
       return `pizza--foundation--${dough}-${sauce}`;
     },
   },
@@ -50,24 +62,6 @@ export default {
     ...mapMutations("Builder", {
       addPizzaIngredient: ADD_BUILDER_PIZZA_INGREDIENT,
     }),
-
-    calcIngredientClasses({ ingredientId, quantity }) {
-      if (this.isLoading) {
-        return "";
-      }
-      const { value } = this.ingredientById(ingredientId);
-      const baseClass = "pizza__filling";
-      const valueClass = baseClass + `--${value}`;
-      if (quantity === 1) {
-        return `${baseClass} ${valueClass}`;
-      }
-      const modifiers = {
-        2: "second",
-        3: "third",
-      };
-      const quantityClass = baseClass + `--${modifiers[quantity]}`;
-      return `${baseClass} ${valueClass} ${quantityClass}`;
-    },
 
     moveIngredient(active) {
       const { ingredientId } = active;
