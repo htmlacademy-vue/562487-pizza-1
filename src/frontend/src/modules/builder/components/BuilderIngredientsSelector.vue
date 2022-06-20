@@ -6,19 +6,17 @@
       <div class="sheet__content ingredients">
         <div class="ingredients__sauce">
           <p>Основной соус:</p>
-
-          <template>
-            <RadioButton
-              v-for="sauce in sauces"
-              :key="sauce.id"
-              :item="sauce"
-              :isChecked="sauce.id === pizza.sauceId"
-              class="radio ingredients__input"
-              @change="setPizzaEntity({ entity: 'sauceId', value: $event })"
-            >
-              <span>{{ sauce.name }}</span>
-            </RadioButton>
-          </template>
+          <RadioButton
+            v-for="sauce in sauces"
+            :key="sauce.id"
+            :item="sauce"
+            :isChecked="sauce.id === pizza.sauceId"
+            class="radio ingredients__input"
+            @change="setPizzaEntity({ entity: 'sauceId', value: $event })"
+            data-test="sauce"
+          >
+            <span>{{ sauce.name }}</span>
+          </RadioButton>
         </div>
 
         <div class="ingredients__filling">
@@ -29,6 +27,7 @@
               v-for="ingredient in ingredients"
               :key="ingredient.ingredientId"
               :ingredient="ingredient"
+              data-test="ingredient"
             />
           </ul>
         </div>
@@ -52,10 +51,6 @@ export default {
     ...mapMutations("Builder", {
       setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
     }),
-    getIngredientQuantity(id) {
-      return this.pizza.ingredients.filter((it) => it.ingredientId === id)
-        .length;
-    },
   },
 };
 </script>
