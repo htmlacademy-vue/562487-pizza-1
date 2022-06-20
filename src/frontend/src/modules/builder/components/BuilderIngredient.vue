@@ -3,7 +3,7 @@
     <SelectorItem
       :ingredient="ingredient"
       class="filling"
-      :class="`filling--${ingredientValue}`"
+      :class="`filling--${ingredient.value}`"
     />
     <ItemCounter
       class="counter--orange ingredients__counter"
@@ -16,6 +16,7 @@
         })
       "
       @decrementClick="removePizzaIngredient(ingredient)"
+      data-test="item-counter"
     />
   </li>
 </template>
@@ -42,11 +43,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("Builder", ["ingredientQuantityById", "ingredientById"]),
-
-    ingredientValue() {
-      return this.ingredientById(this.ingredient.ingredientId).value;
-    },
+    ...mapGetters("Builder", ["ingredientQuantityById"]),
 
     quantity() {
       return this.ingredientQuantityById(this.ingredient.ingredientId);
