@@ -4,7 +4,7 @@
       <h2 class="title">Спасибо за заказ</h2>
     </div>
     <p>Мы начали готовить Ваш заказ, скоро привезём его вам ;)</p>
-    <PopupButton @click.prevent="$emit('close')" ref="ok"
+    <PopupButton @click.prevent="$emit('close')" ref="ok" data-test="ok-button"
       >Отлично, я жду!</PopupButton
     >
   </PopupLayout>
