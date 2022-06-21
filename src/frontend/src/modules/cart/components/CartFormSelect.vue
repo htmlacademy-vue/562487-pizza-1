@@ -6,6 +6,7 @@
       class="select"
       :value="delivery"
       @change="updateDelivery"
+      data-test="delivery-select"
     >
       <option v-for="{ id, name } in deliveries" :key="id" :value="id">
         {{ name }}
