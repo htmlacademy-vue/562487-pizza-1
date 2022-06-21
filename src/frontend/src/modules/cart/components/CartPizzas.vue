@@ -1,6 +1,11 @@
 <template>
   <ul class="cart-list sheet">
-    <li v-for="pizza in pizzas" :key="pizza.id" class="cart-list__item">
+    <li
+      v-for="pizza in pizzas"
+      :key="pizza.id"
+      class="cart-list__item"
+      data-test="pizza-item"
+    >
       <Product class="cart-list__product" :pizza="pizza" />
 
       <ItemCounter
@@ -10,7 +15,7 @@
         @decrementClick="decrementPizza(pizza)"
       />
 
-      <div class="cart-list__price">
+      <div class="cart-list__price" data-test="pizzas-price">
         <b>{{ pizzaPrice(pizza) * pizza.quantity }} ₽</b>
       </div>
 
@@ -19,6 +24,7 @@
           type="button"
           class="cart-list__edit"
           @click="$router.push({ name: 'IndexHome', params: { id: pizza.id } })"
+          data-test="edit-btn"
         >
           Изменить
         </button>
