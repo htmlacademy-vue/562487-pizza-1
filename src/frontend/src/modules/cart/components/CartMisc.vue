@@ -5,8 +5,9 @@
         v-for="{ miscId, name, image, price } in misc"
         :key="miscId"
         class="additional-list__item sheet"
+        data-test="misc-item"
       >
-        <p class="additional-list__description">
+        <p class="additional-list__description" data-test="misc-description">
           <img :src="image" width="39" height="60" :alt="name" />
           <span>{{ name }}</span>
         </p>
@@ -29,7 +30,7 @@
             "
           />
 
-          <div class="additional-list__price">
+          <div class="additional-list__price" data-test="misc-price">
             <b>× {{ price * orderMiscQuantityById(miscId) }} ₽</b>
           </div>
         </div>
