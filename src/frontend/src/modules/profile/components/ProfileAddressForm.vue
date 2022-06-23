@@ -6,7 +6,7 @@
       class="address-form address-form--opened sheet"
       @submit.prevent="submit"
     >
-      <div class="address-form__header">
+      <div class="address-form__header" data-test="form-title">
         <b>{{ addressFormTitle }}</b>
       </div>
 
@@ -58,10 +58,10 @@
 
       <div class="address-form__buttons">
         <AppButton
-          v-if="!isSubmitting"
           class="button--transparent"
           :disabled="isDeleting || isSubmitting"
           @click="startDeleteAddress"
+          data-test="btn-delete"
         >
           Удалить
         </AppButton>
@@ -138,7 +138,6 @@ export default {
     },
 
     async create() {
-      this.isSubmitting = true;
       try {
         const addressData = this.address.toRaw();
         const data = await this.createNewAddress({
@@ -149,13 +148,11 @@ export default {
         this.$notifier.success(message);
         this.$emit("close");
       } catch (err) {
-        console.log(err);
         this.isSubmitting = false;
       }
     },
 
     async update() {
-      this.isSubmitting = true;
       try {
         await this.updateAddress({
           ...this.address,
@@ -170,6 +167,7 @@ export default {
     },
 
     async submit() {
+      this.isSubmitting = true;
       if (this.addressToEdit) {
         await this.update();
       } else {
