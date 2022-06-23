@@ -36,3 +36,24 @@ Vue.component("ConfirmPopup", ConfirmPopup);
 Vue.component("Product", Product);
 Vue.component("PopupTransition", PopupTransition);
 Vue.component("SlideTransitionGroup", SlideTransitionGroup);
+
+export const setUIComponents = (localVue) => {
+  localVue.component("AppLayout", AppLayout);
+  localVue.component("AppNotifications", AppNotifications);
+  localVue.component("AppDrag", AppDrag);
+  localVue.component("AppDrop", AppDrop);
+  localVue.component("AppButton", AppButton);
+  localVue.component("AppInput", AppInput);
+  localVue.component("ItemCounter", ItemCounter);
+  localVue.component("Logo", Logo);
+  localVue.component("RadioButton", RadioButton);
+  localVue.component("SelectorItem", SelectorItem);
+  localVue.component("UserPicture", UserPicture);
+  localVue.component("PopupLayout", PopupLayout);
+  localVue.component("PopupOverlay", PopupOverlay);
+  localVue.component("PopupButton", PopupButton);
+  localVue.component("ConfirmPopup", ConfirmPopup);
+  localVue.component("Product", Product);
+  localVue.component("PopupTransition", PopupTransition);
+  localVue.component("SlideTransitionGroup", SlideTransitionGroup);
+};
