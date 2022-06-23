@@ -28,6 +28,8 @@ describe("Builder", () => {
   };
 
   beforeEach(() => {
+    mocks.$router.push = jest.fn();
+    mocks.$notifier.success = jest.fn();
     store = generateMockStore();
     setPizza(store);
   });

@@ -32,6 +32,7 @@ describe("CartPizzas", () => {
   };
 
   beforeEach(() => {
+    mocks.$router.push = jest.fn();
     store = generateMockStore();
     setDoughs(store);
     setSauces(store);
