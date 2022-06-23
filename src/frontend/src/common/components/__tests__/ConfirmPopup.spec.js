@@ -35,6 +35,17 @@ describe("ConfirmPopup", () => {
     expect(wrapper.find(cancelBtnSelector).exists()).toBe(true);
   });
 
+  it("renders out with cancel button focused", () => {
+    const div = document.createElement("div");
+    div.id = "root";
+    document.body.appendChild(div);
+    createComponent({ stubs, slots, attachTo: "#root" });
+    const cancelBtn = wrapper.find(cancelBtnSelector);
+    const focusedBtn = wrapper.find("a:focus");
+    expect(focusedBtn.exists()).toBe(true);
+    expect(focusedBtn.element).toBe(cancelBtn.element);
+  });
+
   it("emits confirm on confirm button click", async () => {
     createComponent({ stubs });
     const confirmBtn = wrapper.find(confirmBtnSelector);
