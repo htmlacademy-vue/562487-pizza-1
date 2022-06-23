@@ -3,14 +3,14 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import CartFormSelect from "../components/CartFormSelect";
 import { setUIComponents } from "@/plugins/ui";
-import { setDelivery } from "@/store/mocks/setters";
 import { BASE_DELIVERIES } from "@/common/constants";
 import { Address } from "@/common/models";
 import {
+  setDelivery,
   setCartAddress,
   setUserAddresses,
   testAddress,
-} from "../../../store/mocks/setters";
+} from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
