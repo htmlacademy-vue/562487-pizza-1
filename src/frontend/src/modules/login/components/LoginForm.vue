@@ -8,6 +8,7 @@
         v-model="userData.email"
         :error="validations.email.error"
         ref="email"
+        data-test="login-email"
       />
     </div>
 
@@ -20,6 +21,7 @@
         v-model="userData.password"
         :error="validations.password.error"
         ref="password"
+        data-test="login-password"
       />
     </div>
     <AppButton type="submit" :disabled="isSubmitting">Авторизоваться</AppButton>
