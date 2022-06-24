@@ -2,8 +2,10 @@
   <li>
     <img :src="miscItem.image" width="20" height="30" :alt="miscItem.name" />
     <p>
-      <span>{{ miscItem.name }}</span>
-      <b>{{ orderMisc.quantity }} х {{ miscItem.price }} ₽</b>
+      <span data-test="misc-name">{{ miscItem.name }}</span>
+      <b data-test="misc-price"
+        >{{ orderMisc.quantity }} х {{ miscItem.price }} ₽</b
+      >
     </p>
   </li>
 </template>
