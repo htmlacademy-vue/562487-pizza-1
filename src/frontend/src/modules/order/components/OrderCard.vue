@@ -1,11 +1,11 @@
 <template>
   <section class="sheet order">
     <div class="order__wrapper">
-      <div class="order__number">
+      <div class="order__number" data-test="order-number">
         <b>Заказ #{{ order.id }}</b>
       </div>
 
-      <div class="order__sum">
+      <div class="order__sum" data-test="order-sum">
         <span>Сумма заказа: {{ totalPrice(order) }} ₽</span>
       </div>
 
@@ -13,27 +13,25 @@
         <AppButton
           class="button--border"
           @click="$emit('deleteOrder', order.id)"
+          data-test="button-delete"
         >
           Удалить
         </AppButton>
       </div>
-      <div class="order__button" @click="handleRepeat">
-        <AppButton>Повторить</AppButton>
+      <div class="order__button">
+        <AppButton @click="handleRepeat" data-test="button-repeat"
+          >Повторить</AppButton
+        >
       </div>
     </div>
 
     <ul class="order__list">
-      <li
+      <OrderPizza
         v-for="pizza in order.orderPizzas"
         :key="pizza.id"
-        class="order__item"
-      >
-        <Product :pizza="pizza" />
-
-        <p class="order__price">
-          {{ pizza.quantity }} х {{ pizzaPrice(pizza) }} ₽
-        </p>
-      </li>
+        :pizza="pizza"
+        data-test="order-pizza"
+      />
     </ul>
 
     <ul v-if="order.orderMisc.length" class="order__additional">
@@ -41,10 +39,15 @@
         v-for="orderMisc in order.orderMisc"
         :key="orderMisc.miscId"
         :orderMisc="orderMisc"
+        data-test="order-misc"
       />
     </ul>
 
-    <p v-if="order.orderAddress" class="order__address">
+    <p
+      v-if="order.orderAddress"
+      class="order__address"
+      data-test="order-address"
+    >
       Адрес доставки: {{ order.orderAddress.name }}
     </p>
   </section>
@@ -52,11 +55,12 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import OrderPizza from "./OrderPizza";
 import OrderMisc from "./OrderMisc";
 
 export default {
   name: "OrderCard",
-  components: { OrderMisc },
+  components: { OrderPizza, OrderMisc },
   props: {
     order: {
       type: Object,
@@ -65,7 +69,6 @@ export default {
   },
   computed: {
     ...mapState("Cart", ["misc"]),
-    ...mapGetters("Builder", ["pizzaPrice"]),
     ...mapGetters("Orders", ["totalPrice"]),
   },
   methods: {
