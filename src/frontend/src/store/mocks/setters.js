@@ -7,6 +7,7 @@ import {
   Pizza,
   User,
   Address,
+  Order,
 } from "@/common/models";
 import pizzaData from "@/static/pizza.json";
 import miscData from "@/static/misc.json";
@@ -34,6 +35,39 @@ export const testAddress = new Address({
   name: "ул.Baker street, д.1, кв.1",
   comment: "some comment",
   userId: testUser.id,
+});
+export const testOrder = new Order({
+  id: 1,
+  userId: testUser.id,
+  phone: "88008008000",
+  orderPizzas: [
+    {
+      id: 1,
+      name: "Pizzka",
+      sauceId: 1,
+      doughId: 1,
+      sizeId: 1,
+      quantity: 1,
+      orderId: 1,
+      ingredients: [
+        {
+          id: 1,
+          pizzaId: 1,
+          ingredientId: 1,
+          quantity: 1,
+        },
+      ],
+    },
+  ],
+  orderMisc: [
+    {
+      id: 1,
+      orderId: 1,
+      miscId: 1,
+      quantity: 1,
+    },
+  ],
+  orderAddress: testAddress,
 });
 
 export const setDoughs = (store) => {
@@ -131,4 +165,27 @@ export const setUserAddresses = (store) => {
     entity: "addresses",
     value: [testAddress],
   });
+};
+
+export const setOrders = (store) => {
+  store.commit("SET_ENTITY", {
+    module: "Orders",
+    entity: "orders",
+    value: [testOrder],
+  });
+};
+
+export const setCart = (store) => {
+  setDoughs(store);
+  setSauces(store);
+  setSizes(store);
+  setIngredients(store);
+  setMisc(store);
+  setCartPizzas(store, [testPizza]);
+  setOrderMisc(store, [
+    {
+      miscId: 1,
+      quantity: 1,
+    },
+  ]);
 };

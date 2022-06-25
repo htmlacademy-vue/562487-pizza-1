@@ -4,21 +4,27 @@
       <Logo />
     </div>
     <div class="header__cart">
-      <router-link to="/cart">{{ totalSum }} ₽</router-link>
+      <router-link to="/cart" data-test="link-cart"
+        >{{ totalSum }} ₽</router-link
+      >
     </div>
 
     <div v-if="!user" key="header-with-no-user" class="header__user">
-      <router-link to="/login" class="header__login">
+      <router-link to="/login" class="header__login" data-test="link-login">
         <span>Войти</span>
       </router-link>
     </div>
 
     <div v-else key="header-with-user" class="header__user">
-      <router-link to="/profile">
+      <router-link to="/profile" data-test="link-profile">
         <UserPicture :user="user" width="32" height="32" />
         <span>{{ user.name }}</span>
       </router-link>
-      <a href="#" class="header__logout" @click.prevent="$logout"
+      <a
+        href="#"
+        class="header__logout"
+        @click.prevent="$logout"
+        data-test="logout"
         ><span>Выйти</span></a
       >
     </div>
