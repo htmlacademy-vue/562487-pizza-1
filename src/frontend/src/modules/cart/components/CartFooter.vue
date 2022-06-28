@@ -25,8 +25,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 export default {
   name: "CartFooter",
   props: {
@@ -34,9 +32,10 @@ export default {
       type: Boolean,
       required: true,
     },
-  },
-  computed: {
-    ...mapGetters("Cart", ["totalSum"]),
+    totalSum: {
+      type: Number,
+      required: true,
+    },
   },
 };
 </script>
