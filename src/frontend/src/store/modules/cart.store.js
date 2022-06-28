@@ -7,6 +7,7 @@ import {
   UPDATE_PIZZA_QUANTITY,
   UPDATE_CART_ORDER_MISC,
   RESET_CART,
+  UPDATE_CART,
 } from "@/store/mutations-types";
 import { Misc, Pizza } from "@/common/models";
 import { findById, sum } from "@/common/helpers";
@@ -97,6 +98,11 @@ export default {
     },
     [SET_CART_ORDER_ADDRESS_ENTITY](state, { entity, value }) {
       state.orderAddress[entity] = value;
+    },
+    [UPDATE_CART](state, updates) {
+      for (let key in updates) {
+        state[key] = updates[key];
+      }
     },
   },
   actions: {
