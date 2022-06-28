@@ -3,13 +3,7 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import CartPizzas from "../components/CartPizzas";
 import ItemCounter from "@/common/components/ItemCounter";
-import {
-  setDoughs,
-  setSauces,
-  setSizes,
-  setIngredients,
-  testPizza,
-} from "@/store/mocks/setters";
+import { setLoadData, testCartPizza } from "@/store/mocks/setters";
 import { setUIComponents } from "@/plugins/ui";
 
 const localVue = createLocalVue();
@@ -18,7 +12,7 @@ setUIComponents(localVue);
 
 describe("CartPizzas", () => {
   const propsData = {
-    pizzas: [testPizza],
+    pizzas: [testCartPizza],
   };
   const mocks = {
     $router: {
@@ -34,10 +28,7 @@ describe("CartPizzas", () => {
   beforeEach(() => {
     mocks.$router.push = jest.fn();
     store = generateMockStore();
-    setDoughs(store);
-    setSauces(store);
-    setSizes(store);
-    setIngredients(store);
+    setLoadData(store);
   });
 
   afterEach(() => {
@@ -56,10 +47,10 @@ describe("CartPizzas", () => {
       localVue,
       store,
       mocks,
-      propsData: { pizzas: [{ ...testPizza, quantity: 2 }] },
+      propsData: { pizzas: [{ ...testCartPizza, quantity: 2 }] },
     });
     const pizzasPrice = wrapper.find("[data-test='pizzas-price']");
-    const priceValue = store.getters["Builder/pizzaPrice"](testPizza) * 2;
+    const priceValue = store.getters["Builder/pizzaPrice"](testCartPizza) * 2;
     expect(pizzasPrice.text()).toContain(priceValue);
   });
 
@@ -69,8 +60,8 @@ describe("CartPizzas", () => {
     const itemCounter = wrapper.findComponent(ItemCounter);
     itemCounter.vm.$emit("incrementClick");
     expect(spyOnUpdate).toHaveBeenCalledWith({
-      id: testPizza.id,
-      quantity: testPizza.quantity + 1,
+      id: testCartPizza.id,
+      quantity: testCartPizza.quantity + 1,
     });
   });
 
@@ -80,13 +71,13 @@ describe("CartPizzas", () => {
       localVue,
       store,
       mocks,
-      propsData: { pizzas: [{ ...testPizza, quantity }] },
+      propsData: { pizzas: [{ ...testCartPizza, quantity }] },
     });
     const spyOnUpdate = jest.spyOn(wrapper.vm, "updatePizzaQuantity");
     const itemCounter = wrapper.findComponent(ItemCounter);
     itemCounter.vm.$emit("decrementClick");
     expect(spyOnUpdate).toHaveBeenCalledWith({
-      id: testPizza.id,
+      id: testCartPizza.id,
       quantity: quantity - 1,
     });
   });
@@ -104,7 +95,7 @@ describe("CartPizzas", () => {
     await editBtn.trigger("click");
     expect(mocks.$router.push).toHaveBeenCalledWith({
       name: "IndexHome",
-      params: { id: testPizza.id },
+      params: { id: testCartPizza.id },
     });
   });
 });

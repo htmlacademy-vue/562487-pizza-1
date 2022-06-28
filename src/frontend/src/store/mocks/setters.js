@@ -8,6 +8,7 @@ import {
   User,
   Address,
   Order,
+  OrderMisc,
 } from "@/common/models";
 import pizzaData from "@/static/pizza.json";
 import miscData from "@/static/misc.json";
@@ -68,6 +69,25 @@ export const testOrder = new Order({
     },
   ],
   orderAddress: testAddress,
+});
+export const testCartPizza = new Pizza({
+  id: 1,
+  name: "Cart Pizka",
+  doughId: 1,
+  sauceId: 1,
+  sizeId: 2,
+  ingredients: [
+    {
+      ingredientId: 1,
+      quantity: 1,
+    },
+  ],
+  quantity: 1,
+});
+
+export const testCartMisc = new OrderMisc({
+  miscId: 1,
+  quantity: 1,
 });
 
 export const setDoughs = (store) => {
@@ -175,17 +195,15 @@ export const setOrders = (store) => {
   });
 };
 
-export const setCart = (store) => {
+export const setLoadData = (store) => {
   setDoughs(store);
   setSauces(store);
   setSizes(store);
   setIngredients(store);
   setMisc(store);
-  setCartPizzas(store, [testPizza]);
-  setOrderMisc(store, [
-    {
-      miscId: 1,
-      quantity: 1,
-    },
-  ]);
+};
+
+export const setCart = (store) => {
+  setCartPizzas(store, [testCartPizza]);
+  setOrderMisc(store, [testCartMisc]);
 };

@@ -3,12 +3,7 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import Product from "@/common/components/Product";
 import pizzaData from "@/static/pizza.json";
-import {
-  setDoughs,
-  setSizes,
-  setSauces,
-  setIngredients,
-} from "@/store/mocks/setters";
+import { setLoadData } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -46,10 +41,7 @@ describe("Product", () => {
 
   beforeEach(() => {
     store = generateMockStore();
-    setDoughs(store);
-    setSauces(store);
-    setSizes(store);
-    setIngredients(store);
+    setLoadData(store);
   });
 
   afterEach(() => {

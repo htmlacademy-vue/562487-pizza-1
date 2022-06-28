@@ -3,14 +3,7 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import OrderCard from "../components/OrderCard";
 import { setUIComponents } from "@/plugins/ui";
-import {
-  setDoughs,
-  setSauces,
-  setSizes,
-  setIngredients,
-  setMisc,
-  testOrder,
-} from "@/store/mocks/setters";
+import { setLoadData, testOrder } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -34,11 +27,7 @@ describe("OrderCard", () => {
   beforeEach(() => {
     mocks.$router.push = jest.fn();
     store = generateMockStore();
-    setDoughs(store);
-    setSauces(store);
-    setSizes(store);
-    setIngredients(store);
-    setMisc(store);
+    setLoadData(store);
   });
 
   afterEach(() => {

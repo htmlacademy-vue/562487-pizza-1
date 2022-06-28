@@ -4,10 +4,7 @@ import { generateMockStore } from "@/store/mocks";
 import BuilderPizzaView from "../components/BuilderPizzaView";
 import { setUIComponents } from "@/plugins/ui";
 import {
-  setDoughs,
-  setSauces,
-  setSizes,
-  setIngredients,
+  setLoadData,
   setPizza,
   testPizza,
   testIngredients,
@@ -33,10 +30,7 @@ describe("BuilderPizzaView", () => {
 
   beforeEach(() => {
     store = generateMockStore();
-    setDoughs(store);
-    setSauces(store);
-    setSizes(store);
-    setIngredients(store);
+    setLoadData(store);
     setPizza(store);
   });
 

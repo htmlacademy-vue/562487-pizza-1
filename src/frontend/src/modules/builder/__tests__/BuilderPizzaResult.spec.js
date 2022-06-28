@@ -3,13 +3,11 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import BuilderPizzaResult from "../components/BuilderPizzaResult";
 import {
+  addIngredient,
+  setPizza,
+  setLoadData,
   testPizza,
-  setDoughs,
-  setSauces,
-  setSizes,
-  setIngredients,
 } from "@/store/mocks/setters";
-import { addIngredient, setPizza } from "../../../store/mocks/setters";
 import { setUIComponents } from "@/plugins/ui";
 
 const localVue = createLocalVue();
@@ -26,10 +24,7 @@ describe("BuilderPizzaResult", () => {
 
   beforeEach(() => {
     store = generateMockStore();
-    setDoughs(store);
-    setSauces(store);
-    setSizes(store);
-    setIngredients(store);
+    setLoadData(store);
     setPizza(store);
   });
 

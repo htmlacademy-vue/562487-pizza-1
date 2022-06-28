@@ -1,9 +1,10 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import AppLayoutHeader from "../AppLayoutHeader";
 import { setUIComponents } from "@/plugins/ui";
 import { setUser, testUser, setCart } from "@/store/mocks/setters";
+import { setLoadData } from "../../store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -14,7 +15,7 @@ describe("AppLayoutHeader", () => {
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(AppLayoutHeader, options);
+    wrapper = shallowMount(AppLayoutHeader, options);
   };
 
   beforeEach(() => {
@@ -45,6 +46,7 @@ describe("AppLayoutHeader", () => {
   });
 
   it("displays cart total sum", () => {
+    setLoadData(store);
     setCart(store);
     createComponent({ localVue, store, stubs });
     const totalSum = store.getters["Cart/totalSum"];

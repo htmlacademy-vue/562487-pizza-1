@@ -3,13 +3,7 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import OrderPizza from "../components/OrderPizza";
 import { setUIComponents } from "@/plugins/ui";
-import {
-  setDoughs,
-  setSauces,
-  setSizes,
-  setIngredients,
-  testOrder,
-} from "@/store/mocks/setters";
+import { setLoadData, testOrder } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -27,10 +21,7 @@ describe("OrderPizza", () => {
 
   beforeEach(() => {
     store = generateMockStore();
-    setDoughs(store);
-    setSauces(store);
-    setSizes(store);
-    setIngredients(store);
+    setLoadData(store);
   });
 
   afterEach(() => {
