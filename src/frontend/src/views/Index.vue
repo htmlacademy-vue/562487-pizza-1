@@ -49,13 +49,7 @@ export default {
     if (!pizzaId) {
       return;
     }
-    const pizzaToEdit = this.orderPizzaById(pizzaId);
-    if (pizzaToEdit) {
-      this.isEditMode = true;
-      this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
-    } else {
-      this.$route.push("/");
-    }
+    this.setupBuilderWithPizza(pizzaId);
   },
   methods: {
     ...mapMutations("Builder", {
@@ -65,6 +59,16 @@ export default {
     ...mapMutations("Cart", {
       updatePizza: UPDATE_PIZZA,
     }),
+
+    setupBuilderWithPizza(pizzaId) {
+      const pizzaToEdit = this.orderPizzaById(pizzaId);
+      if (!pizzaToEdit) {
+        this.$router.push("/");
+      } else {
+        this.isEditMode = true;
+        this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
+      }
+    },
 
     savePizza() {
       this.updatePizza(this.pizza);
