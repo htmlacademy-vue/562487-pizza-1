@@ -16,7 +16,6 @@
         })
       "
       @decrementClick="removePizzaIngredient(ingredient)"
-      data-test="item-counter"
     />
   </li>
 </template>

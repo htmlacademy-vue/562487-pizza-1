@@ -1,7 +1,11 @@
 <template>
   <AppDrop @drop="moveIngredient">
     <div class="content__constructor">
-      <div class="pizza" :class="pizzaFoundationClasses" data-test="pizza-view">
+      <div
+        class="pizza"
+        :class="pizzaFoundationClasses"
+        data-test="pizza-foundation"
+      >
         <transition-group
           name="fillings"
           tag="div"
@@ -28,7 +32,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import { ADD_BUILDER_PIZZA_INGREDIENT } from "../../../store/mutations-types";
+import { ADD_BUILDER_PIZZA_INGREDIENT } from "@/store/mutations-types";
 
 export default {
   name: "BuilderPizzaView",

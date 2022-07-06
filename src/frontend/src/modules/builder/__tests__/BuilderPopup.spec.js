@@ -1,18 +1,21 @@
 import { createLocalVue, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import BuilderPopup from "../components/BuilderPopup";
 import { setUIComponents } from "@/plugins/ui";
-import PopupLayout from "@/common/components/PopupLayout";
 
 const localVue = createLocalVue();
 setUIComponents(localVue);
 
 describe("BuilderPopup", () => {
-  const saveBtnSelector = "[data-test='save-btn'] a";
-  const cancelBtnSelector = "[data-test='cancel-btn'] a";
   let wrapper;
   const createComponent = (options) => {
     wrapper = mount(BuilderPopup, options);
   };
+
+  const findPopupLayout = () => wrapper.findComponent({ name: "PopupLayout" });
+  const findSaveButton = () => wrapper.find("[data-test='save-btn'] a");
+  const findCancelButton = () => wrapper.find("[data-test='cancel-btn'] a");
+  const findFocused = () => wrapper.find("a:focus");
 
   afterEach(() => {
     wrapper.destroy();
@@ -23,41 +26,49 @@ describe("BuilderPopup", () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+  it("renders out popup layout", () => {
+    createComponent({ localVue });
+    expect(findPopupLayout().exists()).toBe(true);
+  });
+
+  it("renders out save button", () => {
+    createComponent({ localVue });
+    expect(findSaveButton().exists()).toBe(true);
+  });
+
+  it("renders out cancel button", () => {
+    createComponent({ localVue });
+    expect(findCancelButton().exists()).toBe(true);
+  });
+
   it("renders out with save button focused", () => {
     const div = document.createElement("div");
     div.id = "root";
     document.body.appendChild(div);
     createComponent({ localVue, attachTo: "#root" });
-    const focusedBtn = wrapper.find("a:focus");
-    const saveBtn = wrapper.find(saveBtnSelector);
+    const focusedBtn = findFocused();
     expect(focusedBtn.exists()).toBe(true);
-    expect(focusedBtn.element).toBe(saveBtn.element);
+    expect(focusedBtn.element).toBe(findSaveButton().element);
   });
 
-  it("emits close on popup layout close", () => {
+  it("emits close on popup layout close", async () => {
     createComponent({ localVue });
-    const popupLayout = wrapper.findComponent(PopupLayout);
-    popupLayout.vm.$emit("close");
+    findPopupLayout().vm.$emit("close");
+    await nextTick();
     expect(wrapper.emitted().close).toBeTruthy();
   });
 
   it("emits save on save button click", async () => {
     createComponent({ localVue });
-    const saveBtn = wrapper.find(saveBtnSelector);
-    await saveBtn.trigger("click");
+    findSaveButton().trigger("click");
+    await nextTick();
     expect(wrapper.emitted().save).toBeTruthy();
   });
 
   it("emits cancel on cancel button click", async () => {
     createComponent({ localVue });
-    const cancelBtn = wrapper.find(cancelBtnSelector);
-    await cancelBtn.trigger("click");
+    findCancelButton().trigger("click");
+    await nextTick();
     expect(wrapper.emitted().cancel).toBeTruthy();
-  });
-
-  it("renders out save button with save ref", () => {
-    createComponent({ localVue });
-    const saveBtn = wrapper.findComponent({ ref: "save" });
-    expect(saveBtn.exists()).toBe(true);
   });
 });

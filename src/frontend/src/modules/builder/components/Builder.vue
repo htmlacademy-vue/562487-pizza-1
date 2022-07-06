@@ -13,6 +13,7 @@
           placeholder="Введите название пиццы"
           :value="pizza.name"
           @input="setName"
+          data-test="pizza-name"
         />
         <BuilderPizzaView />
         <BuilderPizzaResult />
@@ -33,8 +34,8 @@ import {
   ADD_PIZZA,
   UPDATE_PIZZA,
   RESET_BUILDER_PIZZA,
+  SET_BUILDER_PIZZA_ENTITY,
 } from "@/store/mutations-types";
-import { SET_BUILDER_PIZZA_ENTITY } from "../../../store/mutations-types";
 
 export default {
   name: "Builder",

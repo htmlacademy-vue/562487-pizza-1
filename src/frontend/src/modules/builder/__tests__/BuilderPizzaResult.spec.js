@@ -1,12 +1,13 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import BuilderPizzaResult from "../components/BuilderPizzaResult";
 import {
-  addIngredient,
   setPizza,
   setLoadData,
   testPizza,
+  setPizzaName,
+  setPizzaIngredients,
 } from "@/store/mocks/setters";
 import { setUIComponents } from "@/plugins/ui";
 
@@ -15,12 +16,14 @@ localVue.use(Vuex);
 setUIComponents(localVue);
 
 describe("BuilderPizzaResult", () => {
-  const ingredient = { ingredientId: 1, quantity: 1 };
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(BuilderPizzaResult, options);
+    wrapper = shallowMount(BuilderPizzaResult, options);
   };
+
+  const findPizzaPrice = () => wrapper.find("[data-test='pizza-price']");
+  const findSubmit = () => wrapper.find("[type='submit']");
 
   beforeEach(() => {
     store = generateMockStore();
@@ -32,26 +35,36 @@ describe("BuilderPizzaResult", () => {
     wrapper.destroy();
   });
 
-  it("renders out state pizza price", () => {
+  it("renders out pizza price", () => {
     createComponent({ localVue, store });
-    const priceItem = wrapper.find("[data-test='pizza-price']");
-    const pizzaPriceValue = store.getters["Builder/pizzaPrice"](testPizza);
-    expect(priceItem.exists()).toBe(true);
-    expect(priceItem.text()).toContain(pizzaPriceValue);
+    expect(findPizzaPrice().exists()).toBe(true);
   });
 
-  it("renders out submit button disabled", () => {
+  it("pizza price displays state builder pizza price", () => {
     createComponent({ localVue, store });
-    const btn = wrapper.find("[type='submit']");
-    expect(btn.exists()).toBe(true);
-    expect(btn.element.disabled).toBe(true);
+    const pizzaPriceValue = store.getters["Builder/pizzaPrice"](testPizza);
+    expect(findPizzaPrice().text()).toBe(`Итого: ${pizzaPriceValue} ₽`);
+  });
+
+  it("renders out submit button", () => {
+    createComponent({ localVue, store });
+    expect(findSubmit().exists()).toBe(true);
+  });
+
+  it("renders out submit button disabled when empty pizza name", () => {
+    setPizzaName(store, "");
+    createComponent({ localVue, store });
+    expect(findSubmit().attributes().disabled).toBeTruthy();
+  });
+
+  it("renders out submit button disabled when empty pizza ingredients", () => {
+    setPizzaIngredients(store, []);
+    createComponent({ localVue, store });
+    expect(findSubmit().attributes().disabled).toBeTruthy();
   });
 
   it("renders out submit button not disabled", () => {
-    addIngredient(store, ingredient);
     createComponent({ localVue, store });
-    const btn = wrapper.find("[type='submit']");
-    expect(btn.exists()).toBe(true);
-    expect(btn.element.disabled).toBe(false);
+    expect(findSubmit().attributes().disabled).toBeFalsy();
   });
 });
