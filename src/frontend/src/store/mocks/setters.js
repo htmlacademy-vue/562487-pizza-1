@@ -24,7 +24,12 @@ export const testPizza = new Pizza({
   doughId: 1,
   sauceId: 1,
   sizeId: 2,
-  ingredients: [],
+  ingredients: [
+    {
+      ingredientId: 1,
+      quantity: 1,
+    },
+  ],
   quantity: 1,
 });
 export const testUser = new User(userData);
@@ -129,6 +134,13 @@ export const setPizzaName = (store, name) => {
   });
 };
 
+export const setPizzaIngredients = (store, ingredients) => {
+  store.commit("Builder/SET_BUILDER_PIZZA_ENTITY", {
+    entity: "ingredients",
+    value: ingredients,
+  });
+};
+
 export const setPizza = (store) => {
   store.commit("Builder/SET_BUILDER_ENTITY", {
     entity: "pizza",
@@ -168,6 +180,13 @@ export const setDelivery = (store, delivery) => {
   store.commit("Cart/SET_CART_ENTITY", {
     entity: "delivery",
     value: delivery,
+  });
+};
+
+export const setPhone = (store, phone) => {
+  store.commit("Cart/SET_CART_ENTITY", {
+    entity: "phone",
+    value: phone,
   });
 };
 

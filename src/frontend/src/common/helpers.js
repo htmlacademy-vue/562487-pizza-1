@@ -64,3 +64,29 @@ export const createDeliveries = (items) => {
     name: it.name,
   }));
 };
+
+export const findCheckedItem = (items) => {
+  let checkedItem;
+  let i = 0;
+  while (i < items.length) {
+    if (items.at(i).props().isChecked) {
+      checkedItem = items.at(i);
+      break;
+    }
+    i++;
+  }
+  return checkedItem;
+};
+
+export const findNotCheckedItem = (items) => {
+  let notCheckedItem;
+  let i = 0;
+  while (i < items.length) {
+    if (!items.at(i).props().isChecked) {
+      notCheckedItem = items.at(i);
+      break;
+    }
+    i++;
+  }
+  return notCheckedItem;
+};

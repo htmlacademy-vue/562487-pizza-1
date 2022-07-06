@@ -9,10 +9,18 @@ const initState = () => ({
   notifications: [],
 });
 
-export const generateMockStore = (actions) => {
+export const generateMockStore = (data) => {
   const modulesCopy = cloneDeep(modules);
-  if (actions) {
-    Object.entries(actions).forEach(([module, actions]) => {
+  if (data?.mutations) {
+    Object.entries(data.mutations).forEach(([module, mutations]) => {
+      modulesCopy[module] = {
+        ...modulesCopy[module],
+        mutations: { ...modulesCopy[module].mutations, ...mutations },
+      };
+    });
+  }
+  if (data?.actions) {
+    Object.entries(data.actions).forEach(([module, actions]) => {
       modulesCopy[module] = { ...modulesCopy[module], actions };
     });
   }
