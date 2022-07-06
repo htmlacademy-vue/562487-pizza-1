@@ -1,56 +1,27 @@
 <template>
   <div class="cart__additional">
     <ul class="additional-list">
-      <li
-        v-for="{ miscId, name, image, price } in misc"
-        :key="miscId"
-        class="additional-list__item sheet"
+      <CartMiscItem
+        v-for="item in misc"
+        :key="item.miscId"
+        :item="item"
         data-test="misc-item"
-      >
-        <p class="additional-list__description" data-test="misc-description">
-          <img :src="image" width="39" height="60" :alt="name" />
-          <span>{{ name }}</span>
-        </p>
-
-        <div class="additional-list__wrapper">
-          <ItemCounter
-            class="additional-list__counter"
-            :quantity="orderMiscQuantityById(miscId)"
-            @incrementClick="
-              updateOrderMisc({
-                miscId,
-                quantity: orderMiscQuantityById(miscId) + 1,
-              })
-            "
-            @decrementClick="
-              updateOrderMisc({
-                miscId,
-                quantity: orderMiscQuantityById(miscId) - 1,
-              })
-            "
-          />
-
-          <div class="additional-list__price" data-test="misc-price">
-            <b>× {{ price * orderMiscQuantityById(miscId) }} ₽</b>
-          </div>
-        </div>
-      </li>
+      />
     </ul>
   </div>
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
-import { UPDATE_CART_ORDER_MISC } from "@/store/mutations-types";
+import { mapState } from "vuex";
+import CartMiscItem from "@/modules/cart/components/CartMiscItem";
 
 export default {
   name: "CartMisc",
+  components: {
+    CartMiscItem,
+  },
   computed: {
     ...mapState("Cart", ["misc"]),
-    ...mapGetters("Cart", ["orderMiscQuantityById"]),
-  },
-  methods: {
-    ...mapMutations("Cart", { updateOrderMisc: UPDATE_CART_ORDER_MISC }),
   },
 };
 </script>

@@ -11,7 +11,14 @@
         </div>
 
         <div v-else data-test="cart-content">
-          <CartPizzas :pizzas="orderPizzas" @deletePizza="startDeletePizza" />
+          <ul class="cart-list sheet">
+            <CartPizza
+              v-for="pizza in orderPizzas"
+              :key="pizza.id"
+              :pizza="pizza"
+              @deletePizza="startDeletePizza"
+            />
+          </ul>
           <CartMisc />
           <CartDelivery />
         </div>
@@ -49,19 +56,18 @@
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
-import CartPizzas from "@/modules/cart/components/CartPizzas";
+import CartPizza from "@/modules/cart/components/CartPizza";
 import CartMisc from "@/modules/cart/components/CartMisc";
 import CartDelivery from "@/modules/cart/components/CartDelivery";
 import CartFooter from "@/modules/cart/components/CartFooter";
 import CartPopup from "@/modules/cart/components/CartPopup";
-import { RESET_CART, DELETE_PIZZA, UPDATE_CART } from "@/store/mutations-types";
+import { RESET_CART, SET_CART_WITH_ORDER } from "@/store/mutations-types";
 import { BASE_DELIVERIES } from "@/common/constants";
-import { Pizza } from "@/common/models";
 
 export default {
   name: "Cart",
   components: {
-    CartPizzas,
+    CartPizza,
     CartMisc,
     CartDelivery,
     CartFooter,
@@ -112,7 +118,12 @@ export default {
     const orderId = this.$route?.params?.id;
     if (orderId) {
       await this.queryAddresses();
-      this.setupCartWithOrder(orderId);
+      const orderToEdit = this.getOrderById(orderId);
+      if (!orderToEdit) {
+        this.$router.push("/cart");
+        return;
+      }
+      this.setCartWithOrder(orderToEdit);
       return;
     }
     if (!this.isEmpty) {
@@ -124,10 +135,10 @@ export default {
   methods: {
     ...mapMutations("Cart", {
       resetCart: RESET_CART,
-      deletePizza: DELETE_PIZZA,
-      updateCart: UPDATE_CART,
+      setCartWithOrder: SET_CART_WITH_ORDER,
     }),
     ...mapActions("Auth", ["queryAddresses"]),
+    ...mapActions("Cart", ["deletePizza"]),
     ...mapActions("Orders", ["createOrder"]),
 
     startDeletePizza(pizzaId) {
@@ -138,24 +149,6 @@ export default {
     confirmDeletePizza() {
       this.isConfirmPopupShowed = false;
       this.deletePizza(this.pizzaIdToDelete);
-      if (!this.orderPizzas.length) {
-        this.resetCart();
-      }
-    },
-
-    setupCartWithOrder(orderId) {
-      const orderToEdit = this.getOrderById(orderId);
-      if (!orderToEdit) {
-        this.$router.push("/cart");
-        return;
-      }
-      this.updateCart({
-        delivery: orderToEdit.orderAddress?.id || BASE_DELIVERIES[0].id,
-        phone: orderToEdit.phone,
-        orderAddress: orderToEdit.orderAddress,
-        orderPizzas: Pizza.parseItems(orderToEdit.orderPizzas),
-        orderMisc: orderToEdit.orderMisc,
-      });
     },
 
     async submit() {

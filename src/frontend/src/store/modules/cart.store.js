@@ -7,7 +7,7 @@ import {
   UPDATE_PIZZA_QUANTITY,
   UPDATE_CART_ORDER_MISC,
   RESET_CART,
-  UPDATE_CART,
+  SET_CART_WITH_ORDER,
 } from "@/store/mutations-types";
 import { Misc, Pizza } from "@/common/models";
 import { findById, sum } from "@/common/helpers";
@@ -99,10 +99,12 @@ export default {
     [SET_CART_ORDER_ADDRESS_ENTITY](state, { entity, value }) {
       state.orderAddress[entity] = value;
     },
-    [UPDATE_CART](state, updates) {
-      for (let key in updates) {
-        state[key] = updates[key];
-      }
+    [SET_CART_WITH_ORDER](state, order) {
+      state.delivery = order.orderAddress?.id || BASE_DELIVERIES[0].id;
+      state.phone = order.phone;
+      state.orderAddress = order.orderAddress;
+      state.orderPizzas = Pizza.parseItems(order.orderPizzas);
+      state.orderMisc = order.orderMisc;
     },
   },
   actions: {
@@ -110,6 +112,48 @@ export default {
       const data = await this.$api.misc.query();
       const misc = Misc.parseItems(data);
       commit(SET_CART_ENTITY, { entity: "misc", value: misc });
+    },
+    deletePizza({ commit, state }, id) {
+      commit(DELETE_PIZZA, id);
+      if (!state.orderPizzas.length) {
+        commit(RESET_CART);
+      }
+    },
+    setDelivery({ commit, rootGetters }, data) {
+      const delivery = data.delivery;
+      const address = data?.address;
+      commit(SET_CART_ENTITY, { entity: "delivery", value: delivery });
+      if (delivery === BASE_DELIVERIES[0].id) {
+        commit(SET_CART_ENTITY, { entity: "orderAddress", value: null });
+      } else if (delivery === BASE_DELIVERIES[1].id) {
+        if (!address) {
+          commit(SET_CART_ENTITY, {
+            entity: "orderAddress",
+            value: {
+              street: "",
+              building: "",
+              flat: "",
+            },
+          });
+          return;
+        }
+        commit(SET_CART_ENTITY, {
+          entity: "orderAddress",
+          value: {
+            street: address.street,
+            building: address.building,
+            flat: address.flat,
+          },
+        });
+      } else {
+        const userAddress = rootGetters["Auth/addressById"](+delivery);
+        if (userAddress) {
+          commit(SET_CART_ENTITY, {
+            entity: "orderAddress",
+            value: userAddress,
+          });
+        }
+      }
     },
   },
 };
