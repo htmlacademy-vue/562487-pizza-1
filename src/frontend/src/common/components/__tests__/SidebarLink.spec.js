@@ -17,6 +17,8 @@ describe("SidebarLink", () => {
     wrapper = shallowMount(SidebarLink, options);
   };
 
+  const findLink = () => wrapper.findComponent(RouterLinkStub);
+
   afterEach(() => {
     wrapper.destroy();
   });
@@ -28,13 +30,11 @@ describe("SidebarLink", () => {
 
   it("link to prop link to", () => {
     createComponent({ stubs, propsData });
-    const routerLink = wrapper.findComponent(RouterLinkStub);
-    expect(routerLink.props().to).toBe(propsData.link.to);
+    expect(findLink().props().to).toBe(propsData.link.to);
   });
 
   it("link text is prop link title", () => {
     createComponent({ stubs, propsData });
-    const routerLink = wrapper.findComponent(RouterLinkStub);
-    expect(routerLink.text()).toBe(propsData.link.title);
+    expect(findLink().text()).toBe(propsData.link.title);
   });
 });

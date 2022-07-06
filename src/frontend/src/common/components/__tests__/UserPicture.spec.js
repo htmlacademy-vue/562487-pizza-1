@@ -17,6 +17,10 @@ describe("UserPicture", () => {
     wrapper = shallowMount(UserPicture, options);
   };
 
+  const findPicture = () => wrapper.find("picture");
+  const findSource = () => wrapper.find("source");
+  const findImg = () => wrapper.find("img");
+
   afterEach(() => {
     wrapper.destroy();
   });
@@ -28,9 +32,9 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    expect(wrapper.find("picture").exists()).toBe(true);
-    expect(wrapper.find("source").exists()).toBe(true);
-    expect(wrapper.find("img").exists()).toBe(true);
+    expect(findPicture().exists()).toBe(true);
+    expect(findSource().exists()).toBe(true);
+    expect(findImg().exists()).toBe(true);
   });
 
   it("picture source srcset with small size", () => {
@@ -40,8 +44,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const source = wrapper.find("source");
-    expect(source.attributes().srcset).toBe(smallSizeWebpSrcset);
+    expect(findSource().attributes().srcset).toBe(smallSizeWebpSrcset);
   });
 
   it("picture source srcset with big size", () => {
@@ -51,8 +54,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const source = wrapper.find("source");
-    expect(source.attributes().srcset).toBe(bigSizeWebpSrcset);
+    expect(findSource().attributes().srcset).toBe(bigSizeWebpSrcset);
   });
 
   it("picture img srcset with small size", () => {
@@ -62,8 +64,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const image = wrapper.find("img");
-    expect(image.attributes().srcset).toBe(smallSizeJpgSrcset);
+    expect(findImg().attributes().srcset).toBe(smallSizeJpgSrcset);
   });
 
   it("picture img srcset with big size", () => {
@@ -73,8 +74,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const image = wrapper.find("img");
-    expect(image.attributes().srcset).toBe(bigSizeJpgSrcset);
+    expect(findImg().attributes().srcset).toBe(bigSizeJpgSrcset);
   });
 
   it("picture img alt is prop user name", () => {
@@ -84,8 +84,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const image = wrapper.find("img");
-    expect(image.attributes().alt).toBe(userData.name);
+    expect(findImg().attributes().alt).toBe(userData.name);
   });
 
   it("picture img src is prop user avatar", () => {
@@ -95,8 +94,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const image = wrapper.find("img");
-    expect(image.attributes().src).toBe(userData.avatar);
+    expect(findImg().attributes().src).toBe(userData.avatar);
   });
 
   it("picture img with small size", () => {
@@ -106,7 +104,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const image = wrapper.find("img");
+    const image = findImg();
     expect(image.attributes().width).toBe(smallSize.width);
     expect(image.attributes().height).toBe(smallSize.height);
   });
@@ -118,7 +116,7 @@ describe("UserPicture", () => {
         user: userData,
       },
     });
-    const image = wrapper.find("img");
+    const image = findImg();
     expect(image.attributes().width).toBe(bigSize.width);
     expect(image.attributes().height).toBe(bigSize.height);
   });

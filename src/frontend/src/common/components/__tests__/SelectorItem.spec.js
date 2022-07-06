@@ -1,4 +1,4 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import SelectorItem from "@/common/components/SelectorItem";
@@ -11,8 +11,6 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("SelectorItem", () => {
-  const appDragSelector = "[data-test='app-drag']";
-  const itemSelector = "[data-test='selector-item']";
   const draggableClass = "item--draggable";
   const propsData = {
     ingredient: new Ingredient(pizzaData.ingredients[0]),
@@ -22,8 +20,11 @@ describe("SelectorItem", () => {
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(SelectorItem, options);
+    wrapper = shallowMount(SelectorItem, options);
   };
+
+  const findAppDrag = () => wrapper.findComponent({ name: "AppDrag" });
+  const findItem = () => wrapper.find("[data-test='selector-item']");
 
   beforeEach(() => {
     store = generateMockStore();
@@ -41,10 +42,8 @@ describe("SelectorItem", () => {
 
   it("draggable ingredient has draggableClass", () => {
     createComponent({ localVue, store, stubs, propsData });
-    const itemEl = wrapper.find(itemSelector);
-    const appDragEl = wrapper.find(appDragSelector);
-    expect(appDragEl.element.draggable).toBe(true);
-    expect(itemEl.classes(draggableClass)).toBe(true);
+    expect(findAppDrag().element.draggable).toBe(true);
+    expect(findItem().classes(draggableClass)).toBe(true);
   });
 
   it("undraggable ingredient has not draggableClass", () => {
@@ -62,9 +61,7 @@ describe("SelectorItem", () => {
       quantity: 3,
     });
     createComponent({ localVue, store, stubs, propsData });
-    const appDragEl = wrapper.find(appDragSelector);
-    const itemEl = wrapper.find(itemSelector);
-    expect(appDragEl.element.draggable).toBe(false);
-    expect(itemEl.classes(draggableClass)).toBe(false);
+    expect(findAppDrag().element.draggable).toBe(false);
+    expect(findItem().classes(draggableClass)).toBe(false);
   });
 });

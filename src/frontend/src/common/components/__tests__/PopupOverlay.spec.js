@@ -10,6 +10,8 @@ describe("PopupOverlay", () => {
     wrapper = shallowMount(PopupOverlay, options);
   };
 
+  const findOverlay = () => wrapper.find(".overlay");
+
   beforeEach(() => {
     listeners.click = jest.fn();
     listeners.keydown = jest.fn();
@@ -26,13 +28,13 @@ describe("PopupOverlay", () => {
 
   it("raises the click event on click", async () => {
     createComponent({ listeners });
-    await wrapper.find(".overlay").trigger("click");
+    await findOverlay().trigger("click");
     expect(listeners.click).toHaveBeenCalled();
   });
 
   it("raises the keydown event on escape keydown", async () => {
     createComponent({ listeners });
-    await wrapper.find(".overlay").trigger("keydown.esc");
+    await findOverlay().trigger("keydown.esc");
     expect(listeners.keydown).toHaveBeenCalled();
   });
 });

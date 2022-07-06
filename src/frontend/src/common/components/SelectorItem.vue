@@ -1,9 +1,5 @@
 <template>
-  <AppDrag
-    :transfer-data="ingredient"
-    :isDraggable="isDraggable"
-    data-test="app-drag"
-  >
+  <AppDrag :transfer-data="ingredient" :isDraggable="isDraggable">
     <span :class="isDraggable && 'item--draggable'" data-test="selector-item">
       {{ ingredient.name }}
     </span>

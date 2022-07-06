@@ -13,6 +13,9 @@ describe("PopupLayout", () => {
     wrapper = shallowMount(PopupLayout, options);
   };
 
+  const findCloseBtn = () => wrapper.find(".close");
+  const findOverlay = () => wrapper.find(".overlay");
+
   afterEach(() => {
     wrapper.destroy();
   });
@@ -30,19 +33,19 @@ describe("PopupLayout", () => {
 
   it("emits close on close button click", async () => {
     createComponent({ stubs });
-    await wrapper.find(".close").trigger("click");
+    await findCloseBtn().trigger("click");
     expect(wrapper.emitted().close.length).toBe(1);
   });
 
   it("emits close on overlay click", async () => {
     createComponent({ stubs });
-    await wrapper.find(".overlay").trigger("click");
+    await findOverlay().trigger("click");
     expect(wrapper.emitted().close.length).toBe(1);
   });
 
   it("emits close on escape keydown", async () => {
     createComponent({ stubs });
-    await wrapper.find(".overlay").trigger("keydown.esc");
+    await findOverlay().trigger("keydown.esc");
     expect(wrapper.emitted().close.length).toBe(1);
   });
 });

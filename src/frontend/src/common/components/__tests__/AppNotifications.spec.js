@@ -19,6 +19,10 @@ describe("AppNotifications", () => {
     wrapper = shallowMount(AppNotifications, options);
   };
 
+  const findNotifications = () => wrapper.find("[data-test='notifications']");
+  const findNotification = () => wrapper.find(".notification");
+  const findCloseBtn = () => wrapper.find(".close");
+
   beforeEach(() => {
     mocks.$notifier.close = jest.fn();
   });
@@ -30,7 +34,7 @@ describe("AppNotifications", () => {
 
   it("doesn't render out when no notifications", () => {
     createComponent({ mocks });
-    expect(wrapper.find("[data-test='notifications']").exists()).toBe(false);
+    expect(findNotifications().exists()).toBe(false);
   });
 
   it("renders out when there are some notifications", () => {
@@ -43,7 +47,7 @@ describe("AppNotifications", () => {
     const notificationClassName = "notification--" + notificationData.type;
     mocks.$store.state.notifications.push(notificationData);
     createComponent({ mocks });
-    const notification = wrapper.find(".notification");
+    const notification = findNotification();
     expect(notification.classes()).toContain(notificationClassName);
     expect(notification.text()).toContain(notificationData.text);
   });
@@ -51,14 +55,13 @@ describe("AppNotifications", () => {
   it("render out close button", () => {
     mocks.$store.state.notifications.push(notificationData);
     createComponent({ mocks });
-    expect(wrapper.find(".close").exists()).toBe(true);
+    expect(findCloseBtn().exists()).toBe(true);
   });
 
   it("calls $notifier.close with id on close button click", async () => {
     mocks.$store.state.notifications.push(notificationData);
     createComponent({ mocks });
-    const closeBtn = wrapper.find(".close");
-    await closeBtn.trigger("click");
+    await findCloseBtn().trigger("click");
     expect(mocks.$notifier.close).toHaveBeenCalledWith(notificationData.id);
   });
 });
