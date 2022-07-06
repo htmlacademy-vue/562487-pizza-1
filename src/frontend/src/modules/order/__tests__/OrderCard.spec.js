@@ -1,5 +1,6 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
+import { nextTick } from "vue";
 import { generateMockStore } from "@/store/mocks";
 import OrderCard from "../components/OrderCard";
 import { setUIComponents } from "@/plugins/ui";
@@ -21,8 +22,16 @@ describe("OrderCard", () => {
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(OrderCard, options);
+    wrapper = shallowMount(OrderCard, options);
   };
+
+  const findOrderNumber = () => wrapper.find("[data-test='order-number']");
+  const findOrderSum = () => wrapper.find("[data-test='order-sum']");
+  const findDeleteBtn = () => wrapper.find("[data-test='button-delete']");
+  const findRepeatBtn = () => wrapper.find("[data-test='button-repeat']");
+  const findPizzas = () => wrapper.findAllComponents({ name: "OrderPizza" });
+  const findMisc = () => wrapper.findAllComponents({ name: "OrderMisc" });
+  const findOrderAddress = () => wrapper.find("[data-test='order-address']");
 
   beforeEach(() => {
     mocks.$router.push = jest.fn();
@@ -41,54 +50,52 @@ describe("OrderCard", () => {
 
   it("renders out order number", () => {
     createComponent({ localVue, mocks, store, propsData });
-    const orderNumber = wrapper.find("[data-test='order-number']");
+    const orderNumber = findOrderNumber();
+    expect(orderNumber.exists()).toBe(true);
     expect(orderNumber.text()).toBe(`Заказ #${testOrder.id}`);
   });
 
   it("renders out order total price", () => {
     createComponent({ localVue, mocks, store, propsData });
-    const orderTotalPrice = wrapper.find("[data-test='order-sum']");
     const totalPrice = store.getters["Orders/totalPrice"](testOrder);
-    expect(orderTotalPrice.text()).toBe(`Сумма заказа: ${totalPrice} ₽`);
+    expect(findOrderSum().text()).toBe(`Сумма заказа: ${totalPrice} ₽`);
   });
 
   it("emits deleteOrder on delete button click", async () => {
     createComponent({ localVue, mocks, store, propsData });
-    const deleteBtn = wrapper.find("[data-test='button-delete']");
-    await deleteBtn.trigger("click");
+    findDeleteBtn().vm.$emit("click");
+    await nextTick();
     expect(wrapper.emitted().deleteOrder).toBeTruthy();
     expect(wrapper.emitted().deleteOrder[0][0]).toBe(testOrder.id);
   });
 
   it("goes to cart route on repeat button click", async () => {
     createComponent({ localVue, mocks, store, propsData });
-    const repeatBtn = wrapper.find("[data-test='button-repeat']");
-    await repeatBtn.trigger("click");
+    findRepeatBtn().vm.$emit("click");
+    await nextTick();
     expect(mocks.$router.push).toHaveBeenCalledWith({
       name: "Cart",
       params: {
-        id: testOrder.id,
+        id: propsData.order.id,
       },
     });
   });
 
   it("renders out pizzas list", () => {
     createComponent({ localVue, mocks, store, propsData });
-    const pizzas = wrapper.findAll("[data-test='order-pizza']");
-    expect(pizzas.length).toBe(testOrder.orderPizzas.length);
+    expect(findPizzas().length).toBe(propsData.order.orderPizzas.length);
   });
 
   it("renders out order misc list", () => {
     createComponent({ localVue, mocks, store, propsData });
-    const misc = wrapper.findAll("[data-test='order-misc']");
-    expect(misc.length).toBe(testOrder.orderMisc.length);
+    expect(findMisc().length).toBe(propsData.order.orderMisc.length);
   });
 
   it("renders out order address when exists", () => {
     createComponent({ localVue, mocks, store, propsData });
-    const address = wrapper.find("[data-test='order-address']");
+    const address = findOrderAddress();
     expect(address.exists()).toBe(true);
-    expect(address.text()).toContain(testOrder.orderAddress.name);
+    expect(address.text()).toContain(propsData.order.orderAddress.name);
   });
 
   it("does not render out order address when does not exist", () => {
@@ -100,7 +107,6 @@ describe("OrderCard", () => {
         order: { ...testOrder, orderAddress: null },
       },
     });
-    const address = wrapper.find("[data-test='order-address']");
-    expect(address.exists()).toBe(false);
+    expect(findOrderAddress().exists()).toBe(false);
   });
 });

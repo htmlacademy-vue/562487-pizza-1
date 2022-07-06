@@ -1,4 +1,4 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import OrderPizza from "../components/OrderPizza";
@@ -16,8 +16,11 @@ describe("OrderPizza", () => {
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(OrderPizza, options);
+    wrapper = shallowMount(OrderPizza, options);
   };
+
+  const findProduct = () => wrapper.findComponent({ name: "Product" });
+  const findPrice = () => wrapper.find("[data-test='pizza-price']");
 
   beforeEach(() => {
     store = generateMockStore();
@@ -33,11 +36,15 @@ describe("OrderPizza", () => {
     expect(wrapper.exists()).toBe(true);
   });
 
+  it("renders out product", () => {
+    createComponent({ localVue, store, propsData });
+    expect(findProduct().exists()).toBe(true);
+  });
+
   it("renders out pizza quantity and price", () => {
     createComponent({ localVue, store, propsData });
-    const price = wrapper.find("[data-test='pizza-price']");
     const { quantity } = propsData.pizza;
     const pizzaPrice = store.getters["Builder/pizzaPrice"](propsData.pizza);
-    expect(price.text()).toContain(`${quantity} х ${pizzaPrice}`);
+    expect(findPrice().text()).toContain(`${quantity} х ${pizzaPrice}`);
   });
 });

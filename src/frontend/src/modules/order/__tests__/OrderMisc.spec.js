@@ -1,4 +1,4 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import OrderMisc from "../components/OrderMisc";
@@ -22,8 +22,12 @@ describe("OrderMisc", () => {
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(OrderMisc, options);
+    wrapper = shallowMount(OrderMisc, options);
   };
+
+  const findImage = () => wrapper.find("img");
+  const findMiscName = () => wrapper.find("[data-test='misc-name']");
+  const findMiscPrice = () => wrapper.find("[data-test='misc-price']");
 
   beforeEach(() => {
     store = generateMockStore();
@@ -41,20 +45,23 @@ describe("OrderMisc", () => {
 
   it("renders out order misc image", () => {
     createComponent({ localVue, store, propsData });
-    const image = wrapper.find("img");
+    const image = findImage();
+    expect(image.exists()).toBe(true);
     expect(image.attributes().src).toBe(miscItem.image);
     expect(image.attributes().alt).toBe(miscItem.name);
   });
 
   it("renders out order misc name", () => {
     createComponent({ localVue, store, propsData });
-    const miscName = wrapper.find("[data-test='misc-name']");
+    const miscName = findMiscName();
+    expect(miscName.exists()).toBe(true);
     expect(miscName.text()).toBe(miscItem.name);
   });
 
   it("renders out order misc price", () => {
     createComponent({ localVue, store, propsData });
-    const miscPrice = wrapper.find("[data-test='misc-price']");
+    const miscPrice = findMiscPrice();
+    expect(miscPrice.exists()).toBe(true);
     expect(miscPrice.text()).toBe(
       `${propsData.orderMisc.quantity} х ${miscItem.price} ₽`
     );

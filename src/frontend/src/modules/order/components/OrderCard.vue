@@ -30,7 +30,6 @@
         v-for="pizza in order.orderPizzas"
         :key="pizza.id"
         :pizza="pizza"
-        data-test="order-pizza"
       />
     </ul>
 
@@ -39,7 +38,6 @@
         v-for="orderMisc in order.orderMisc"
         :key="orderMisc.miscId"
         :orderMisc="orderMisc"
-        data-test="order-misc"
       />
     </ul>
 
