@@ -20,7 +20,6 @@
         placeholder="***********"
         v-model="userData.password"
         :error="validations.password.error"
-        ref="password"
         data-test="login-password"
       />
     </div>
