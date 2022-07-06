@@ -1,4 +1,5 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import Login from "../Login";
 import { setUIComponents } from "@/plugins/ui";
 
@@ -14,8 +15,13 @@ describe("Login", () => {
   };
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(Login, options);
+    wrapper = shallowMount(Login, options);
   };
+
+  const findCloseBtn = () => wrapper.find("[data-test='login-close']");
+  const findTitle = () => wrapper.find("[data-test='login-title']");
+  const findLoginForm = () => wrapper.findComponent({ name: "LoginForm" });
+  const findOverlay = () => wrapper.findComponent({ name: "PopupOverlay" });
 
   beforeEach(() => {
     mocks.$router.push = jest.fn();
@@ -32,40 +38,37 @@ describe("Login", () => {
 
   it("renders out link to index route as close button", () => {
     createComponent({ localVue, stubs });
-    const closeBtn = wrapper.find("[data-test='login-close']");
+    const closeBtn = findCloseBtn();
+    expect(closeBtn.exists()).toBe(true);
     expect(closeBtn.attributes().to).toBe("/");
   });
 
   it("renders out login title", () => {
     createComponent({ localVue, stubs, mocks });
-    const loginTitle = wrapper.find("[data-test='login-title']");
-    expect(loginTitle.exists()).toBe(true);
+    expect(findTitle().exists()).toBe(true);
   });
 
   it("renders out login form", () => {
     createComponent({ localVue, stubs, mocks });
-    const loginForm = wrapper.findComponent({ name: "LoginForm" });
-    expect(loginForm.exists()).toBe(true);
+    expect(findLoginForm().exists()).toBe(true);
   });
 
   it("goes to index route on PopupOverlay click.self", async () => {
-    createComponent({ localVue, stubs, mocks });
-    const overlay = wrapper.find("[data-test='overlay']");
-    await overlay.trigger("click.self");
+    wrapper = mount(Login, { localVue, stubs, mocks });
+    await findOverlay().trigger("click.self");
     expect(mocks.$router.push).toHaveBeenCalledWith("/");
   });
 
   it("goes to index route on PopupOverlay keydown.esc", async () => {
-    createComponent({ localVue, stubs, mocks });
-    const overlay = wrapper.findComponent({ name: "PopupOverlay" });
-    await overlay.trigger("keydown.esc");
+    wrapper = mount(Login, { localVue, stubs, mocks });
+    await findOverlay().trigger("keydown.esc");
     expect(mocks.$router.push).toHaveBeenCalledWith("/");
   });
 
-  it("goes to index route on LoginForm close", () => {
+  it("goes to index route on LoginForm close", async () => {
     createComponent({ localVue, stubs, mocks });
-    const loginForm = wrapper.findComponent({ name: "LoginForm" });
-    loginForm.vm.$emit("close");
+    findLoginForm().vm.$emit("close");
+    await nextTick();
     expect(mocks.$router.push).toHaveBeenCalledWith("/");
   });
 });

@@ -13,6 +13,7 @@ import {
   setLoadData,
   testCartPizza,
 } from "@/store/mocks/setters";
+import { BASE_DELIVERIES } from "@/common/constants";
 import { Pizza } from "@/common/models";
 
 const localVue = createLocalVue();
@@ -29,11 +30,33 @@ describe("Cart", () => {
       push: jest.fn(),
     },
   };
+  let mutations;
   let actions;
   let store;
   let wrapper;
   const createComponent = (options) => {
     wrapper = shallowMount(Cart, options);
+  };
+
+  const findCartEmpty = () => wrapper.find("[data-test='cart-empty']");
+  const findCartContent = () => wrapper.find("[data-test='cart-content']");
+  const findCartFooter = () => wrapper.findComponent({ name: "CartFooter" });
+  const findCartPopup = () => wrapper.findComponent({ name: "CartPopup" });
+  const findCartPopupTransition = () =>
+    wrapper.find("[data-test='cart-popup-transition']");
+  const findPizzas = () => wrapper.findAllComponents({ name: "CartPizza" });
+  const findConfirmPopup = () =>
+    wrapper.findComponent({ name: "ConfirmPopup" });
+  const findForm = () => wrapper.find("form");
+
+  const triggerSubmit = async () => {
+    findForm().trigger("submit");
+    await nextTick();
+  };
+
+  const showConfirmPopup = async () => {
+    findPizzas().at(0).vm.$emit("deletePizza", testCartPizza.id);
+    await nextTick();
   };
 
   beforeEach(() => {
@@ -45,8 +68,11 @@ describe("Cart", () => {
       Orders: {
         createOrder: jest.fn(() => Promise.resolve()),
       },
+      Cart: {
+        deletePizza: jest.fn(),
+      },
     };
-    store = generateMockStore(actions);
+    store = generateMockStore({ actions });
     setLoadData(store);
   });
 
@@ -54,277 +80,236 @@ describe("Cart", () => {
     wrapper.destroy();
   });
 
-  it("renders out cart empty", () => {
-    createComponent({ localVue, store, stubs, mocks });
-    expect(wrapper.exists()).toBe(true);
-    const cartEmpty = wrapper.find("[data-test='cart-empty']");
-    expect(cartEmpty.exists()).toBe(true);
-  });
-
-  it("renders out cart content when not empty cart", () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    const cartContent = wrapper.find("[data-test='cart-content']");
-    expect(cartContent.exists()).toBe(true);
-  });
-
-  it("renders out cart footer", () => {
-    createComponent({ localVue, store, stubs, mocks });
-    const cartFooter = wrapper.findComponent({ name: "CartFooter" });
-    expect(cartFooter.exists()).toBe(true);
-  });
-
-  it("renders out cart popup when isSuccessPopupShowed", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await wrapper.setData({
-      isSuccessPopupShowed: true,
+  describe("cart view", () => {
+    it("renders out cart empty", () => {
+      createComponent({ localVue, store, stubs, mocks });
+      expect(wrapper.exists()).toBe(true);
+      expect(findCartEmpty().exists()).toBe(true);
     });
-    const popup = wrapper.findComponent({ name: "CartPopup" });
-    expect(popup.exists()).toBe(true);
-  });
 
-  it("does not render out cart popup", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    const popup = wrapper.findComponent({ name: "CartPopup" });
-    expect(popup.exists()).toBe(false);
-    expect(wrapper.vm.isSuccessPopupShowed).toBe(false);
-  });
-
-  it("renders out confirm popup when isConfirmPopupShowed", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      pizzaIdToDelete: testCartPizza.id,
+    it("renders out cart content when not empty cart", () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      expect(findCartContent().exists()).toBe(true);
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    expect(popup.exists()).toBe(true);
-  });
 
-  it("does not render out confirm popup", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    expect(popup.exists()).toBe(false);
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(false);
-  });
+    it("renders out state pizzas", () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      expect(findPizzas()).toHaveLength(store.state.Cart.orderPizzas.length);
+    });
 
-  it("does not call vuex action when created without user", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    expect(actions.Auth.queryAddresses).not.toHaveBeenCalled();
-  });
+    it("renders out cart content when repeat order", async () => {
+      mocks.$route.params.id = testOrder.id;
+      setUser(store);
+      setOrders(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      expect(findCartContent().exists()).toBe(true);
+    });
 
-  it("calls vuex action when not empty cart created with user", async () => {
-    setCart(store);
-    setUser(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    expect(actions.Auth.queryAddresses).toHaveBeenCalled();
-  });
+    it("renders out cart footer", () => {
+      createComponent({ localVue, store, stubs, mocks });
+      expect(findCartFooter().exists()).toBe(true);
+    });
 
-  it("calls vuex action when created with user and order id", async () => {
-    mocks.$route.params.id = testOrder.id;
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    expect(actions.Auth.queryAddresses).toHaveBeenCalled();
-  });
+    it("does not render out cart popup", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      expect(findCartPopup().exists()).toBe(false);
+    });
 
-  it("calls vuex mutations when created with user and order id", async () => {
-    mocks.$route.params.id = testOrder.id;
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    const spyOnUpdateCart = jest.spyOn(wrapper.vm, "updateCart");
-    await flushPromises();
-    expect(spyOnUpdateCart).toHaveBeenNthCalledWith(1, {
-      delivery: testOrder.orderAddress.id,
-      phone: testOrder.phone,
-      orderAddress: testOrder.orderAddress,
-      orderPizzas: Pizza.parseItems(testOrder.orderPizzas),
-      orderMisc: testOrder.orderMisc,
+    it("does not render out confirm popup", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      expect(findConfirmPopup().exists()).toBe(false);
     });
   });
 
-  it("calls vuex action to create order on submit", async () => {
-    mocks.$route.params.id = testOrder.id;
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    const spyOnCreate = jest.spyOn(wrapper.vm, "createOrder");
-    await flushPromises();
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    expect(spyOnCreate).toHaveBeenCalledWith({
-      userId: testOrder.userId,
-      phone: testOrder.phone,
-      pizzas: Pizza.parseItems(testOrder.orderPizzas).map((it) => it.toRaw()),
-      misc: testOrder.orderMisc,
-      address: testOrder.orderAddress,
+  describe("when created", () => {
+    it("does not call vuex action when created without user", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      expect(actions.Auth.queryAddresses).not.toHaveBeenCalled();
+    });
+
+    it("calls vuex action when not empty cart created with user", async () => {
+      setCart(store);
+      setUser(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      expect(actions.Auth.queryAddresses).toHaveBeenCalled();
+    });
+
+    it("calls vuex action when created with user and order id", async () => {
+      mocks.$route.params.id = testOrder.id;
+      setUser(store);
+      setOrders(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      expect(actions.Auth.queryAddresses).toHaveBeenCalled();
+    });
+
+    it("calls vuex mutation when created with user and order id", async () => {
+      mocks.$route.params.id = testOrder.id;
+      mutations = {
+        Cart: {
+          SET_CART_WITH_ORDER: jest.fn(),
+        },
+      };
+      store = generateMockStore({ actions, mutations });
+      setLoadData(store);
+      setUser(store);
+      setOrders(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      expect(mutations.Cart.SET_CART_WITH_ORDER).toHaveBeenCalled();
+    });
+
+    it("sets state cart with order data when created with user and order id", async () => {
+      mocks.$route.params.id = testOrder.id;
+      setUser(store);
+      setOrders(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      const { delivery, phone, orderAddress, orderPizzas, orderMisc } =
+        store.state.Cart;
+      const parsedPizzas = Pizza.parseItems(testOrder.orderPizzas);
+      expect(delivery).toBe(testOrder.id);
+      expect(phone).toBe(testOrder.phone);
+      expect(orderAddress).toEqual(testOrder.orderAddress);
+      expect(orderPizzas).toEqual(parsedPizzas);
+      expect(orderMisc).toEqual(testOrder.orderMisc);
     });
   });
 
-  it("calls vuex mutation to reset cart on submit success", async () => {
-    mocks.$route.params.id = testOrder.id;
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    const spyOnReset = jest.spyOn(wrapper.vm, "resetCart");
-    await flushPromises();
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    await nextTick();
-    expect(spyOnReset).toHaveBeenCalled();
-  });
-
-  it("shows success popup on submit success", async () => {
-    mocks.$route.params.id = testOrder.id;
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    expect(wrapper.vm.isSuccessPopupShowed).toBe(false);
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    await nextTick();
-    expect(wrapper.vm.isSuccessPopupShowed).toBe(true);
-  });
-
-  it("sets isSubmitting to false when submit error", async () => {
-    mocks.$route.params.id = testOrder.id;
-    actions.Orders.createOrder = jest.fn(() => Promise.reject());
-    store = generateMockStore(actions);
-    setLoadData(store);
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    expect(wrapper.vm.isSubmitting).toBe(true);
-    await nextTick();
-    await nextTick();
-    expect(wrapper.vm.isSubmitting).toBe(false);
-  });
-
-  it("goes to orders route on cart popup transition leave when user exists", async () => {
-    mocks.$route.params.id = testOrder.id;
-    setUser(store);
-    setOrders(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    await nextTick();
-    const cartPopupTransition = wrapper.find(
-      "[data-test='cart-popup-transition']"
-    );
-    cartPopupTransition.vm.$emit("leave");
-    expect(mocks.$router.push).toHaveBeenCalledWith("/orders");
-  });
-
-  it("goes to root route on cart popup transition leave when no user", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    await nextTick();
-    const cartPopupTransition = wrapper.find(
-      "[data-test='cart-popup-transition']"
-    );
-    cartPopupTransition.vm.$emit("leave");
-    expect(mocks.$router.push).toHaveBeenCalledWith("/");
-  });
-
-  it("closes cart popup on close", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    const form = wrapper.find("form");
-    await form.trigger("submit");
-    await nextTick();
-    const cartPopup = wrapper.findComponent({ name: "CartPopup" });
-    cartPopup.vm.$emit("close");
-    await nextTick();
-    expect(wrapper.vm.isSuccessPopupShowed).toBe(false);
-    expect(wrapper.findComponent({ name: "CartPopup" }).exists()).toBe(false);
-  });
-
-  it("shows confirm popup when cart pizzas emit deletePizza", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    expect(wrapper.vm.pizzaIdToDelete).toBe(null);
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(false);
-    const cartPizzas = wrapper.findComponent({ name: "CartPizzas" });
-    cartPizzas.vm.$emit("deletePizza", testCartPizza.id);
-    await nextTick();
-    expect(wrapper.vm.pizzaIdToDelete).toBe(testCartPizza.id);
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(true);
-  });
-
-  it("closes confirm popup when confirm popup emits cancel", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      pizzaIdToDelete: testCartPizza.id,
+  describe("when confirm delete pizza", () => {
+    it("shows confirm popup when cart pizzas emit deletePizza", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      findPizzas().at(0).vm.$emit("deletePizza", testCartPizza.id);
+      await nextTick();
+      expect(findConfirmPopup().exists()).toBe(true);
+      expect(findConfirmPopup().text()).toContain(
+        `Удалить пиццу ${testCartPizza.name}?`
+      );
     });
-    const confirmPopup = wrapper.findComponent({ name: "ConfirmPopup" });
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(true);
-    confirmPopup.vm.$emit("cancel");
-    await nextTick();
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(false);
+
+    it("closes confirm popup when it emits cancel", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      const confirmPopup = findConfirmPopup();
+      confirmPopup.vm.$emit("cancel");
+      await nextTick();
+      expect(confirmPopup.exists()).toBe(false);
+    });
+
+    it("calls vuex action when confirm popup emits confirm", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      findConfirmPopup().vm.$emit("confirm");
+      await nextTick();
+      expect(actions.Cart.deletePizza).toHaveBeenCalled();
+    });
+
+    it("closes confirm popup when it emits confirm", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      const confirmPopup = findConfirmPopup();
+      confirmPopup.vm.$emit("confirm");
+      await nextTick();
+      expect(confirmPopup.exists()).toBe(false);
+    });
   });
 
-  it("calls vuex action when confirm popup emits confirm", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      pizzaIdToDelete: testCartPizza.id,
+  describe("when submit", () => {
+    it("calls vuex action to create order on submit", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await triggerSubmit();
+      expect(actions.Orders.createOrder).toHaveBeenCalled();
     });
-    const spyOnDeletePizza = jest.spyOn(wrapper.vm, "deletePizza");
-    const confirmPopup = wrapper.findComponent({ name: "ConfirmPopup" });
-    confirmPopup.vm.$emit("confirm");
-    await nextTick();
-    expect(spyOnDeletePizza).toHaveBeenCalledWith(testCartPizza.id);
+
+    it("calls vuex mutation to reset cart on submit success", async () => {
+      mutations = {
+        Cart: {
+          RESET_CART: jest.fn(),
+        },
+      };
+      store = generateMockStore({ actions, mutations });
+      setLoadData(store);
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await triggerSubmit();
+      await nextTick();
+      expect(mutations.Cart.RESET_CART).toHaveBeenCalled();
+    });
+
+    it("resets state cart on submit success", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await triggerSubmit();
+      await nextTick();
+      const { delivery, phone, orderPizzas, orderMisc, orderAddress } =
+        store.state.Cart;
+      expect(delivery).toBe(BASE_DELIVERIES[0].id);
+      expect(phone).toBe("");
+      expect(orderPizzas).toEqual([]);
+      expect(orderMisc).toEqual([]);
+      expect(orderAddress).toBe(null);
+    });
+
+    it("shows cart popup on submit success", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      expect(findCartPopup().exists()).toBe(false);
+      await triggerSubmit();
+      expect(findCartPopup().exists()).toBe(true);
+    });
+
+    it("closes cart popup on close", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await triggerSubmit();
+      const cartPopup = findCartPopup();
+      cartPopup.vm.$emit("close");
+      await nextTick();
+      expect(cartPopup.exists()).toBe(false);
+    });
   });
 
-  it("closes confirm popup when confirm popup emits confirm", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      pizzaIdToDelete: testCartPizza.id,
+  describe("when leave cart route", () => {
+    it("goes to orders route when cart popup transition emits leave if user exists", async () => {
+      mocks.$route.params.id = testOrder.id;
+      setUser(store);
+      setOrders(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await triggerSubmit();
+      findCartPopupTransition().vm.$emit("leave");
+      expect(mocks.$router.push).toHaveBeenCalledWith("/orders");
     });
-    const confirmPopup = wrapper.findComponent({ name: "ConfirmPopup" });
-    confirmPopup.vm.$emit("confirm");
-    await nextTick();
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(false);
-  });
 
-  it("calls vuex mutation to reset cart when confirm popup emits confirm and no more pizzas", async () => {
-    setCart(store);
-    createComponent({ localVue, store, stubs, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      pizzaIdToDelete: testCartPizza.id,
+    it("goes to root route when cart popup transition emits leave when no user", async () => {
+      setCart(store);
+      createComponent({ localVue, store, stubs, mocks });
+      await flushPromises();
+      await triggerSubmit();
+      findCartPopupTransition().vm.$emit("leave");
+      expect(mocks.$router.push).toHaveBeenCalledWith("/");
     });
-    const spyOnReset = jest.spyOn(wrapper.vm, "resetCart");
-    const confirmPopup = wrapper.findComponent({ name: "ConfirmPopup" });
-    confirmPopup.vm.$emit("confirm");
-    await nextTick();
-    expect(spyOnReset).toHaveBeenCalled();
   });
 });

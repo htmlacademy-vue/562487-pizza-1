@@ -24,6 +24,33 @@ describe("Profile", () => {
     wrapper = shallowMount(Profile, options);
   };
 
+  const findProfileUser = () => wrapper.findComponent({ name: "ProfileUser" });
+  const findAddressForm = () =>
+    wrapper.findComponent({ name: "ProfileAddressForm" });
+  const findAllCards = () =>
+    wrapper.findAllComponents({ name: "ProfileAddressCard" });
+  const findAddressCard = () =>
+    wrapper.findComponent({ name: "ProfileAddressCard" });
+  const findConfirmPopup = () =>
+    wrapper.findComponent({ name: "ConfirmPopup" });
+  const findOpenBtn = () => wrapper.find("[data-test='button-open'");
+
+  const showAddForm = async () => {
+    findOpenBtn().vm.$emit("click");
+    await nextTick();
+  };
+
+  const showEditForm = async () => {
+    findAddressCard().vm.$emit("edit", testAddress.id);
+    await nextTick();
+  };
+
+  const showConfirmPopup = async () => {
+    await showEditForm();
+    findAddressForm().vm.$emit("deleteAddress");
+    await nextTick();
+  };
+
   beforeEach(() => {
     mocks.$notifier.success = jest.fn();
     actions = {
@@ -32,7 +59,7 @@ describe("Profile", () => {
         deleteAddress: jest.fn(() => Promise.resolve()),
       },
     };
-    store = generateMockStore(actions);
+    store = generateMockStore({ actions });
     setUser(store);
     setUserAddresses(store);
   });
@@ -41,224 +68,175 @@ describe("Profile", () => {
     wrapper.destroy();
   });
 
-  it("renders out profile view", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    expect(wrapper.exists()).toBe(true);
-  });
-
-  it("calls vuex action when created", async () => {
-    createComponent({ localVue, store });
-    await flushPromises();
-    expect(actions.Auth.queryAddresses).toHaveBeenCalled();
-  });
-
-  it("renders out profile user if user exists", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const profileUser = wrapper.findComponent({ name: "ProfileUser" });
-    expect(profileUser.exists()).toBe(true);
-  });
-
-  it("renders out addresses", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const addresses = wrapper.findAllComponents({ name: "ProfileAddressCard" });
-    const stateAddresses = store.state.Auth.addresses;
-    expect(addresses.length).toBe(stateAddresses.length);
-  });
-
-  it("does not render out address form", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const addressForm = wrapper.findComponent({ name: "ProfileAddressForm" });
-    expect(addressForm.exists()).toBe(false);
-  });
-
-  it("renders out address form when isFormShowed", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isFormShowed: true,
+  describe("profile view", () => {
+    it("renders out profile view", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      expect(wrapper.exists()).toBe(true);
     });
-    const addressForm = wrapper.findComponent({ name: "ProfileAddressForm" });
-    expect(addressForm.exists()).toBe(true);
-  });
 
-  it("renders out open form button", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const openButton = wrapper.find("[data-test='button-open'");
-    expect(openButton.exists()).toBe(true);
-  });
-
-  it("does not render out confirm popup", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    expect(popup.exists()).toBe(false);
-  });
-
-  it("renders out confirm popup when isConfirmPopupShowed", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
+    it("calls vuex action when created", async () => {
+      createComponent({ localVue, store });
+      await flushPromises();
+      expect(actions.Auth.queryAddresses).toHaveBeenCalled();
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    expect(popup.exists()).toBe(true);
-    expect(popup.text()).toContain(`Удалить адрес #${testAddress.id}?`);
-  });
 
-  it("opens edit form when address card emits edit", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const addressCard = wrapper.findComponent({ name: "ProfileAddressCard" });
-    expect(wrapper.vm.isFormShowed).toBe(false);
-    expect(wrapper.vm.isEditMode).toBe(false);
-    expect(wrapper.vm.addressToEdit).toBe(null);
-    addressCard.vm.$emit("edit", testAddress.id);
-    expect(wrapper.vm.isFormShowed).toBe(true);
-    expect(wrapper.vm.isEditMode).toBe(true);
-    expect(wrapper.vm.addressToEdit).toBe(testAddress.id);
-  });
-
-  it("opens new address form on open button click", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    const openButton = wrapper.find("[data-test='button-open'");
-    openButton.vm.$emit("click");
-    await nextTick();
-    expect(wrapper.vm.isFormShowed).toBe(true);
-    expect(wrapper.vm.isEditMode).toBe(false);
-  });
-
-  it("closes address form when it emits close", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isFormShowed: true,
-      isEditMode: false,
+    it("renders out profile user if user exists", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      expect(findProfileUser().exists()).toBe(true);
     });
-    const addressForm = wrapper.findComponent({ name: "ProfileAddressForm" });
-    addressForm.vm.$emit("close");
-    await nextTick();
-    expect(wrapper.vm.isFormShowed).toBe(false);
-    expect(wrapper.vm.isEditMode).toBe(false);
-    expect(wrapper.vm.addressToEdit).toBe(null);
+
+    it("renders out addresses", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      const stateAddresses = store.state.Auth.addresses;
+      expect(findAllCards().length).toBe(stateAddresses.length);
+    });
+
+    it("renders out open button", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      expect(findOpenBtn().exists()).toBe(true);
+    });
+
+    it("does not render out address form", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      expect(findAddressForm().exists()).toBe(false);
+    });
+
+    it("does not render out confirm popup", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      expect(findConfirmPopup().exists()).toBe(false);
+    });
   });
 
-  it("opens confirm popup when edit address form emits deleteAddress", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isFormShowed: true,
-      addressToEdit: testAddress.id,
+  describe("new address form", () => {
+    it("opens new address form on open button click", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      findOpenBtn().vm.$emit("click");
+      await nextTick();
+      const addressForm = findAddressForm();
+      expect(addressForm.exists()).toBe(true);
+      expect(addressForm.props("isEditMode")).toBe(false);
+      expect(addressForm.props("addressToEdit")).toBe(null);
     });
-    const addressForm = wrapper.findComponent({ name: "ProfileAddressForm" });
-    addressForm.vm.$emit("deleteAddress");
-    await nextTick();
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(true);
+
+    it("closes address form when it emits close", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showAddForm();
+      const addressForm = findAddressForm();
+      addressForm.vm.$emit("close");
+      await nextTick();
+      expect(addressForm.exists()).toBe(false);
+    });
   });
 
-  it("closes confirm popup when it emits cancel", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
-      isEditMode: true,
+  describe("edit address form", () => {
+    it("opens edit form when address card emits edit", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      findAddressCard().vm.$emit("edit", testAddress.id);
+      await nextTick();
+      const addressForm = findAddressForm();
+      expect(addressForm.exists()).toBe(true);
+      expect(addressForm.props("isEditMode")).toBe(true);
+      expect(addressForm.props("addressToEdit")).toBe(testAddress.id);
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    popup.vm.$emit("cancel");
-    await nextTick();
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(false);
   });
 
-  // confirm delete
-  it("calls vuex action when confirm popup it emits confirm", async () => {
-    createComponent({ localVue, store, mocks });
-    const spyOnDeleteAddress = jest.spyOn(wrapper.vm, "deleteAddress");
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
-      isFormShowed: true,
-      isEditMode: true,
+  describe("confirm delete address", () => {
+    it("opens confirm popup when edit address form emits deleteAddress", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showEditForm();
+      findAddressForm().vm.$emit("deleteAddress");
+      await nextTick();
+      expect(findConfirmPopup().exists()).toBe(true);
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    popup.vm.$emit("confirm");
-    await nextTick();
-    expect(spyOnDeleteAddress).toHaveBeenCalledWith(testAddress.id);
-  });
 
-  it("calls notifier success when delete order success", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
-      isFormShowed: true,
-      isEditMode: true,
+    it("closes confirm popup when it emits cancel", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      const popup = findConfirmPopup();
+      popup.vm.$emit("cancel");
+      await nextTick();
+      expect(popup.exists()).toBe(false);
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    popup.vm.$emit("confirm");
-    await nextTick();
-    await nextTick();
-    const message = `Адрес ${testAddress.id} успешно удалён`;
-    expect(mocks.$notifier.success).toHaveBeenCalledWith(message);
-  });
 
-  it("closes popup when delete order success", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
-      isFormShowed: true,
-      isEditMode: true,
+    it("calls vuex action when confirm popup emits confirm", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      findConfirmPopup().vm.$emit("confirm");
+      await nextTick();
+      expect(actions.Auth.deleteAddress).toHaveBeenCalled();
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    popup.vm.$emit("confirm");
-    await nextTick();
-    await nextTick();
-    expect(wrapper.vm.isConfirmPopupShowed).toBe(false);
-  });
 
-  it("closes address form when delete order success", async () => {
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
-      isFormShowed: true,
-      isEditMode: true,
+    it("calls notifier success when delete order success", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      findConfirmPopup().vm.$emit("confirm");
+      await nextTick();
+      await nextTick();
+      const message = `Адрес ${testAddress.id} успешно удалён`;
+      expect(mocks.$notifier.success).toHaveBeenCalledWith(message);
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    popup.vm.$emit("confirm");
-    await nextTick();
-    await nextTick();
-    expect(wrapper.vm.isFormShowed).toBe(false);
-    expect(wrapper.vm.isEditMode).toBe(false);
-  });
 
-  it("sets isDeleting to false when delete order error", async () => {
-    actions.Auth.deleteAddress = jest.fn(() => Promise.reject());
-    store = generateMockStore(actions);
-    createComponent({ localVue, store, mocks });
-    await flushPromises();
-    await wrapper.setData({
-      isConfirmPopupShowed: true,
-      addressToEdit: testAddress.id,
-      isFormShowed: true,
-      isEditMode: true,
+    it("closes popup when delete order success", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      const popup = findConfirmPopup();
+      popup.vm.$emit("confirm");
+      await nextTick();
+      await nextTick();
+      expect(popup.exists()).toBe(false);
     });
-    const popup = wrapper.findComponent({ name: "ConfirmPopup" });
-    popup.vm.$emit("confirm");
-    expect(wrapper.vm.isDeleting).toBe(true);
-    await nextTick();
-    await nextTick();
-    expect(wrapper.vm.isDeleting).toBe(false);
+
+    it("does not close popup when delete order error", async () => {
+      actions.Auth.deleteAddress = jest.fn(() => Promise.reject());
+      store = generateMockStore({ actions });
+      setUser(store);
+      setUserAddresses(store);
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      const popup = findConfirmPopup();
+      popup.vm.$emit("confirm");
+      await nextTick();
+      await nextTick();
+      expect(popup.exists()).toBe(true);
+    });
+
+    it("closes address form when delete order success", async () => {
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      findConfirmPopup().vm.$emit("confirm");
+      await nextTick();
+      await nextTick();
+      expect(findAddressForm().exists()).toBe(false);
+    });
+
+    it("does not close address form when delete order error", async () => {
+      actions.Auth.deleteAddress = jest.fn(() => Promise.reject());
+      store = generateMockStore({ actions });
+      setUser(store);
+      setUserAddresses(store);
+      createComponent({ localVue, store, mocks });
+      await flushPromises();
+      await showConfirmPopup();
+      findConfirmPopup().vm.$emit("confirm");
+      await nextTick();
+      await nextTick();
+      expect(findAddressForm().exists()).toBe(true);
+    });
   });
 });

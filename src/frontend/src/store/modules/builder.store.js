@@ -5,6 +5,7 @@ import {
   Size,
   Ingredient,
   PizzaIngredient,
+  Pizza,
 } from "@/common/models";
 import {
   SET_BUILDER_ENTITY,
@@ -13,7 +14,6 @@ import {
   REMOVE_BUILDER_PIZZA_INGREDIENT,
   RESET_BUILDER_PIZZA,
 } from "@/store/mutations-types";
-import { Pizza } from "@/common/models";
 import { INGREDIENT_MAX_COUNT } from "@/common/constants";
 
 export default {

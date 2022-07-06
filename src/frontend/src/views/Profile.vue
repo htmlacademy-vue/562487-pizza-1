@@ -77,8 +77,6 @@ export default {
       addressToEdit: null,
       isConfirmPopupShowed: false,
       isDeleting: false,
-      addressIdToDelete: null,
-      editY: 0,
     };
   },
   computed: {

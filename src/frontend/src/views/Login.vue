@@ -1,10 +1,6 @@
 <template>
-  <PopupOverlay
-    @click.self="closeLogin"
-    @keydown.esc="closeLogin"
-    data-test="overlay"
-  >
-    <div class="sign-form" ref="login">
+  <PopupOverlay @click.self="closeLogin" @keydown.esc="closeLogin">
+    <div class="sign-form">
       <router-link to="/" class="close close--white" data-test="login-close">
         <span class="visually-hidden">Закрыть форму авторизации</span>
       </router-link>
