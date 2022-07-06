@@ -3,8 +3,7 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import AppLayoutHeader from "../AppLayoutHeader";
 import { setUIComponents } from "@/plugins/ui";
-import { setUser, testUser, setCart } from "@/store/mocks/setters";
-import { setLoadData } from "../../store/mocks/setters";
+import { setUser, testUser, setCart, setLoadData } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -17,6 +16,12 @@ describe("AppLayoutHeader", () => {
   const createComponent = (options) => {
     wrapper = shallowMount(AppLayoutHeader, options);
   };
+
+  const findLogo = () => wrapper.findComponent({ name: "Logo" });
+  const findCartLink = () => wrapper.find("[data-test='link-cart']");
+  const findLoginLink = () => wrapper.find("[data-test='link-login']");
+  const findProfileLink = () => wrapper.find("[data-test='link-profile']");
+  const findLogoutLink = () => wrapper.find("[data-test='logout']");
 
   beforeEach(() => {
     store = generateMockStore();
@@ -33,14 +38,13 @@ describe("AppLayoutHeader", () => {
 
   it("renders out logo", () => {
     createComponent({ localVue, store, stubs });
-    const logo = wrapper.findComponent({ name: "Logo" });
-    expect(logo.exists()).toBe(true);
+    expect(findLogo().exists()).toBe(true);
   });
 
   it("renders out link to cart", () => {
     const emptyCartText = "0 ₽";
     createComponent({ localVue, store, stubs });
-    const cartLink = wrapper.find("[data-test='link-cart']");
+    const cartLink = findCartLink();
     expect(cartLink.exists()).toBe(true);
     expect(cartLink.text()).toBe(emptyCartText);
   });
@@ -50,14 +54,14 @@ describe("AppLayoutHeader", () => {
     setCart(store);
     createComponent({ localVue, store, stubs });
     const totalSum = store.getters["Cart/totalSum"];
-    const cartLink = wrapper.find("[data-test='link-cart']");
+    const cartLink = findCartLink();
     expect(cartLink.exists()).toBe(true);
     expect(cartLink.text()).toBe(`${totalSum} ₽`);
   });
 
   it("renders out link to login when no user", () => {
     createComponent({ localVue, store, stubs });
-    const loginLink = wrapper.find("[data-test='link-login']");
+    const loginLink = findLoginLink();
     expect(loginLink.exists()).toBe(true);
     expect(loginLink.text()).toBe("Войти");
   });
@@ -65,7 +69,7 @@ describe("AppLayoutHeader", () => {
   it("renders out link to profile when is current user", () => {
     setUser(store);
     createComponent({ localVue, store, stubs });
-    const profileLink = wrapper.find("[data-test='link-profile']");
+    const profileLink = findProfileLink();
     expect(profileLink.exists()).toBe(true);
     expect(profileLink.text()).toContain(testUser.name);
   });
@@ -73,7 +77,7 @@ describe("AppLayoutHeader", () => {
   it("renders out logout link when is current user", () => {
     setUser(store);
     createComponent({ localVue, store, stubs });
-    const logoutLink = wrapper.find("[data-test='logout']");
+    const logoutLink = findLogoutLink();
     expect(logoutLink.exists()).toBe(true);
     expect(logoutLink.text()).toBe("Выйти");
   });
@@ -82,8 +86,7 @@ describe("AppLayoutHeader", () => {
     setUser(store);
     createComponent({ localVue, store, stubs });
     const spyOnLogout = jest.spyOn(wrapper.vm, "$logout");
-    const logoutLink = wrapper.find("[data-test='logout']");
-    await logoutLink.trigger("click");
+    await findLogoutLink().trigger("click");
     expect(spyOnLogout).toHaveBeenCalled();
   });
 });

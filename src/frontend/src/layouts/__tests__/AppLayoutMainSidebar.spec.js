@@ -12,6 +12,8 @@ describe("AppLayoutMainSidebar", () => {
     wrapper = shallowMount(AppLayoutMainSidebar, options);
   };
 
+  const findSidebarLinks = () => wrapper.findAll("[data-test='sidebar-link']");
+
   afterEach(() => {
     wrapper.destroy();
   });
@@ -23,7 +25,6 @@ describe("AppLayoutMainSidebar", () => {
 
   it("renders out sidebar links", () => {
     createComponent({ localVue, stubs });
-    const links = wrapper.findAll("[data-test='sidebar-link']");
-    expect(links.length).toBe(wrapper.vm.links.length);
+    expect(findSidebarLinks()).toHaveLength(wrapper.vm.links.length);
   });
 });

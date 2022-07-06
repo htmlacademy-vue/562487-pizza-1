@@ -12,6 +12,10 @@ describe("AppLayoutDefault", () => {
     wrapper = shallowMount(AppLayoutDefault, options);
   };
 
+  const findNotifications = () =>
+    wrapper.findComponent({ name: "AppNotifications" });
+  const findHeader = () => wrapper.findComponent({ name: "AppLayoutHeader" });
+
   afterEach(() => {
     wrapper.destroy();
   });
@@ -23,14 +27,12 @@ describe("AppLayoutDefault", () => {
 
   it("renders out app notifications", () => {
     createComponent({ localVue, slots });
-    const notifications = wrapper.findComponent({ name: "AppNotifications" });
-    expect(notifications.exists()).toBe(true);
+    expect(findNotifications().exists()).toBe(true);
   });
 
   it("renders out app header", () => {
     createComponent({ localVue, slots });
-    const header = wrapper.findComponent({ name: "AppLayoutHeader" });
-    expect(header.exists()).toBe(true);
+    expect(findHeader().exists()).toBe(true);
   });
 
   it("renders out slot content", () => {

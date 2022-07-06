@@ -1,6 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
 import AppLayoutMain from "../AppLayoutMain";
-import AppLayoutMainSidebar from "../AppLayoutMainSidebar";
 
 describe("AppLayoutMain", () => {
   const slots = { default: "content" };
@@ -8,6 +7,9 @@ describe("AppLayoutMain", () => {
   const createComponent = (options) => {
     wrapper = shallowMount(AppLayoutMain, options);
   };
+
+  const findSidebar = () =>
+    wrapper.findComponent({ name: "AppLayoutMainSidebar" });
 
   afterEach(() => {
     wrapper.destroy();
@@ -20,7 +22,7 @@ describe("AppLayoutMain", () => {
 
   it("renders out sidebar", () => {
     createComponent({ slots });
-    expect(wrapper.findComponent(AppLayoutMainSidebar).exists()).toBeTruthy();
+    expect(findSidebar().exists()).toBe(true);
   });
 
   it("renders out slot content", () => {
