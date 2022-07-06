@@ -1,5 +1,6 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
+import { nextTick } from "vue";
 import ProfileAddressCard from "../components/ProfileAddressCard";
 import { setUIComponents } from "@/plugins/ui";
 import { testAddress } from "@/store/mocks/setters";
@@ -15,8 +16,14 @@ describe("ProfileAddressCard", () => {
   };
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(ProfileAddressCard, options);
+    wrapper = shallowMount(ProfileAddressCard, options);
   };
+
+  const findAddressName = () => wrapper.find("[data-test='address-name']");
+  const findEditBtn = () => wrapper.find("[data-test='button-edit']");
+  const findAddressInfo = () => wrapper.find("[data-test='address-info']");
+  const findAddressComment = () =>
+    wrapper.find("[data-test='address-comment']");
 
   afterEach(() => {
     wrapper.destroy();
@@ -27,16 +34,15 @@ describe("ProfileAddressCard", () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it("displays address name", () => {
+  it("displays prop address name", () => {
     createComponent({ localVue, propsData });
-    const nameEl = wrapper.find("[data-test='address-name']");
-    expect(nameEl.text()).toContain(testAddress.id);
-    expect(nameEl.text()).toContain(testAddress.name);
+    const { id, name } = propsData.address;
+    expect(findAddressName().text()).toBe(`Адрес №${id}. ${name}`);
   });
 
   it("renders out edit button not disabled", () => {
     createComponent({ localVue, propsData });
-    const btn = wrapper.find("[data-test='button-edit']");
+    const btn = findEditBtn();
     expect(btn.element.disabled).toBe(false);
     expect(btn.text()).toBe("Изменить адрес");
   });
@@ -46,29 +52,27 @@ describe("ProfileAddressCard", () => {
       localVue,
       propsData: { ...propsData, isEditDisabled: true },
     });
-    const btn = wrapper.find("[data-test='button-edit']");
-    expect(btn.element.disabled).toBe(true);
+    expect(findEditBtn().element.disabled).toBe(true);
   });
 
   it("emits edit on edit button click", async () => {
     createComponent({ localVue, propsData });
-    const btn = wrapper.find("[data-test='button-edit']");
-    await btn.trigger("click");
+    findEditBtn().trigger("click");
+    await nextTick();
     expect(wrapper.emitted().edit).toBeTruthy();
-    expect(wrapper.emitted().edit[0][0]).toBe(testAddress.id);
+    expect(wrapper.emitted().edit[0][0]).toBe(propsData.address.id);
   });
 
   it("displays address info", () => {
-    const { street, building, flat } = testAddress;
+    const { street, building, flat } = propsData.address;
     const addressString = `${street}, д. ${building}, кв. ${flat}`;
     createComponent({ localVue, propsData });
-    const addressInfo = wrapper.find("[data-test='address-info']");
-    expect(addressInfo.text()).toBe(addressString);
+    expect(findAddressInfo().text()).toBe(addressString);
   });
 
   it("displays address comment", () => {
     createComponent({ localVue, propsData });
-    const addressComment = wrapper.find("[data-test='address-comment']");
+    const addressComment = findAddressComment();
     expect(addressComment.exists()).toBe(true);
     expect(addressComment.text()).toBe(testAddress.comment);
   });
@@ -84,7 +88,6 @@ describe("ProfileAddressCard", () => {
         },
       },
     });
-    const addressComment = wrapper.find("[data-test='address-comment']");
-    expect(addressComment.exists()).toBe(false);
+    expect(findAddressComment().exists()).toBe(false);
   });
 });

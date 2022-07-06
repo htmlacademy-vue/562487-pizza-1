@@ -2,9 +2,8 @@ import { createLocalVue, mount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import ProfileUser from "../components/ProfileUser";
-import UserPicture from "@/common/components/UserPicture";
 import { setUIComponents } from "@/plugins/ui";
-import { setUser, testUser } from "@/store/mocks/setters";
+import { setUser } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -16,6 +15,10 @@ describe("ProfileUser", () => {
   const createComponent = (options) => {
     wrapper = mount(ProfileUser, options);
   };
+
+  const findUserPicture = () => wrapper.findComponent({ name: "UserPicture" });
+  const findUserName = () => wrapper.find("[data-test='user-name']");
+  const findUserPhone = () => wrapper.find("[data-test='user-phone']");
 
   beforeEach(() => {
     store = generateMockStore();
@@ -33,19 +36,22 @@ describe("ProfileUser", () => {
 
   it("renders out state user picture", () => {
     createComponent({ localVue, store });
-    const userPicture = wrapper.findComponent(UserPicture);
-    expect(userPicture.exists()).toBe(true);
+    expect(findUserPicture().exists()).toBe(true);
   });
 
   it("renders out state user name", () => {
     createComponent({ localVue, store });
-    const userName = wrapper.find("[data-test='user-name']");
-    expect(userName.text()).toBe(testUser.name);
+    const { name } = store.state.Auth.user;
+    const userName = findUserName();
+    expect(userName.exists()).toBe(true);
+    expect(userName.text()).toBe(name);
   });
 
   it("renders out state user phone", () => {
     createComponent({ localVue, store });
-    const userPhone = wrapper.find("[data-test='user-phone']");
-    expect(userPhone.text()).toContain(testUser.phone);
+    const { phone } = store.state.Auth.user;
+    const userPhone = findUserPhone();
+    expect(userPhone.exists()).toBe(true);
+    expect(userPhone.text()).toContain(phone);
   });
 });
