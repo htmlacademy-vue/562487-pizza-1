@@ -5,8 +5,7 @@
       name="delivery"
       class="select"
       :value="delivery"
-      @change="updateDelivery"
-      data-test="delivery-select"
+      @change="changeDelivery"
     >
       <option v-for="{ id, name } in deliveries" :key="id" :value="id">
         {{ name }}
@@ -16,10 +15,9 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 import { BASE_DELIVERIES } from "@/common/constants";
-import { SET_CART_ENTITY } from "@/store/mutations-types";
 import { createDeliveries } from "@/common/helpers";
 
 export default {
@@ -35,45 +33,22 @@ export default {
     },
   },
   created() {
-    if (this.orderAddress && !this.isUserAddress(this.orderAddress.id)) {
-      this.setDelivery(BASE_DELIVERIES[1].id);
-      this.setAddress({
-        street: this.orderAddress.street,
-        building: this.orderAddress.building,
-        flat: this.orderAddress?.flat || "",
+    if (
+      this.orderAddress &&
+      !this.isUserAddress(this.orderAddress.id) &&
+      this.delivery !== BASE_DELIVERIES[1].id
+    ) {
+      this.setDelivery({
+        delivery: BASE_DELIVERIES[1].id,
+        address: this.orderAddress,
       });
     }
   },
   methods: {
-    ...mapMutations("Cart", {
-      setCartEntity: SET_CART_ENTITY,
-    }),
+    ...mapActions("Cart", ["setDelivery"]),
 
-    setAddress(value) {
-      this.setCartEntity({ entity: "orderAddress", value });
-    },
-
-    setDelivery(value) {
-      this.setCartEntity({ entity: "delivery", value });
-    },
-
-    updateDelivery(evt) {
-      const { value } = evt.target;
-      this.setDelivery(value);
-      if (value === BASE_DELIVERIES[0].id) {
-        this.setAddress(null);
-      } else if (value === BASE_DELIVERIES[1].id) {
-        this.setAddress({
-          street: "",
-          building: "",
-          flat: "",
-        });
-      } else {
-        const userAddress = this.addressById(+value);
-        if (userAddress) {
-          this.setAddress(userAddress);
-        }
-      }
+    changeDelivery(evt) {
+      this.setDelivery({ delivery: evt.target.value });
     },
   },
 };

@@ -1,13 +1,12 @@
 import { createLocalVue, mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import CartPopup from "../components/CartPopup";
 import { setUIComponents } from "@/plugins/ui";
-import PopupLayout from "@/common/components/PopupLayout";
 
 const localVue = createLocalVue();
 setUIComponents(localVue);
 
 describe("CartPopup", () => {
-  const okBtnSelector = "[data-test='ok-button'] a";
   let wrapper;
   const createComponent = (options) => {
     wrapper = mount(CartPopup, options);
@@ -16,6 +15,9 @@ describe("CartPopup", () => {
   afterEach(() => {
     wrapper.destroy();
   });
+
+  const findOkBtn = () => wrapper.find("[data-test='ok-button'] a");
+  const findPopupLayout = () => wrapper.findComponent({ name: "PopupLayout" });
 
   it("renders out cart popup", () => {
     createComponent({ localVue });
@@ -26,30 +28,24 @@ describe("CartPopup", () => {
     const div = document.createElement("div");
     div.id = "root";
     document.body.appendChild(div);
-    createComponent({ localVue, attachTo: "#root" });
+    wrapper = mount(CartPopup, { localVue, attachTo: "#root" });
     const focusedBtn = wrapper.find("a:focus");
-    const okBtn = wrapper.find(okBtnSelector);
+    const okBtn = findOkBtn();
     expect(focusedBtn.exists()).toBe(true);
     expect(focusedBtn.element).toBe(okBtn.element);
   });
 
-  it("emits close on popup layout close", () => {
+  it("emits close on popup layout close", async () => {
     createComponent({ localVue });
-    const popupLayout = wrapper.findComponent(PopupLayout);
-    popupLayout.vm.$emit("close");
+    findPopupLayout().vm.$emit("close");
+    await nextTick();
     expect(wrapper.emitted().close).toBeTruthy();
   });
 
   it("emits close on ok button click", async () => {
     createComponent({ localVue });
-    const okBtn = wrapper.find(okBtnSelector);
-    await okBtn.trigger("click");
+    findOkBtn().trigger("click");
+    await nextTick();
     expect(wrapper.emitted().close).toBeTruthy();
-  });
-
-  it("renders out ok button with ok ref", () => {
-    createComponent({ localVue });
-    const okBtn = wrapper.findComponent({ ref: "ok" });
-    expect(okBtn.exists()).toBe(true);
   });
 });

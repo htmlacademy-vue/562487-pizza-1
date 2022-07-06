@@ -1,8 +1,10 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
+import { nextTick } from "vue";
 import { generateMockStore } from "@/store/mocks";
 import CartFormPhone from "../components/CartFormPhone";
 import { setUIComponents } from "@/plugins/ui";
+import { setPhone } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -10,18 +12,19 @@ setUIComponents(localVue);
 
 describe("CartFormPhone", () => {
   const cartPhone = "88000000000";
+
+  let mutations;
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(CartFormPhone, options);
+    wrapper = shallowMount(CartFormPhone, options);
   };
+
+  const findInput = () => wrapper.findComponent({ name: "AppInput" });
 
   beforeEach(() => {
     store = generateMockStore();
-    store.commit("Cart/SET_CART_ENTITY", {
-      entity: "phone",
-      value: cartPhone,
-    });
+    setPhone(store, cartPhone);
   });
 
   afterEach(() => {
@@ -35,20 +38,29 @@ describe("CartFormPhone", () => {
 
   it("phone input value is cart state phone", () => {
     createComponent({ localVue, store });
-    const phoneInput = wrapper.find("input");
-    expect(phoneInput.element.value).toBe(cartPhone);
+    expect(findInput().props().value).toBe(cartPhone);
   });
 
-  it("call vuex mutation setCartEntity on phone input", async () => {
+  it("changes state phone when phone input emits input", async () => {
     const newPhone = "88002000600";
     createComponent({ localVue, store });
-    const spyOnMutation = jest.spyOn(wrapper.vm, "setCartEntity");
-    const phoneInput = wrapper.find("input");
-    phoneInput.element.value = newPhone;
-    await phoneInput.trigger("input");
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "phone",
-      value: newPhone,
-    });
+    findInput().vm.$emit("input", newPhone);
+    await nextTick();
+    expect(store.state.Cart.phone).toBe(newPhone);
+  });
+
+  it("call vuex mutation when phone input emits input", async () => {
+    const newPhone = "88002000600";
+    mutations = {
+      Cart: {
+        SET_CART_ENTITY: jest.fn(),
+      },
+    };
+    store = generateMockStore({ mutations });
+    setPhone(store, "");
+    createComponent({ localVue, store });
+    findInput().vm.$emit("input", newPhone);
+    await nextTick();
+    expect(mutations.Cart.SET_CART_ENTITY).toHaveBeenCalled();
   });
 });

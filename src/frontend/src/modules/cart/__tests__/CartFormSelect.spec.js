@@ -1,15 +1,15 @@
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
+import { nextTick } from "vue";
 import { generateMockStore } from "@/store/mocks";
 import CartFormSelect from "../components/CartFormSelect";
 import { setUIComponents } from "@/plugins/ui";
 import { BASE_DELIVERIES } from "@/common/constants";
-import { Address } from "@/common/models";
 import {
   setDelivery,
-  setCartAddress,
   setUserAddresses,
   testAddress,
+  setCartAddress,
 } from "@/store/mocks/setters";
 
 const localVue = createLocalVue();
@@ -17,10 +17,11 @@ localVue.use(Vuex);
 setUIComponents(localVue);
 
 describe("CartFormSelect", () => {
+  let actions;
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = mount(CartFormSelect, options);
+    wrapper = shallowMount(CartFormSelect, options);
   };
 
   beforeEach(() => {
@@ -31,106 +32,116 @@ describe("CartFormSelect", () => {
     wrapper.destroy();
   });
 
-  it("renders out cart form select", () => {
-    createComponent({ localVue, store });
-    expect(wrapper.exists()).toBe(true);
-    const select = wrapper.find("[data-test='delivery-select']");
-    expect(select.exists()).toBe(true);
-  });
+  const findSelect = () => wrapper.find("select");
+  const findOptions = () => wrapper.findAll("option");
 
-  it("select has 2 basic options", () => {
-    createComponent({ localVue, store });
-    const options = wrapper.findAll("option");
-    expect(options.length).toBe(2);
-    expect(options.at(0).text()).toBe(BASE_DELIVERIES[0].name);
-    expect(options.at(1).text()).toBe(BASE_DELIVERIES[1].name);
-  });
-
-  it("select has 3 options", () => {
-    setUserAddresses(store);
-    createComponent({ localVue, store });
-    const options = wrapper.findAll("option");
-    expect(options.length).toBe(3);
-    expect(options.at(0).text()).toBe(BASE_DELIVERIES[0].name);
-    expect(options.at(1).text()).toBe(BASE_DELIVERIES[1].name);
-    expect(options.at(2).text()).toBe(testAddress.name);
-  });
-
-  it("select value is cart state delivery", () => {
-    setDelivery(store, BASE_DELIVERIES[1].id);
-    createComponent({ localVue, store });
-    const select = wrapper.find("[data-test='delivery-select']");
-    expect(select.element.value).toBe(BASE_DELIVERIES[1].id);
-  });
-
-  it("set delivery with new address when created with not user's orderAddress", () => {
-    const notUserOrderAddress = new Address({
-      ...testAddress,
-      userId: null,
-      id: "100",
+  describe("select", () => {
+    it("renders out cart form select", () => {
+      createComponent({ localVue, store });
+      expect(wrapper.exists()).toBe(true);
+      expect(findSelect().exists()).toBe(true);
     });
-    setCartAddress(store, notUserOrderAddress);
-    createComponent({ localVue, store });
-    const { delivery, orderAddress } = store.state.Cart;
-    expect(delivery).toBe(BASE_DELIVERIES[1].id);
-    expect(orderAddress).toEqual({
-      street: notUserOrderAddress.street,
-      building: notUserOrderAddress.building,
-      flat: notUserOrderAddress.flat,
+
+    it("renders out select with 2 basic options", () => {
+      createComponent({ localVue, store });
+      const options = findOptions();
+      expect(options.length).toBe(2);
+      expect(options.at(0).text()).toBe(BASE_DELIVERIES[0].name);
+      expect(options.at(1).text()).toBe(BASE_DELIVERIES[1].name);
+    });
+
+    it("renders out select with 3 or more options when user addresses exist", () => {
+      setUserAddresses(store);
+      createComponent({ localVue, store });
+      const options = findOptions();
+      expect(options.length).toBe(3);
+      expect(options.at(0).text()).toBe(BASE_DELIVERIES[0].name);
+      expect(options.at(1).text()).toBe(BASE_DELIVERIES[1].name);
+      expect(options.at(2).text()).toBe(testAddress.name);
+    });
+
+    it("select value is cart state delivery", () => {
+      setDelivery(store, BASE_DELIVERIES[1].id);
+      createComponent({ localVue, store });
+      expect(findSelect().element.value).toBe(store.state.Cart.delivery);
     });
   });
 
-  it("calls mutations on select change to pickup delivery", async () => {
-    setDelivery(store, BASE_DELIVERIES[1].id);
-    createComponent({ localVue, store });
-    const spyOnMutation = jest.spyOn(wrapper.vm, "setCartEntity");
-    const select = wrapper.find("[data-test='delivery-select']");
-    select.element.value = BASE_DELIVERIES[0].id;
-    await select.trigger("change");
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "delivery",
-      value: BASE_DELIVERIES[0].id,
-    });
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "orderAddress",
-      value: null,
+  describe("when created", () => {
+    it("changes state delivery and order address when user deleted current order address", async () => {
+      setDelivery(store, testAddress.id);
+      setCartAddress(store, testAddress);
+      createComponent({ localVue, store });
+      expect(store.state.Cart.delivery).toBe(BASE_DELIVERIES[1].id);
+      expect(store.state.Cart.orderAddress).toEqual({
+        street: testAddress.street,
+        building: testAddress.building,
+        flat: testAddress.flat,
+      });
     });
   });
 
-  it("calls mutations on select change to new address", async () => {
-    createComponent({ localVue, store });
-    const spyOnMutation = jest.spyOn(wrapper.vm, "setCartEntity");
-    const select = wrapper.find("[data-test='delivery-select']");
-    select.element.value = BASE_DELIVERIES[1].id;
-    await select.trigger("change");
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "delivery",
-      value: BASE_DELIVERIES[1].id,
+  describe("when select emits change", () => {
+    it("changes state delivery when select emits change", async () => {
+      setDelivery(store, BASE_DELIVERIES[1].id);
+      createComponent({ localVue, store });
+      const select = findSelect();
+      select.element.value = BASE_DELIVERIES[0].id;
+      select.trigger("change");
+      await nextTick();
+      expect(store.state.Cart.delivery).toBe(BASE_DELIVERIES[0].id);
     });
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "orderAddress",
-      value: {
+
+    it("changes state order address to null when select emits change to 1st option", async () => {
+      setDelivery(store, BASE_DELIVERIES[1].id);
+      createComponent({ localVue, store });
+      const select = findSelect();
+      select.element.value = BASE_DELIVERIES[0].id;
+      select.trigger("change");
+      await nextTick();
+      expect(store.state.Cart.orderAddress).toBe(null);
+    });
+
+    it("changes state order address to new address when select emits change to 2nd option", async () => {
+      setDelivery(store, BASE_DELIVERIES[0].id);
+      createComponent({ localVue, store });
+      const select = findSelect();
+      select.element.value = BASE_DELIVERIES[1].id;
+      select.trigger("change");
+      await nextTick();
+      expect(store.state.Cart.orderAddress).toEqual({
         street: "",
         building: "",
         flat: "",
-      },
+      });
     });
-  });
 
-  it("calls mutations on select change to user address", async () => {
-    setUserAddresses(store);
-    createComponent({ localVue, store });
-    const spyOnMutation = jest.spyOn(wrapper.vm, "setCartEntity");
-    const select = wrapper.find("[data-test='delivery-select']");
-    select.element.value = testAddress.id;
-    await select.trigger("change");
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "delivery",
-      value: `${testAddress.id}`,
+    it("changes state order address to user address when select emits change to 3rd option", async () => {
+      setDelivery(store, BASE_DELIVERIES[0].id);
+      setUserAddresses(store);
+      createComponent({ localVue, store });
+      const userAddress = store.state.Auth.addresses[0];
+      const select = findSelect();
+      select.element.value = userAddress.id;
+      select.trigger("change");
+      await nextTick();
+      expect(store.state.Cart.orderAddress).toEqual(userAddress);
     });
-    expect(spyOnMutation).toHaveBeenCalledWith({
-      entity: "orderAddress",
-      value: testAddress,
+
+    it("calls vuex action when select emits change", async () => {
+      actions = {
+        Cart: {
+          setDelivery: jest.fn(),
+        },
+      };
+      store = generateMockStore({ actions });
+      setDelivery(store, BASE_DELIVERIES[1].id);
+      createComponent({ localVue, store });
+      const select = findSelect();
+      select.element.value = BASE_DELIVERIES[0].id;
+      select.trigger("change");
+      await nextTick();
+      expect(actions.Cart.setDelivery).toHaveBeenCalled();
     });
   });
 });
