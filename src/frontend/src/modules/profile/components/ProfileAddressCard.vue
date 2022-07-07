@@ -2,20 +2,25 @@
   <div class="layout__address">
     <div class="sheet address-form">
       <div class="address-form__header">
-        <b>Адрес №{{ address.id }}. {{ address.name }}</b>
+        <b data-test="address-name"
+          >Адрес №{{ address.id }}. {{ address.name }}</b
+        >
         <div class="address-form__edit">
           <button
             type="button"
             class="icon"
             :disabled="isEditDisabled"
             @click="$emit('edit', address.id)"
+            data-test="button-edit"
           >
             <span class="visually-hidden">Изменить адрес</span>
           </button>
         </div>
       </div>
-      <p>{{ addressToString }}</p>
-      <small v-if="address.comment">{{ address.comment }}</small>
+      <p data-test="address-info">{{ addressToString }}</p>
+      <small v-if="address.comment" data-test="address-comment">{{
+        address.comment
+      }}</small>
     </div>
   </div>
 </template>

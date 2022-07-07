@@ -15,25 +15,8 @@ export const generateAvatar = (avatarUrl = "") => ({
   jpg4x: avatarUrl.replace(/.jpg/gi, "@4x.jpg"),
 });
 
-export const findByValue = (items, value) => {
-  return items.find((it) => it.value === value);
-};
-
 export const findById = (items, id) => {
   return items.find((it) => it.id === id);
-};
-
-export const findIndexById = (items, id) => {
-  return items.findIndex((it) => it.id === id);
-};
-
-export const calculateSum = (items) => {
-  if (!items.length) {
-    return 0;
-  }
-  return items
-    .map((it) => it.price * it.quantity)
-    .reduce((acc, it) => acc + it, 0);
 };
 
 export const sum = (acc, it) => acc + it;
@@ -80,4 +63,30 @@ export const createDeliveries = (items) => {
     id: it.id,
     name: it.name,
   }));
+};
+
+export const findCheckedItem = (items) => {
+  let checkedItem;
+  let i = 0;
+  while (i < items.length) {
+    if (items.at(i).props().isChecked) {
+      checkedItem = items.at(i);
+      break;
+    }
+    i++;
+  }
+  return checkedItem;
+};
+
+export const findNotCheckedItem = (items) => {
+  let notCheckedItem;
+  let i = 0;
+  while (i < items.length) {
+    if (!items.at(i).props().isChecked) {
+      notCheckedItem = items.at(i);
+      break;
+    }
+    i++;
+  }
+  return notCheckedItem;
 };

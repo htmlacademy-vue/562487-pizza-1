@@ -1,6 +1,10 @@
 <template>
   <transition name="notifications" appear>
-    <div v-if="notifications.length" class="notification__wrapper">
+    <div
+      v-if="notifications.length"
+      class="notification__wrapper"
+      data-test="notifications"
+    >
       <div
         v-for="{ id, text, type } in notifications"
         :key="id"

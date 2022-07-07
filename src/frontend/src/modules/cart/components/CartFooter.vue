@@ -1,14 +1,17 @@
 <template>
   <section class="footer">
     <div class="footer__more">
-      <router-link to="/" class="button button--border button--arrow"
+      <router-link
+        to="/"
+        class="button button--border button--arrow"
+        data-test="one-more-btn"
         >Хочу еще одну</router-link
       >
     </div>
     <p class="footer__text">
       Перейти к конструктору<br />чтоб собрать ещё одну пиццу
     </p>
-    <div class="footer__price">
+    <div class="footer__price" data-test="footer-price">
       <b>Итого: {{ totalSum }} ₽</b>
     </div>
 
@@ -22,8 +25,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-
 export default {
   name: "CartFooter",
   props: {
@@ -31,9 +32,10 @@ export default {
       type: Boolean,
       required: true,
     },
-  },
-  computed: {
-    ...mapGetters("Cart", ["totalSum"]),
+    totalSum: {
+      type: Number,
+      required: true,
+    },
   },
 };
 </script>

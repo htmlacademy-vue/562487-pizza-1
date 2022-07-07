@@ -50,12 +50,12 @@ export default {
       return;
     }
     const pizzaToEdit = this.orderPizzaById(pizzaId);
-    if (pizzaToEdit) {
-      this.isEditMode = true;
-      this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
-    } else {
-      this.$route.push("/");
+    if (!pizzaToEdit) {
+      this.$router.push("/");
+      return;
     }
+    this.isEditMode = true;
+    this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
   },
   methods: {
     ...mapMutations("Builder", {

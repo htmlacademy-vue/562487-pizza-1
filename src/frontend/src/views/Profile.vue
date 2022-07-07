@@ -30,7 +30,11 @@
         ref="form"
       />
       <div v-else class="layout__button">
-        <AppButton class="button--border" @click="openForm">
+        <AppButton
+          class="button--border"
+          @click="openForm"
+          data-test="button-open"
+        >
           Добавить новый адрес
         </AppButton>
       </div>
@@ -73,8 +77,6 @@ export default {
       addressToEdit: null,
       isConfirmPopupShowed: false,
       isDeleting: false,
-      addressIdToDelete: null,
-      editY: 0,
     };
   },
   computed: {
@@ -108,21 +110,16 @@ export default {
     },
     async confirmDelete() {
       this.isDeleting = true;
-      if (this.isEditMode) {
-        const addressId = this.addressToEdit;
-        try {
-          await this.deleteAddress(addressId);
-          const message = `Адрес ${addressId} успешно удалён`;
-          this.$notifier.success(message);
-          this.closeConfirmPopup();
-          this.closeForm();
-          this.isDeleting = false;
-        } catch {
-          this.isDeleting = false;
-        }
-      } else {
+      const addressId = this.addressToEdit;
+      try {
+        await this.deleteAddress(addressId);
+        const message = `Адрес ${addressId} успешно удалён`;
+        this.$notifier.success(message);
         this.closeConfirmPopup();
         this.closeForm();
+        this.isDeleting = false;
+      } catch {
+        this.isDeleting = false;
       }
     },
     animateFormEnter(el, done) {

@@ -6,20 +6,34 @@
           <h1 class="title title--big">Корзина</h1>
         </div>
 
-        <div v-if="isEmpty" class="sheet cart__empty">
+        <div v-if="isEmpty" class="sheet cart__empty" data-test="cart-empty">
           <p>В корзине нет ни одного товара</p>
         </div>
 
-        <div v-else>
-          <CartPizzas :pizzas="orderPizzas" @deletePizza="startDeletePizza" />
-          <CartMisc :orderMisc="orderMisc" />
+        <div v-else data-test="cart-content">
+          <ul class="cart-list sheet">
+            <CartPizza
+              v-for="pizza in orderPizzas"
+              :key="pizza.id"
+              :pizza="pizza"
+              @deletePizza="startDeletePizza"
+            />
+          </ul>
+          <CartMisc />
           <CartDelivery />
         </div>
       </div>
     </main>
-    <CartFooter :isSubmitDisabled="isInvalid || isSubmitting" />
+    <CartFooter
+      :isSubmitDisabled="isInvalid || isSubmitting"
+      :totalSum="totalSum"
+    />
 
-    <PopupTransition hasCallback @leave="leavePage">
+    <PopupTransition
+      hasCallback
+      @leave="leavePage"
+      data-test="cart-popup-transition"
+    >
       <CartPopup
         v-if="isSuccessPopupShowed"
         @close="isSuccessPopupShowed = false"
@@ -42,23 +56,18 @@
 
 <script>
 import { mapState, mapGetters, mapMutations, mapActions } from "vuex";
-import CartPizzas from "@/modules/cart/components/CartPizzas";
+import CartPizza from "@/modules/cart/components/CartPizza";
 import CartMisc from "@/modules/cart/components/CartMisc";
 import CartDelivery from "@/modules/cart/components/CartDelivery";
 import CartFooter from "@/modules/cart/components/CartFooter";
 import CartPopup from "@/modules/cart/components/CartPopup";
-import {
-  SET_CART_ENTITY,
-  RESET_CART,
-  DELETE_PIZZA,
-} from "@/store/mutations-types";
+import { RESET_CART, SET_CART_WITH_ORDER } from "@/store/mutations-types";
 import { BASE_DELIVERIES } from "@/common/constants";
-import { Pizza } from "@/common/models";
 
 export default {
   name: "Cart",
   components: {
-    CartPizzas,
+    CartPizza,
     CartMisc,
     CartDelivery,
     CartFooter,
@@ -103,40 +112,34 @@ export default {
   },
 
   async created() {
-    const orderId = this.$route.params.id;
-    if (this.user && orderId) {
-      await this.queryAddresses();
-      this.setupCartWithOrder(orderId);
+    if (!this.user) {
       return;
     }
-    if (this.user && !this.isEmpty) {
+    const orderId = this.$route?.params?.id;
+    if (orderId) {
       await this.queryAddresses();
+      const orderToEdit = this.getOrderById(orderId);
+      if (!orderToEdit) {
+        this.$router.push("/cart");
+        return;
+      }
+      this.setCartWithOrder(orderToEdit);
+      return;
+    }
+    if (!this.isEmpty) {
+      await this.queryAddresses();
+      return;
     }
   },
+
   methods: {
     ...mapMutations("Cart", {
-      setCartEntity: SET_CART_ENTITY,
       resetCart: RESET_CART,
-      deletePizza: DELETE_PIZZA,
+      setCartWithOrder: SET_CART_WITH_ORDER,
     }),
     ...mapActions("Auth", ["queryAddresses"]),
+    ...mapActions("Cart", ["deletePizza"]),
     ...mapActions("Orders", ["createOrder"]),
-
-    setCartOrderPizzas(value) {
-      this.setCartEntity({ entity: "orderPizzas", value });
-    },
-    setCartOrderMisc(value) {
-      this.setCartEntity({ entity: "orderMisc", value });
-    },
-    setAddress(value) {
-      this.setCartEntity({ entity: "orderAddress", value });
-    },
-    setDelivery(value) {
-      this.setCartEntity({ entity: "delivery", value });
-    },
-    setPhone(value) {
-      this.setCartEntity({ entity: "phone", value });
-    },
 
     startDeletePizza(pizzaId) {
       this.pizzaIdToDelete = pizzaId;
@@ -146,23 +149,6 @@ export default {
     confirmDeletePizza() {
       this.isConfirmPopupShowed = false;
       this.deletePizza(this.pizzaIdToDelete);
-      if (!this.orderPizzas.length) {
-        this.resetCart();
-      }
-    },
-
-    setupCartWithOrder(orderId) {
-      const orderToEdit = this.getOrderById(orderId);
-      if (!orderToEdit) {
-        this.$route.push("/cart");
-        return;
-      }
-      this.setDelivery(orderToEdit.orderAddress?.id || BASE_DELIVERIES[0].id);
-      this.setPhone(orderToEdit.phone);
-      this.setAddress(orderToEdit.orderAddress);
-      const cartOrderPizzas = Pizza.parseItems(orderToEdit.orderPizzas);
-      this.setCartOrderPizzas(cartOrderPizzas);
-      this.setCartOrderMisc(orderToEdit.orderMisc);
     },
 
     async submit() {
@@ -180,7 +166,6 @@ export default {
         this.resetCart();
         this.isSuccessPopupShowed = true;
       } catch (err) {
-        console.log(err);
         this.isSubmitting = false;
       }
     },

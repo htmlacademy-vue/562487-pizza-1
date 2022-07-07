@@ -1,10 +1,10 @@
 <template>
   <div class="user">
     <UserPicture :user="user" width="72" height="72" />
-    <div class="user__name">
+    <div class="user__name" data-test="user-name">
       <span>{{ user.name }}</span>
     </div>
-    <p class="user__phone">
+    <p class="user__phone" data-test="user-phone">
       Контактный телефон: <span>{{ user.phone }}</span>
     </p>
   </div>

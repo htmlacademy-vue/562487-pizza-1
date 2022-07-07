@@ -9,6 +9,7 @@
         :value="orderAddress.street"
         :readonly="isReadOnly"
         @input="updateAddress({ entity: 'street', value: $event })"
+        data-test="input-street"
       />
     </div>
 
@@ -19,6 +20,7 @@
         :value="orderAddress.building"
         :readonly="isReadOnly"
         @input="updateAddress({ entity: 'building', value: $event })"
+        data-test="input-building"
       />
     </div>
 
@@ -29,6 +31,7 @@
         :value="orderAddress.flat"
         :readonly="isReadOnly"
         @input="updateAddress({ entity: 'flat', value: $event })"
+        data-test="input-flat"
       />
     </div>
   </div>

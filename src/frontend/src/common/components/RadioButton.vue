@@ -7,6 +7,7 @@
       class="visually-hidden"
       :checked="isChecked"
       @change="$emit('change', item.id)"
+      :data-test-id="item.id"
     />
     <slot />
   </label>

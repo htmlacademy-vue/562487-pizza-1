@@ -5,11 +5,14 @@
     </div>
     <PopupButton
       class="popup__button--danger"
-      :disabled="isSubmitting"
-      @click.prevent="$emit('confirm')"
+      @click.prevent="confirm"
+      data-test="confirm-btn"
       >Да, удалить!</PopupButton
     >
-    <PopupButton @click.prevent="$emit('cancel')" ref="cancel"
+    <PopupButton
+      @click.prevent="$emit('cancel')"
+      ref="cancel"
+      data-test="cancel-btn"
       >Нет, оставить!</PopupButton
     >
   </PopupLayout>
@@ -26,6 +29,14 @@ export default {
   },
   mounted() {
     this.$refs.cancel.focus();
+  },
+  methods: {
+    confirm() {
+      if (this.isSubmitting) {
+        return;
+      }
+      this.$emit("confirm");
+    },
   },
 };
 </script>
