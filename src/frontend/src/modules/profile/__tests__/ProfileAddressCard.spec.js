@@ -14,6 +14,11 @@ describe("ProfileAddressCard", () => {
     address: testAddress,
     isEditDisabled: false,
   };
+  const mocks = {
+    $router: {
+      push: jest.fn(),
+    },
+  };
   let wrapper;
   const createComponent = (options) => {
     wrapper = shallowMount(ProfileAddressCard, options);
@@ -25,53 +30,52 @@ describe("ProfileAddressCard", () => {
   const findAddressComment = () =>
     wrapper.find("[data-test='address-comment']");
 
+  beforeEach(() => {
+    mocks.$router.push = jest.fn();
+  });
+
   afterEach(() => {
     wrapper.destroy();
   });
 
   it("renders out profile address card", () => {
-    createComponent({ localVue, propsData });
+    createComponent({ localVue, mocks, propsData });
     expect(wrapper.exists()).toBe(true);
   });
 
   it("displays prop address name", () => {
-    createComponent({ localVue, propsData });
+    createComponent({ localVue, mocks, propsData });
     const { id, name } = propsData.address;
-    expect(findAddressName().text()).toBe(`Адрес №${id}. ${name}`);
+    const addressName = findAddressName();
+    expect(addressName.exists()).toBe(true);
+    expect(addressName.text()).toBe(`Адрес №${id}. ${name}`);
   });
 
-  it("renders out edit button not disabled", () => {
-    createComponent({ localVue, propsData });
-    const btn = findEditBtn();
-    expect(btn.element.disabled).toBe(false);
-    expect(btn.text()).toBe("Изменить адрес");
+  it("renders out edit button", () => {
+    createComponent({ localVue, mocks, propsData });
+    const editBtn = findEditBtn();
+    expect(editBtn.exists()).toBe(true);
+    expect(findEditBtn().text()).toBe("Изменить адрес");
   });
 
-  it("edit button is disabled when prop isEditDisabled", () => {
-    createComponent({
-      localVue,
-      propsData: { ...propsData, isEditDisabled: true },
-    });
-    expect(findEditBtn().element.disabled).toBe(true);
-  });
-
-  it("emits edit on edit button click", async () => {
-    createComponent({ localVue, propsData });
+  it("goes to profile edit route on edit button click", async () => {
+    createComponent({ localVue, mocks, propsData });
     findEditBtn().trigger("click");
     await nextTick();
-    expect(wrapper.emitted().edit).toBeTruthy();
-    expect(wrapper.emitted().edit[0][0]).toBe(propsData.address.id);
+    expect(mocks.$router.push).toHaveBeenCalledWith(
+      "/profile/edit/" + testAddress.id
+    );
   });
 
   it("displays address info", () => {
     const { street, building, flat } = propsData.address;
     const addressString = `${street}, д. ${building}, кв. ${flat}`;
-    createComponent({ localVue, propsData });
+    createComponent({ localVue, propsData, mocks });
     expect(findAddressInfo().text()).toBe(addressString);
   });
 
   it("displays address comment", () => {
-    createComponent({ localVue, propsData });
+    createComponent({ localVue, mocks, propsData });
     const addressComment = findAddressComment();
     expect(addressComment.exists()).toBe(true);
     expect(addressComment.text()).toBe(testAddress.comment);
@@ -80,6 +84,7 @@ describe("ProfileAddressCard", () => {
   it("does not display address comment", async () => {
     createComponent({
       localVue,
+      mocks,
       propsData: {
         isEditDisabled: false,
         address: {
