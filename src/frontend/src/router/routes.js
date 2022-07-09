@@ -33,5 +33,19 @@ export default [
     name: "Profile",
     component: () => import("../views/Profile.vue"),
     meta: { layout: "AppLayoutMain", middlewares: [auth] },
+    children: [
+      {
+        path: "create",
+        name: "ProfileCreate",
+        component: () => import("../views/ProfileCreate.vue"),
+        meta: { layout: "AppLayoutMain", middlewares: [auth] },
+      },
+      {
+        path: "edit/:id",
+        name: "ProfileEdit",
+        component: () => import("../views/ProfileEdit.vue"),
+        meta: { layout: "AppLayoutMain", middlewares: [auth] },
+      },
+    ],
   },
 ];

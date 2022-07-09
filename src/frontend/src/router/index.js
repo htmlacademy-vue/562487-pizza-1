@@ -10,6 +10,20 @@ const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+  scrollBehavior(to) {
+    if (to.name === "Profile") {
+      return {
+        selector: "h1",
+        behavior: "smooth",
+      };
+    }
+    if (to.name === "ProfileCreate" || to.name === "ProfileEdit") {
+      return {
+        selector: "form",
+        behavior: "smooth",
+      };
+    }
+  },
 });
 
 router.beforeEach((to, from, next) => {

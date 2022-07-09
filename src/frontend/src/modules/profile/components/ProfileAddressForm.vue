@@ -4,7 +4,7 @@
       action="/"
       method="post"
       class="address-form address-form--opened sheet"
-      @submit.prevent="submit"
+      @submit.prevent="$emit('submitForm', address)"
     >
       <div class="address-form__header" data-test="form-title">
         <b>{{ addressFormTitle }}</b>
@@ -61,9 +61,10 @@
 
       <div class="address-form__buttons">
         <AppButton
+          v-if="!isSubmitting"
           class="button--transparent"
-          :disabled="isDeleting || isSubmitting"
-          @click="startDeleteAddress"
+          :disabled="isDeleting"
+          @click="$emit('deleteClick')"
           data-test="btn-delete"
         >
           Удалить
@@ -77,7 +78,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import { Address } from "@/common/models";
 
 export default {
@@ -85,25 +86,23 @@ export default {
   props: {
     isEditMode: {
       type: Boolean,
-      required: true,
-    },
-    addressToEdit: {
-      type: Number,
-      default: null,
+      default: false,
     },
     isDeleting: {
       type: Boolean,
-      required: true,
+      default: false,
+    },
+    isSubmitting: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
     return {
       address: null,
-      isSubmitting: false,
     };
   },
   computed: {
-    ...mapState("Auth", ["user"]),
     ...mapGetters("Auth", ["addressById"]),
 
     isSubmitDisabled() {
@@ -116,67 +115,19 @@ export default {
     },
 
     addressFormTitle() {
-      return this.addressToEdit ? "Редактировать адрес" : "Новый адрес";
+      return this.isEditMode ? "Редактировать адрес" : "Новый адрес";
     },
   },
   created() {
-    if (this.addressToEdit) {
-      this.address = this.addressById(this.addressToEdit);
+    if (this.isEditMode) {
+      const id = +this.$route.params.id;
+      this.address = new Address(this.addressById(id));
     } else {
       this.address = Address.createNew();
     }
   },
   mounted() {
     this.$refs.name.focus();
-  },
-  methods: {
-    ...mapActions("Auth", ["createNewAddress", "updateAddress"]),
-
-    startDeleteAddress() {
-      if (this.isEditMode) {
-        this.$emit("deleteAddress");
-      } else {
-        this.$emit("close");
-      }
-    },
-
-    async create() {
-      try {
-        const addressData = this.address.toRaw();
-        const data = await this.createNewAddress({
-          ...addressData,
-          userId: this.user.id,
-        });
-        const message = `Адрес ${data.id} успешно создан`;
-        this.$notifier.success(message);
-        this.$emit("close");
-      } catch (err) {
-        this.isSubmitting = false;
-      }
-    },
-
-    async update() {
-      try {
-        await this.updateAddress({
-          ...this.address,
-          userId: this.user.id,
-        });
-        const message = `Адрес ${this.addressToEdit} успешно обновлён`;
-        this.$notifier.success(message);
-        this.$emit("close");
-      } catch {
-        this.isSubmitting = false;
-      }
-    },
-
-    async submit() {
-      this.isSubmitting = true;
-      if (this.addressToEdit) {
-        await this.update();
-      } else {
-        await this.create();
-      }
-    },
   },
 };
 </script>
