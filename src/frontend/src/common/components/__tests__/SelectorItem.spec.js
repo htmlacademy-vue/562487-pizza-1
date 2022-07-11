@@ -42,7 +42,7 @@ describe("SelectorItem", () => {
 
   it("draggable ingredient has draggableClass", () => {
     createComponent({ localVue, store, stubs, propsData });
-    expect(findAppDrag().element.draggable).toBe(true);
+    expect(findAppDrag().props().isDraggable).toBe(true);
     expect(findItem().classes(draggableClass)).toBe(true);
   });
 
@@ -61,7 +61,7 @@ describe("SelectorItem", () => {
       quantity: 3,
     });
     createComponent({ localVue, store, stubs, propsData });
-    expect(findAppDrag().element.draggable).toBe(false);
+    expect(findAppDrag().props().isDraggable).toBe(false);
     expect(findItem().classes(draggableClass)).toBe(false);
   });
 });
