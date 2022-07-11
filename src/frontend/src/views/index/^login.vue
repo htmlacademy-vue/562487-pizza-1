@@ -14,9 +14,11 @@
 
 <script>
 import LoginForm from "@/modules/login/components/LoginForm";
+import { isLoggedIn } from "@/middlewares";
 
 export default {
   name: "Login",
+  middlewares: [isLoggedIn],
   components: { LoginForm },
   methods: {
     closeLogin() {

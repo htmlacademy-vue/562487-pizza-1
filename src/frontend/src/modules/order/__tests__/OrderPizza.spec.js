@@ -41,10 +41,22 @@ describe("OrderPizza", () => {
     expect(findProduct().exists()).toBe(true);
   });
 
-  it("renders out pizza quantity and price", () => {
-    createComponent({ localVue, store, propsData });
-    const { quantity } = propsData.pizza;
+  it("renders out pizza quantity and price if quantity > 1", () => {
+    const pizzaQuantity = 2;
+    createComponent({
+      localVue,
+      store,
+      propsData: {
+        pizza: { ...propsData.pizza, quantity: pizzaQuantity },
+      },
+    });
     const pizzaPrice = store.getters["Builder/pizzaPrice"](propsData.pizza);
-    expect(findPrice().text()).toContain(`${quantity} х ${pizzaPrice}`);
+    expect(findPrice().text()).toBe(`${pizzaQuantity} х ${pizzaPrice} ₽`);
+  });
+
+  it("renders out pizza price if quantity = 1", () => {
+    createComponent({ localVue, store, propsData });
+    const pizzaPrice = store.getters["Builder/pizzaPrice"](propsData.pizza);
+    expect(findPrice().text()).toBe(`${pizzaPrice} ₽`);
   });
 });

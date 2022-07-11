@@ -15,14 +15,13 @@ describe("ProfileAddressForm", () => {
   const newAddressId = 1;
 
   const propsData = {
-    isEditMode: false,
-    isDeleting: false,
+    isSubmitting: false,
   };
 
   const editPropsData = {
     isEditMode: true,
     isDeleting: false,
-    addressToEdit: testAddress.id,
+    isSubmitting: false,
   };
 
   const addressData = new Address({
@@ -34,6 +33,11 @@ describe("ProfileAddressForm", () => {
   });
 
   const mocks = {
+    $route: {
+      params: {
+        id: testAddress.id,
+      },
+    },
     $notifier: {
       success: jest.fn(),
     },
@@ -96,7 +100,7 @@ describe("ProfileAddressForm", () => {
   });
 
   describe("when add mode", () => {
-    it("renders out profile form", () => {
+    it("renders out add form", () => {
       createComponent({ localVue, store, mocks, propsData });
       expect(wrapper.exists()).toBe(true);
       expect(findTitle().text()).toBe("Новый адрес");
@@ -107,52 +111,20 @@ describe("ProfileAddressForm", () => {
       expect(findCommentInput().element.value).toBe("");
     });
 
-    it("emits close on delete button click", async () => {
-      createComponent({ localVue, store, mocks, propsData });
-      await findDelete().trigger("click");
-      expect(wrapper.emitted().close).toBeTruthy();
-    });
-
-    it("calls vuex action to create new address on submit", async () => {
+    it("emits submitForm on add form submit", async () => {
       createComponent({ localVue, store, mocks, propsData });
       await fillForm();
       await triggerSubmit();
-      expect(actions.Auth.createNewAddress).toHaveBeenCalled();
-    });
-
-    it("calls notifier success method when submit success", async () => {
-      createComponent({ localVue, store, mocks, propsData });
-      await fillForm();
-      await triggerSubmit();
-      expect(mocks.$notifier.success).toHaveBeenCalledWith(
-        `Адрес ${newAddressId} успешно создан`
-      );
-    });
-
-    it("emits close on submit success", async () => {
-      createComponent({ localVue, store, mocks, propsData });
-      await fillForm();
-      await triggerSubmit();
-      expect(wrapper.emitted().close).toBeTruthy();
-    });
-
-    it("does not emit close on submit error", async () => {
-      actions = {
-        Auth: {
-          createNewAddress: jest.fn(() => Promise.reject()),
-        },
-      };
-      store = generateMockStore({ actions });
-      setUser(store);
-      setUserAddresses(store);
-      createComponent({ localVue, store, mocks, propsData });
-      await triggerSubmit();
-      expect(wrapper.emitted().close).toBeFalsy();
+      expect(wrapper.emitted().submitForm).toBeTruthy();
+      const submitData = wrapper.emitted().submitForm[0][0];
+      expect(submitData.name).toBe(addressData.name);
+      expect(submitData.street).toBe(addressData.street);
+      expect(submitData.building).toBe(addressData.building);
     });
   });
 
   describe("when edit mode", () => {
-    it("renders out profile form", () => {
+    it("renders out edit form", () => {
       createComponent({
         localVue,
         store,
@@ -168,29 +140,7 @@ describe("ProfileAddressForm", () => {
       expect(findCommentInput().element.value).toBe(testAddress.comment);
     });
 
-    it("buttons are disabled when prop isDeleting", async () => {
-      createComponent({
-        localVue,
-        store,
-        mocks,
-        propsData: { ...editPropsData, isDeleting: true },
-      });
-      expect(findDelete().element.disabled).toBe(true);
-      expect(findSubmit().element.disabled).toBe(true);
-    });
-
-    it("emits deleteAddress on delete button click", async () => {
-      createComponent({
-        localVue,
-        store,
-        mocks,
-        propsData: { ...editPropsData },
-      });
-      await findDelete().trigger("click");
-      expect(wrapper.emitted().deleteAddress).toBeTruthy();
-    });
-
-    it("calls vuex action to update address on submit", async () => {
+    it("emits submitForm on edit form submit", async () => {
       createComponent({
         localVue,
         store,
@@ -198,50 +148,7 @@ describe("ProfileAddressForm", () => {
         propsData: { ...editPropsData },
       });
       await triggerSubmit();
-      expect(actions.Auth.updateAddress).toHaveBeenCalled();
-    });
-
-    it("calls notifier success method when submit success", async () => {
-      createComponent({
-        localVue,
-        store,
-        mocks,
-        propsData: { ...editPropsData },
-      });
-      await triggerSubmit();
-      expect(mocks.$notifier.success).toHaveBeenCalledWith(
-        `Адрес ${editPropsData.addressToEdit} успешно обновлён`
-      );
-    });
-
-    it("emits close on submit success", async () => {
-      createComponent({
-        localVue,
-        store,
-        mocks,
-        propsData: { ...editPropsData },
-      });
-      await triggerSubmit();
-      expect(wrapper.emitted().close).toBeTruthy();
-    });
-
-    it("does not emit close on submit error", async () => {
-      actions = {
-        Auth: {
-          updateAddress: jest.fn(() => Promise.reject()),
-        },
-      };
-      store = generateMockStore({ actions });
-      setUser(store);
-      setUserAddresses(store);
-      createComponent({
-        localVue,
-        store,
-        mocks,
-        propsData: { ...editPropsData },
-      });
-      await triggerSubmit();
-      expect(wrapper.emitted().close).toBeFalsy();
+      expect(wrapper.emitted().submitForm[0][0]).toEqual(testAddress);
     });
   });
 
@@ -283,28 +190,47 @@ describe("ProfileAddressForm", () => {
       expect(findSubmit().element.disabled).toBe(true);
     });
 
-    it("disables submit button when submitting", async () => {
-      createComponent({ localVue, store, mocks, propsData });
-      await fillForm();
-      await triggerSubmit();
+    it("submit button disabled when prop isSubmitting", async () => {
+      createComponent({
+        localVue,
+        store,
+        mocks,
+        propsData: {
+          ...propsData,
+          isSubmitting: true,
+        },
+      });
       expect(findSubmit().element.disabled).toBe(true);
     });
 
-    it("sets submit not disabled on submit error", async () => {
-      actions = {
-        Auth: {
-          createNewAddress: jest.fn(() => Promise.reject()),
+    it("does not render out delete button when prop isSubmitting", async () => {
+      createComponent({
+        localVue,
+        store,
+        mocks,
+        propsData: {
+          ...propsData,
+          isSubmitting: true,
         },
-      };
-      store = generateMockStore({ actions });
-      setUser(store);
-      setUserAddresses(store);
-      createComponent({ localVue, store, mocks, propsData });
-      await fillForm();
-      await triggerSubmit();
+      });
+      expect(findDelete().exists()).toBe(false);
+    });
+
+    it("buttons are disabled when prop isDeleting", async () => {
+      createComponent({
+        localVue,
+        store,
+        mocks,
+        propsData: { ...editPropsData, isDeleting: true },
+      });
+      expect(findDelete().element.disabled).toBe(true);
       expect(findSubmit().element.disabled).toBe(true);
-      await nextTick();
-      expect(findSubmit().element.disabled).toBe(false);
+    });
+
+    it("emits deleteClick on delete button click", async () => {
+      createComponent({ localVue, store, mocks, propsData });
+      await findDelete().trigger("click");
+      expect(wrapper.emitted().deleteClick).toBeTruthy();
     });
   });
 });

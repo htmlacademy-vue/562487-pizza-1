@@ -1,6 +1,6 @@
 <template>
   <AppLayoutContent>
-    <div class="layout__title" ref="start">
+    <div class="layout__title">
       <h1 class="title title--big">Мои данные</h1>
     </div>
     <ProfileUser v-if="user" />
@@ -9,133 +9,72 @@
         v-for="address in addresses"
         :key="address.id"
         :address="address"
-        :isEditDisabled="isFormShowed"
-        @edit="editAddress"
       />
     </SlideTransitionGroup>
-    <transition
-      name="form"
-      mode="out-in"
-      :css="false"
-      @enter="animateFormEnter"
-      @leave="animateFormLeave"
-    >
-      <ProfileAddressForm
-        v-if="isFormShowed"
-        :isEditMode="isEditMode"
-        :addressToEdit="addressToEdit"
-        :isDeleting="isDeleting"
-        @close="closeForm"
-        @deleteAddress="isConfirmPopupShowed = true"
-        ref="form"
-      />
-      <div v-else class="layout__button">
-        <AppButton
-          class="button--border"
-          @click="openForm"
-          data-test="button-open"
-        >
-          Добавить новый адрес
-        </AppButton>
-      </div>
+    <transition name="form" mode="out-in">
+      <router-view />
     </transition>
-    <PopupTransition>
-      <ConfirmPopup
-        v-if="isConfirmPopupShowed"
-        :isSubmitting="isDeleting"
-        :addressId="addressToEdit"
-        @confirm="confirmDelete"
-        @cancel="closeConfirmPopup"
+    <div class="layout__button">
+      <AppButton
+        class="button--border"
+        @click="toggleForm"
+        data-test="button-open"
+        >{{ buttonText }}</AppButton
       >
-        <h2 class="title">Удалить адрес #{{ addressToEdit }}?</h2>
-        <p>После удаления aдрес не сохранится.</p>
-      </ConfirmPopup>
-    </PopupTransition>
+    </div>
   </AppLayoutContent>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 import AppLayoutContent from "@/layouts/AppLayoutContent";
 import ProfileUser from "@/modules/profile/components/ProfileUser";
 import ProfileAddressCard from "@/modules/profile/components/ProfileAddressCard";
-import ProfileAddressForm from "@/modules/profile/components/ProfileAddressForm";
-import { clearAnimations } from "@/common/helpers";
+import { auth } from "@/middlewares";
 
 export default {
   name: "Profile",
+  layout: "AppLayoutMain",
+  middlewares: [auth],
   components: {
     AppLayoutContent,
     ProfileUser,
     ProfileAddressCard,
-    ProfileAddressForm,
-  },
-  data() {
-    return {
-      isEditMode: false,
-      isFormShowed: false,
-      addressToEdit: null,
-      isConfirmPopupShowed: false,
-      isDeleting: false,
-    };
   },
   computed: {
     ...mapState("Auth", ["user", "addresses"]),
+
+    isCreateRoute() {
+      return this.$route.name === "ProfileCreate";
+    },
+
+    buttonText() {
+      return this.isCreateRoute ? "Закрыть форму" : "Добавить новый адрес";
+    },
   },
   async created() {
     await this.queryAddresses();
   },
   methods: {
-    ...mapActions("Auth", ["queryAddresses", "deleteAddress"]),
+    ...mapActions("Auth", ["queryAddresses"]),
 
-    editAddress(addressId) {
-      this.addressToEdit = addressId;
-      this.openEditForm();
-    },
-    openForm() {
-      this.isFormShowed = true;
-      this.isEditMode = false;
-    },
-    openEditForm() {
-      this.isFormShowed = true;
-      this.isEditMode = true;
-    },
-    closeForm() {
-      this.isFormShowed = false;
-      this.isEditMode = false;
-      this.addressToEdit = null;
-    },
-    closeConfirmPopup() {
-      this.isConfirmPopupShowed = false;
-    },
-    async confirmDelete() {
-      this.isDeleting = true;
-      const addressId = this.addressToEdit;
-      try {
-        await this.deleteAddress(addressId);
-        const message = `Адрес ${addressId} успешно удалён`;
-        this.$notifier.success(message);
-        this.closeConfirmPopup();
-        this.closeForm();
-        this.isDeleting = false;
-      } catch {
-        this.isDeleting = false;
-      }
-    },
-    animateFormEnter(el, done) {
-      if (this.isFormShowed) {
-        this.$refs.form.$el.scrollIntoView({ block: "center" });
-      }
-      clearAnimations(el, done);
-      el.style.animation = "fade-in 0.3s";
-    },
-    animateFormLeave(el, done) {
-      clearAnimations(el, done);
-      el.style.animation = "fade-in 0.3s reverse";
-      if (!this.isFormShowed) {
-        this.$refs.start.scrollIntoView({ block: "center" });
+    toggleForm() {
+      if (this.isCreateRoute) {
+        this.$router.push("/profile");
+      } else {
+        this.$router.push("/profile/create");
       }
     },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.form-enter-active {
+  animation: fade-in 0.3s;
+}
+
+.form-leave-active {
+  animation: fade-in 0.3s reverse;
+}
+</style>

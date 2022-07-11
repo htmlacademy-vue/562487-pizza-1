@@ -2,9 +2,7 @@
   <li class="order__item">
     <Product :pizza="pizza" />
 
-    <p class="order__price" data-test="pizza-price">
-      {{ pizza.quantity }} х {{ pizzaPrice(pizza) }} ₽
-    </p>
+    <p class="order__price" data-test="pizza-price">{{ priceText }}</p>
   </li>
 </template>
 
@@ -21,6 +19,18 @@ export default {
   },
   computed: {
     ...mapGetters("Builder", ["pizzaPrice"]),
+
+    priceText() {
+      const { quantity } = this.pizza;
+      const price = this.pizzaPrice(this.pizza);
+      return quantity > 1 ? `${quantity} х ${price} ₽` : `${price} ₽`;
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.order__price {
+  margin-left: 10px;
+}
+</style>

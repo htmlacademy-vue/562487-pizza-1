@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import { nextTick } from "vue";
 import flushPromises from "flush-promises";
 import { generateMockStore } from "@/store/mocks";
-import Cart from "../Cart";
+import Cart from "@/views/Cart";
 import { setUIComponents } from "@/plugins/ui";
 import {
   setCart,

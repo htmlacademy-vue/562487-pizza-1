@@ -9,8 +9,7 @@
           <button
             type="button"
             class="icon"
-            :disabled="isEditDisabled"
-            @click="$emit('edit', address.id)"
+            @click="editAddress"
             data-test="button-edit"
           >
             <span class="visually-hidden">Изменить адрес</span>
@@ -33,10 +32,6 @@ export default {
       type: Object,
       required: true,
     },
-    isEditDisabled: {
-      type: Boolean,
-      required: true,
-    },
   },
   computed: {
     addressToString() {
@@ -46,6 +41,11 @@ export default {
         addressString += `, кв. ${flat}`;
       }
       return addressString;
+    },
+  },
+  methods: {
+    editAddress() {
+      this.$router.push("/profile/edit/" + this.address.id);
     },
   },
 };

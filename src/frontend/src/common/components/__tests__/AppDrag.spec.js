@@ -26,11 +26,17 @@ describe("AppDrag", () => {
 
   it("renders draggable content", () => {
     createComponent({ slots, propsData });
-    expect(wrapper.element.draggable).toBe(true);
+    expect(wrapper.attributes().draggable).toBe(
+      propsData.isDraggable.toString()
+    );
   });
 
   it("renders undraggable content", () => {
-    createComponent({ slots, propsData: { ...propsData, isDraggable: false } });
-    expect(wrapper.element.draggable).toBe(false);
+    const notDraggable = false;
+    createComponent({
+      slots,
+      propsData: { ...propsData, isDraggable: notDraggable },
+    });
+    expect(wrapper.attributes().draggable).toBe(notDraggable.toString());
   });
 });

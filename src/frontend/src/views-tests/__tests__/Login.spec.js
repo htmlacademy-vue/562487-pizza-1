@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount, mount } from "@vue/test-utils";
 import { nextTick } from "vue";
-import Login from "../Login";
+import Login from "@/views/index/^login";
 import { setUIComponents } from "@/plugins/ui";
 
 const localVue = createLocalVue();

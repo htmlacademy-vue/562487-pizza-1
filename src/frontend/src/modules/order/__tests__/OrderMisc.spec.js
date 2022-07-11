@@ -58,12 +58,24 @@ describe("OrderMisc", () => {
     expect(miscName.text()).toBe(miscItem.name);
   });
 
-  it("renders out order misc price", () => {
+  it("renders out order misc quantity and price if quantity > 1", () => {
+    const miscItemQuantity = 2;
+    createComponent({
+      localVue,
+      store,
+      propsData: {
+        orderMisc: { ...propsData.orderMisc, quantity: miscItemQuantity },
+      },
+    });
+    const miscPrice = findMiscPrice();
+    expect(miscPrice.exists()).toBe(true);
+    expect(miscPrice.text()).toBe(`${miscItemQuantity} х ${miscItem.price} ₽`);
+  });
+
+  it("renders out order misc price if quantity = 1", () => {
     createComponent({ localVue, store, propsData });
     const miscPrice = findMiscPrice();
     expect(miscPrice.exists()).toBe(true);
-    expect(miscPrice.text()).toBe(
-      `${propsData.orderMisc.quantity} х ${miscItem.price} ₽`
-    );
+    expect(miscPrice.text()).toBe(`${miscItem.price} ₽`);
   });
 });
