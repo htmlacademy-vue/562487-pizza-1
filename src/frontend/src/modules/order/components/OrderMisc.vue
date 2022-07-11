@@ -3,9 +3,7 @@
     <img :src="miscItem.image" width="20" height="30" :alt="miscItem.name" />
     <p>
       <span data-test="misc-name">{{ miscItem.name }}</span>
-      <b data-test="misc-price"
-        >{{ orderMisc.quantity }} х {{ miscItem.price }} ₽</b
-      >
+      <b data-test="misc-price">{{ priceText }}</b>
     </p>
   </li>
 </template>
@@ -27,6 +25,12 @@ export default {
     miscItem() {
       const id = this.orderMisc.miscId;
       return this.miscById(id);
+    },
+
+    priceText() {
+      const { quantity } = this.orderMisc;
+      const { price } = this.miscItem;
+      return quantity > 1 ? `${quantity} х ${price} ₽` : `${price} ₽`;
     },
   },
 };
