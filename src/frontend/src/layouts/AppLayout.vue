@@ -36,6 +36,9 @@ export default {
       this.isFromMainLayout = from.meta.layout === "AppLayoutMain";
     },
   },
+  created() {
+    this.isMainLayout = this.$route?.meta?.layout === "AppLayoutMain";
+  },
   methods: {
     animateEnter(el, done) {
       if (this.isMainLayout) {
