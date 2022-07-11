@@ -2,7 +2,7 @@ import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { nextTick } from "vue";
 import { generateMockStore } from "@/store/mocks";
-import ProfileCreate from "../ProfileCreate";
+import ProfileCreate from "@/views/profile/^create";
 import { setUIComponents } from "@/plugins/ui";
 import { setUser, setUserAddresses, testAddress } from "@/store/mocks/setters";
 

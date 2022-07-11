@@ -25,9 +25,12 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import ProfileAddressForm from "@/modules/profile/components/ProfileAddressForm";
+import { auth } from "@/middlewares";
 
 export default {
   name: "ProfileEdit",
+  layout: "AppLayoutMain",
+  middlewares: [auth],
   components: {
     ProfileAddressForm,
   },

@@ -30,9 +30,12 @@ import { mapState, mapActions } from "vuex";
 import AppLayoutContent from "@/layouts/AppLayoutContent";
 import ProfileUser from "@/modules/profile/components/ProfileUser";
 import ProfileAddressCard from "@/modules/profile/components/ProfileAddressCard";
+import { auth } from "@/middlewares";
 
 export default {
   name: "Profile",
+  layout: "AppLayoutMain",
+  middlewares: [auth],
   components: {
     AppLayoutContent,
     ProfileUser,

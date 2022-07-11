@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import flushPromises from "flush-promises";
 import { nextTick } from "vue";
 import { generateMockStore } from "@/store/mocks";
-import Profile from "../Profile";
+import Profile from "@/views/Profile";
 import { setUIComponents } from "@/plugins/ui";
 import { setUser, setUserAddresses } from "@/store/mocks/setters";
 

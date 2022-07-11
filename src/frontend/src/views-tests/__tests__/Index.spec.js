@@ -1,7 +1,7 @@
 import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
-import Index from "../Index";
+import Index from "@/views/Index.vue";
 import { setUIComponents } from "@/plugins/ui";
 import { setCartPizzas, testCartPizza } from "@/store/mocks/setters";
 import { nextTick } from "vue";

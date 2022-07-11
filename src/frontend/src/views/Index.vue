@@ -27,7 +27,7 @@ import {
 } from "@/store/mutations-types";
 
 export default {
-  name: "Index",
+  name: "IndexHome",
   components: {
     Builder,
     BuilderPopup,
