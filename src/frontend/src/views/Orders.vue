@@ -28,7 +28,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import AppLayoutContent from "@/layouts/AppLayoutContent";
-import OrderCard from "@/modules/order/components/OrderCard";
+import OrderCard from "@/modules/orders/components/OrderCard";
 import { auth } from "@/middlewares";
 
 export default {
