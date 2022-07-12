@@ -1,6 +1,6 @@
 <template>
   <main class="content">
-    <Builder :isEditMode="isEditMode" @saveEdit="isEditMode = false" />
+    <BuilderForm :isEditMode="isEditMode" @saveEdit="isEditMode = false" />
     <PopupTransition>
       <BuilderPopup
         v-if="isPopupShowed"
@@ -18,7 +18,7 @@
 
 <script>
 import { mapState, mapGetters, mapMutations } from "vuex";
-import Builder from "@/modules/builder/components/Builder";
+import BuilderForm from "@/modules/builder/components/BuilderForm";
 import BuilderPopup from "@/modules/builder/components/BuilderPopup";
 import {
   SET_BUILDER_ENTITY,
@@ -29,7 +29,7 @@ import {
 export default {
   name: "IndexHome",
   components: {
-    Builder,
+    BuilderForm,
     BuilderPopup,
   },
   data() {

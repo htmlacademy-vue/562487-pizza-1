@@ -38,7 +38,7 @@ import {
 } from "@/store/mutations-types";
 
 export default {
-  name: "Builder",
+  name: "BuilderForm",
   components: {
     BuilderDoughSelector,
     BuilderSizeSelector,
