@@ -1,13 +1,13 @@
 import { shallowMount, RouterLinkStub } from "@vue/test-utils";
-import Logo from "@/common/components/Logo";
+import AppLogo from "@/common/components/AppLogo";
 
-describe("Logo", () => {
+describe("AppLogo", () => {
   const stubs = {
     "router-link": RouterLinkStub,
   };
   let wrapper;
   const createComponent = (options) => {
-    wrapper = shallowMount(Logo, options);
+    wrapper = shallowMount(AppLogo, options);
   };
 
   afterEach(() => {

@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="header__logo">
-      <Logo />
+      <AppLogo />
     </div>
     <div class="header__cart">
       <router-link to="/cart" data-test="link-cart"
