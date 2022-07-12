@@ -27,7 +27,7 @@ describe("CartPizza", () => {
     wrapper = shallowMount(CartPizza, options);
   };
 
-  const findProduct = () => wrapper.findComponent({ name: "Product" });
+  const findPizzaInfo = () => wrapper.findComponent({ name: "PizzaInfo" });
   const findItemCounter = () => wrapper.findComponent({ name: "ItemCounter" });
   const findPizzaPrice = () => wrapper.find("[data-test='pizza-price']");
   const findEditBtn = () => wrapper.find("[data-test='edit-btn']");
@@ -49,9 +49,9 @@ describe("CartPizza", () => {
       expect(wrapper.exists()).toBe(true);
     });
 
-    it("renders out product", () => {
+    it("renders out pizza info", () => {
       createComponent({ localVue, store, mocks, propsData });
-      expect(findProduct().exists()).toBe(true);
+      expect(findPizzaInfo().exists()).toBe(true);
     });
 
     it("renders out item counter", () => {

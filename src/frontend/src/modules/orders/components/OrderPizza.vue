@@ -1,6 +1,6 @@
 <template>
   <li class="order__item">
-    <Product :pizza="pizza" />
+    <PizzaInfo :pizza="pizza" />
 
     <p class="order__price" data-test="pizza-price">{{ priceText }}</p>
   </li>

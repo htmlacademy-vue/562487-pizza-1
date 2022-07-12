@@ -19,7 +19,7 @@ describe("OrderPizza", () => {
     wrapper = shallowMount(OrderPizza, options);
   };
 
-  const findProduct = () => wrapper.findComponent({ name: "Product" });
+  const findPizzaInfo = () => wrapper.findComponent({ name: "PizzaInfo" });
   const findPrice = () => wrapper.find("[data-test='pizza-price']");
 
   beforeEach(() => {
@@ -36,9 +36,9 @@ describe("OrderPizza", () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it("renders out product", () => {
+  it("renders out pizza info", () => {
     createComponent({ localVue, store, propsData });
-    expect(findProduct().exists()).toBe(true);
+    expect(findPizzaInfo().exists()).toBe(true);
   });
 
   it("renders out pizza quantity and price if quantity > 1", () => {

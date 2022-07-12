@@ -14,7 +14,7 @@ import PopupLayout from "@/common/components/PopupLayout";
 import PopupOverlay from "@/common/components/PopupOverlay";
 import PopupButton from "@/common/components/PopupButton";
 import ConfirmPopup from "@/common/components/ConfirmPopup";
-import Product from "@/common/components/Product";
+import PizzaInfo from "@/common/components/PizzaInfo";
 import PopupTransition from "@/common/components/PopupTransition";
 import SlideTransitionGroup from "@/common/components/SlideTransitionGroup";
 
@@ -33,7 +33,7 @@ Vue.component("PopupLayout", PopupLayout);
 Vue.component("PopupOverlay", PopupOverlay);
 Vue.component("PopupButton", PopupButton);
 Vue.component("ConfirmPopup", ConfirmPopup);
-Vue.component("Product", Product);
+Vue.component("PizzaInfo", PizzaInfo);
 Vue.component("PopupTransition", PopupTransition);
 Vue.component("SlideTransitionGroup", SlideTransitionGroup);
 
@@ -53,7 +53,7 @@ export const setUIComponents = (localVue) => {
   localVue.component("PopupOverlay", PopupOverlay);
   localVue.component("PopupButton", PopupButton);
   localVue.component("ConfirmPopup", ConfirmPopup);
-  localVue.component("Product", Product);
+  localVue.component("PizzaInfo", PizzaInfo);
   localVue.component("PopupTransition", PopupTransition);
   localVue.component("SlideTransitionGroup", SlideTransitionGroup);
 };

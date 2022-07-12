@@ -22,7 +22,7 @@
 import { mapGetters } from "vuex";
 
 export default {
-  name: "Product",
+  name: "PizzaInfo",
   props: {
     pizza: {
       type: Object,

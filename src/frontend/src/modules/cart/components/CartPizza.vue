@@ -1,6 +1,6 @@
 <template>
   <li class="cart-list__item">
-    <Product class="cart-list__product" :pizza="pizza" />
+    <PizzaInfo class="cart-list__product" :pizza="pizza" />
 
     <ItemCounter
       class="cart-list__counter"
