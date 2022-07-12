@@ -6,6 +6,7 @@
       mode="out-in"
       @enter="animateEnter"
       @leave="animateLeave"
+      appear
     >
       <AppLayoutMain v-if="isMainLayout">
         <slot />
@@ -26,18 +27,18 @@ export default {
   components: { AppLayoutDefault, AppLayoutMain },
   data() {
     return {
-      isMainLayout: false,
       isFromMainLayout: false,
     };
   },
-  watch: {
-    $route(to, from) {
-      this.isMainLayout = to.meta.layout === "AppLayoutMain";
-      this.isFromMainLayout = from.meta.layout === "AppLayoutMain";
+  computed: {
+    isMainLayout() {
+      return this.$route.meta.layout === "AppLayoutMain";
     },
   },
-  created() {
-    this.isMainLayout = this.$route?.meta?.layout === "AppLayoutMain";
+  watch: {
+    $route(to, from) {
+      this.isFromMainLayout = from.meta.layout === "AppLayoutMain";
+    },
   },
   methods: {
     animateEnter(el, done) {
@@ -58,7 +59,7 @@ export default {
         return;
       }
       clearAnimations(el, done);
-      el.style.animation = Animations.SLIDE_REVERSE;
+      el.style.animation = Animations.SLIDE_LEAVE;
     },
   },
 };

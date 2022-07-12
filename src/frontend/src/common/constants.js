@@ -24,11 +24,9 @@ export const BASE_DELIVERIES = [
 
 export const Animations = {
   SIDEBAR: "sidebar-slide 0.5s",
-  SIDEBAR_REVERSE: "sidebar-slide 0.5s reverse",
+  SIDEBAR_REVERSE: "sidebar-slide 0.3s reverse",
   SLIDE: "slide 0.5s",
-  SLIDE_REVERSE: "slide 0.5s reverse",
+  SLIDE_LEAVE: "slide-leave 0.3s",
   ZOOM: "zoom-in 0.5s",
-  ZOOM_REVERSE: "zoom-in 0.5s reverse",
-  FADE: "fade-in 0.5",
-  FADE_REVERSE: "fade-in 0.5 reverse",
+  ZOOM_REVERSE: "zoom-in 0.3s reverse",
 };

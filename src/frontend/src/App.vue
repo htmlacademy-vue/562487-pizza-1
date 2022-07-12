@@ -37,6 +37,13 @@ export default {
   }
 }
 
+@keyframes slide-leave {
+  100% {
+    transform: translateX(-10%);
+    opacity: 0;
+  }
+}
+
 @keyframes sidebar-slide {
   0% {
     opacity: 0;
@@ -45,6 +52,13 @@ export default {
   100% {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes sidebar-leave {
+  100% {
+    opacity: 0;
+    transform: translateX(-25px);
   }
 }
 
