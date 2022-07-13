@@ -4,9 +4,9 @@
       name="layout"
       :css="false"
       mode="out-in"
+      appear
       @enter="animateEnter"
       @leave="animateLeave"
-      appear
     >
       <AppLayoutMain v-if="isMainLayout">
         <slot />
@@ -30,16 +30,19 @@ export default {
       isFromMainLayout: false,
     };
   },
+
   computed: {
     isMainLayout() {
       return this.$route.meta.layout === "AppLayoutMain";
     },
   },
+
   watch: {
     $route(to, from) {
       this.isFromMainLayout = from.meta.layout === "AppLayoutMain";
     },
   },
+
   methods: {
     animateEnter(el, done) {
       if (this.isMainLayout) {
@@ -51,6 +54,7 @@ export default {
       clearAnimations(el, done);
       el.style.animation = Animations.SLIDE;
     },
+
     animateLeave(el, done) {
       if (this.isFromMainLayout) {
         const sidebarEl = el.firstElementChild;

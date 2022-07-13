@@ -1,7 +1,11 @@
 <template>
   <main class="layout">
     <AppLayoutMainSidebar />
-    <transition name="content" mode="out-in" appear>
+    <transition
+      name="content"
+      mode="out-in"
+      appear
+    >
       <slot />
     </transition>
   </main>
