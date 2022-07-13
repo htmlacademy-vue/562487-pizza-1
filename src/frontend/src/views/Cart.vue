@@ -13,6 +13,7 @@
 
         <div
           v-if="isEmpty"
+          key="cart-empty"
           class="sheet cart__empty"
           data-test="cart-empty"
         >
@@ -21,6 +22,7 @@
 
         <div
           v-else
+          key="cart-content"
           data-test="cart-content"
         >
           <ul class="cart-list sheet">
