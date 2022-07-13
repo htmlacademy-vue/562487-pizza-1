@@ -1,6 +1,9 @@
 <template>
   <picture>
-    <source type="image/webp" :srcset="webpSrcset" />
+    <source
+      type="image/webp"
+      :srcset="webpSrcset"
+    />
     <img
       :src="avatarsSet.jpg"
       :srcset="jpgSrcset"
@@ -19,31 +22,37 @@ export default {
   props: {
     user: {
       type: Object,
-      default: null,
+      required: true,
     },
+
     width: {
       type: [Number, String],
       required: true,
     },
+
     height: {
       type: [Number, String],
       required: true,
     },
   },
+
   computed: {
     isBigSize() {
       const bigSize = "72";
       return this.width.toString() === bigSize;
     },
+
     avatarsSet() {
       return generateAvatar(this.user.avatar);
     },
+
     webpSrcset() {
       const avatars = this.avatarsSet;
       return this.isBigSize
         ? `${avatars.webp2x} 2x, ${avatars.webp4x} 4x`
         : `${avatars.webp} 1x, ${avatars.webp2x} 2x`;
     },
+
     jpgSrcset() {
       const avatars = this.avatarsSet;
       return this.isBigSize

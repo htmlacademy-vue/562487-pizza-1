@@ -1,6 +1,12 @@
 <template>
-  <AppDrag :transfer-data="ingredient" :isDraggable="isDraggable">
-    <span :class="isDraggable && 'item--draggable'" data-test="selector-item">
+  <AppDrag
+    :transfer-data="ingredient"
+    :is-draggable="isDraggable"
+  >
+    <span
+      :class="isDraggable && 'item--draggable'"
+      data-test="selector-item"
+    >
       {{ ingredient.name }}
     </span>
   </AppDrag>
@@ -16,12 +22,14 @@ export default {
   components: {
     AppDrag,
   },
+
   props: {
     ingredient: {
       type: Object,
       required: true,
     },
   },
+
   computed: {
     ...mapGetters("Builder", ["ingredientQuantityById"]),
 

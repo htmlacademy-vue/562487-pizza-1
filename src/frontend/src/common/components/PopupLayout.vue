@@ -1,7 +1,15 @@
 <template>
-  <PopupOverlay @click.self="$emit('close')" @keydown.esc="$emit('close')">
+  <PopupOverlay
+    @click.self="$emit('close')"
+    @keydown.esc="$emit('close')"
+  >
     <div class="popup">
-      <a href="#" class="close" @click.prevent="$emit('close')" ref="close">
+      <a
+        href="#"
+        ref="close"
+        class="close"
+        @click.prevent="$emit('close')"
+      >
         <span class="visually-hidden">Закрыть попап</span>
       </a>
       <slot />

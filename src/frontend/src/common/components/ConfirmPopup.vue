@@ -5,14 +5,14 @@
     </div>
     <PopupButton
       class="popup__button--danger"
-      @click.prevent="confirm"
       data-test="confirm-btn"
+      @click.prevent="confirm"
       >Да, удалить!</PopupButton
     >
     <PopupButton
-      @click.prevent="$emit('cancel')"
       ref="cancel"
       data-test="cancel-btn"
+      @click.prevent="$emit('cancel')"
       >Нет, оставить!</PopupButton
     >
   </PopupLayout>
@@ -27,9 +27,11 @@ export default {
       default: false,
     },
   },
+
   mounted() {
     this.$refs.cancel.focus();
   },
+
   methods: {
     confirm() {
       if (this.isSubmitting) {

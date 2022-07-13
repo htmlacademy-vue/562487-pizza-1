@@ -2,12 +2,15 @@
   <div class="product">
     <img
       src="@/assets/img/product.svg"
-      class="product__img"
       width="56"
       height="56"
       :alt="pizza.name"
+      class="product__img"
     />
-    <div class="product__text" data-test="product-text">
+    <div
+      class="product__text"
+      data-test="product-text"
+    >
       <h2 data-test="product-text-title">{{ pizza.name }}</h2>
       <ul data-test="product-text-list">
         <li>{{ sizeDisplayName }}, на {{ doughDisplayName }} тесте</li>
@@ -29,6 +32,7 @@ export default {
       required: true,
     },
   },
+
   computed: {
     ...mapGetters("Builder", [
       "doughById",
@@ -40,12 +44,15 @@ export default {
     doughDisplayName() {
       return this.doughById(this.pizza.doughId).displayName;
     },
+
     sauceDisplayName() {
       return this.sauceById(this.pizza.sauceId).displayName;
     },
+
     sizeDisplayName() {
       return this.sizeById(this.pizza.sizeId).displayName;
     },
+
     ingredientsDisplayName() {
       const displayNames = this.pizza.ingredients.map((it) => {
         const ingredient = this.ingredientById(it.ingredientId);

@@ -4,10 +4,10 @@
       type="radio"
       :name="item.kind"
       :value="item.value"
-      class="visually-hidden"
       :checked="isChecked"
-      @change="$emit('change', item.id)"
+      class="visually-hidden"
       :data-test-id="item.id"
+      @change="$emit('change', item.id)"
     />
     <slot />
   </label>
@@ -21,11 +21,13 @@ export default {
       type: Object,
       required: true,
     },
+
     isChecked: {
       type: Boolean,
       required: true,
     },
   },
+
   computed: {
     radioButtonClasses() {
       const { kind, value } = this.item;
@@ -34,5 +36,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped></style>

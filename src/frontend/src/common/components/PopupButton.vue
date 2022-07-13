@@ -1,6 +1,11 @@
 <template>
   <div class="popup__button">
-    <a href="#" class="button" v-on="$listeners" ref="button">
+    <a
+      href="#"
+      ref="button"
+      class="button"
+      v-on="$listeners"
+    >
       <slot />
     </a>
   </div>

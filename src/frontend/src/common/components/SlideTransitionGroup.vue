@@ -1,5 +1,8 @@
 <template>
-  <transition-group name="list" appear>
+  <transition-group
+    name="list"
+    appear
+  >
     <slot />
   </transition-group>
 </template>
@@ -10,7 +13,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .list-enter-active {
   animation: slide 0.5s;
 }

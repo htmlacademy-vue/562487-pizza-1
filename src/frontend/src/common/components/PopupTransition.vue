@@ -21,6 +21,7 @@ export default {
       default: false,
     },
   },
+
   methods: {
     animatePopupEnter(el, done) {
       const firstChildEl = el.firstElementChild;

@@ -1,8 +1,8 @@
 <template>
   <router-link
+    :to="link.to"
     class="layout__link"
     active-class="layout__link--active"
-    :to="link.to"
     >{{ link.title }}</router-link
   >
 </template>
