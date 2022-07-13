@@ -26,7 +26,7 @@ describe("Orders", () => {
     wrapper.findComponent({ name: "ConfirmPopup" });
 
   const showConfirmPopup = async () => {
-    findCard().vm.$emit("deleteOrder", testOrder.id);
+    findCard().vm.$emit("delete", testOrder.id);
     await nextTick();
   };
 
@@ -78,11 +78,11 @@ describe("Orders", () => {
   });
 
   describe("confirm delete order", () => {
-    it("shows confirm popup when order card emits deleteOrder", async () => {
+    it("shows confirm popup when order card emits delete", async () => {
       setOrders(store);
       createComponent({ localVue, store });
       await flushPromises();
-      findCard().vm.$emit("deleteOrder", testOrder.id);
+      findCard().vm.$emit("delete", testOrder.id);
       await nextTick();
       const confirmPopup = findConfirmPopup();
       expect(confirmPopup.exists()).toBe(true);

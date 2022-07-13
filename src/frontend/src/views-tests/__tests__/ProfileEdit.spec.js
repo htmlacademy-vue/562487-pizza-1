@@ -38,7 +38,12 @@ describe("ProfileEdit", () => {
     wrapper.findComponent({ name: "ConfirmPopup" });
 
   const showConfirmPopup = async () => {
-    findAddressForm().vm.$emit("deleteClick");
+    findAddressForm().vm.$emit("delete");
+    await nextTick();
+  };
+
+  const submitForm = async () => {
+    findAddressForm().vm.$emit("save", testAddress);
     await nextTick();
   };
 
@@ -83,9 +88,9 @@ describe("ProfileEdit", () => {
   });
 
   describe("confirm delete address", () => {
-    it("shows confirm popup when form emits deleteClick", async () => {
+    it("shows confirm popup when form emits delete", async () => {
       createComponent({ localVue, store, mocks });
-      findAddressForm().vm.$emit("deleteClick");
+      findAddressForm().vm.$emit("delete");
       await nextTick();
       expect(findConfirmPopup().exists()).toBe(true);
     });
@@ -174,25 +179,23 @@ describe("ProfileEdit", () => {
   });
 
   describe("when submit", () => {
-    it("sets isSubmitting to true when form emits submitForm", async () => {
+    it("sets isSubmitting to true when form emits save", async () => {
       createComponent({ localVue, store, mocks });
       const form = findAddressForm();
-      form.vm.$emit("submitForm", testAddress);
+      form.vm.$emit("save", testAddress);
       await nextTick();
       expect(form.props().isSubmitting).toBe(true);
     });
 
-    it("calls vuex action to create address when form emits submitForm", async () => {
+    it("calls vuex action to create address when form emits save", async () => {
       createComponent({ localVue, store, mocks });
-      findAddressForm().vm.$emit("submitForm", testAddress);
-      await nextTick();
+      await submitForm();
       expect(actions.Auth.updateAddress).toHaveBeenCalled();
     });
 
     it("calls notifier success when submit success", async () => {
       createComponent({ localVue, store, mocks });
-      findAddressForm().vm.$emit("submitForm", testAddress);
-      await nextTick();
+      await submitForm();
       await nextTick();
       expect(mocks.$notifier.success).toHaveBeenCalledWith(
         `Адрес ${testAddress.id} успешно обновлён`
@@ -201,8 +204,7 @@ describe("ProfileEdit", () => {
 
     it("goes to profile route when submit success", async () => {
       createComponent({ localVue, store, mocks });
-      findAddressForm().vm.$emit("submitForm", testAddress);
-      await nextTick();
+      await submitForm();
       await nextTick();
       expect(mocks.$router.push).toHaveBeenCalledWith("/profile");
     });
@@ -218,7 +220,7 @@ describe("ProfileEdit", () => {
       setUserAddresses(store);
       createComponent({ localVue, store, mocks });
       const form = findAddressForm();
-      form.vm.$emit("submitForm", testAddress);
+      form.vm.$emit("save", testAddress);
       await nextTick();
       await nextTick();
       expect(form.props().isSubmitting).toBe(false);

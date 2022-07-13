@@ -55,7 +55,7 @@ describe("Cart", () => {
   };
 
   const showConfirmPopup = async () => {
-    findPizzas().at(0).vm.$emit("deletePizza", testCartPizza.id);
+    findPizzas().at(0).vm.$emit("delete", testCartPizza.id);
     await nextTick();
   };
 
@@ -185,11 +185,11 @@ describe("Cart", () => {
   });
 
   describe("when confirm delete pizza", () => {
-    it("shows confirm popup when cart pizzas emit deletePizza", async () => {
+    it("shows confirm popup when cart pizza emit delete", async () => {
       setCart(store);
       createComponent({ localVue, store, stubs, mocks });
       await flushPromises();
-      findPizzas().at(0).vm.$emit("deletePizza", testCartPizza.id);
+      findPizzas().at(0).vm.$emit("delete", testCartPizza.id);
       await nextTick();
       expect(findConfirmPopup().exists()).toBe(true);
       expect(findConfirmPopup().text()).toContain(

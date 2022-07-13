@@ -1,22 +1,34 @@
 <template>
-  <form action="#" method="post" class="layout-form" @submit.prevent="submit">
+  <form
+    action="#"
+    method="post"
+    class="layout-form"
+    @submit.prevent="submit"
+  >
     <main class="content cart">
       <div class="container">
         <div class="cart__title">
           <h1 class="title title--big">Корзина</h1>
         </div>
 
-        <div v-if="isEmpty" class="sheet cart__empty" data-test="cart-empty">
+        <div
+          v-if="isEmpty"
+          class="sheet cart__empty"
+          data-test="cart-empty"
+        >
           <p>В корзине нет ни одного товара</p>
         </div>
 
-        <div v-else data-test="cart-content">
+        <div
+          v-else
+          data-test="cart-content"
+        >
           <ul class="cart-list sheet">
             <CartPizza
               v-for="pizza in orderPizzas"
               :key="pizza.id"
               :pizza="pizza"
-              @deletePizza="startDeletePizza"
+              @delete="startDeletePizza"
             />
           </ul>
           <CartMisc />
@@ -25,14 +37,14 @@
       </div>
     </main>
     <CartFooter
-      :isSubmitDisabled="isInvalid || isSubmitting"
-      :totalSum="totalSum"
+      :is-submit-disabled="isInvalid || isSubmitting"
+      :total-sum="totalSum"
     />
 
     <PopupTransition
-      hasCallback
-      @leave="leavePage"
+      has-callback
       data-test="cart-popup-transition"
+      @leave="leavePage"
     >
       <CartPopup
         v-if="isSuccessPopupShowed"
@@ -73,6 +85,7 @@ export default {
     CartFooter,
     CartPopup,
   },
+
   data() {
     return {
       isSuccessPopupShowed: false,
@@ -81,9 +94,11 @@ export default {
       pizzaIdToDelete: null,
     };
   },
+
   computed: {
     ...mapState("Auth", ["user"]),
     ...mapState("Orders", ["orders"]),
+
     ...mapState("Cart", [
       "delivery",
       "phone",
@@ -91,6 +106,7 @@ export default {
       "orderMisc",
       "orderAddress",
     ]),
+
     ...mapGetters("Auth", ["isUserAddress"]),
     ...mapGetters("Cart", ["totalSum", "miscById", "orderPizzaNameById"]),
     ...mapGetters("Orders", ["getOrderById"]),
@@ -137,6 +153,7 @@ export default {
       resetCart: RESET_CART,
       setCartWithOrder: SET_CART_WITH_ORDER,
     }),
+
     ...mapActions("Auth", ["queryAddresses"]),
     ...mapActions("Cart", ["deletePizza"]),
     ...mapActions("Orders", ["createOrder"]),

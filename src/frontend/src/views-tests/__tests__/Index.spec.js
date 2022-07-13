@@ -74,13 +74,13 @@ describe("Index", () => {
       expect(builder.props().isEditMode).toBe(true);
     });
 
-    it("switches off edit mode when builder emits saveEdit", async () => {
+    it("switches off edit mode when builder emits save", async () => {
       mocks.$route.params.id = testCartPizza.id;
       setCartPizzas(store, [testCartPizza]);
       createComponent({ localVue, store, stubs, mocks });
       const builder = findBuilderForm();
       expect(builder.props().isEditMode).toBe(true);
-      builder.vm.$emit("saveEdit");
+      builder.vm.$emit("save");
       await nextTick();
       expect(builder.props().isEditMode).toBe(false);
     });

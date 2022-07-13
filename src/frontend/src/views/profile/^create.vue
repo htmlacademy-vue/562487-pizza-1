@@ -1,8 +1,8 @@
 <template>
   <ProfileAddressForm
-    :isSubmitting="isSubmitting"
-    @deleteClick="closeForm"
-    @submitForm="submit"
+    :is-submitting="isSubmitting"
+    @delete="closeForm"
+    @save="submit"
   />
 </template>
 
@@ -15,17 +15,21 @@ export default {
   name: "ProfileCreate",
   layout: "AppLayoutMain",
   middlewares: [auth],
+
   components: {
     ProfileAddressForm,
   },
+
   data() {
     return {
       isSubmitting: false,
     };
   },
+
   computed: {
     ...mapState("Auth", ["user"]),
   },
+
   methods: {
     ...mapActions("Auth", ["createNewAddress"]),
 

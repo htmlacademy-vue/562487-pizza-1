@@ -1,10 +1,12 @@
 <template>
   <main class="content">
-    <BuilderForm :isEditMode="isEditMode" @saveEdit="isEditMode = false" />
+    <BuilderForm
+      :is-edit-mode="isEditMode"
+      @save="isEditMode = false"
+    />
     <PopupTransition>
       <BuilderPopup
         v-if="isPopupShowed"
-        key="builder"
         @save="savePizza"
         @cancel="leavePage"
         @close="isPopupShowed = false"
@@ -32,6 +34,7 @@ export default {
     BuilderForm,
     BuilderPopup,
   },
+
   data() {
     return {
       isEditMode: false,
@@ -39,11 +42,13 @@ export default {
       routeToLeave: null,
     };
   },
+
   computed: {
     ...mapGetters("Cart", ["orderPizzaById"]),
     ...mapState("Cart", ["order"]),
     ...mapState("Builder", ["pizza"]),
   },
+
   created() {
     const pizzaId = this.$route.params.id;
     if (!pizzaId) {
@@ -57,17 +62,20 @@ export default {
     this.isEditMode = true;
     this.setBuilderEntity({ entity: "pizza", value: pizzaToEdit });
   },
+
   methods: {
     ...mapMutations("Builder", {
       setBuilderEntity: SET_BUILDER_ENTITY,
       resetPizza: RESET_BUILDER_PIZZA,
     }),
+
     ...mapMutations("Cart", {
       updatePizza: UPDATE_PIZZA,
     }),
 
     savePizza() {
       this.updatePizza(this.pizza);
+      this.resetPizza();
       this.pushNextRoute();
     },
 
@@ -84,6 +92,7 @@ export default {
       }, 500);
     },
   },
+
   beforeRouteUpdate(to, from, next) {
     if (this.isEditMode) {
       this.isPopupShowed = true;
@@ -92,6 +101,7 @@ export default {
     }
     next();
   },
+
   beforeRouteLeave(to, from, next) {
     if (this.isEditMode) {
       this.isPopupShowed = true;
