@@ -3,11 +3,15 @@
     <span class="cart-form__label">Получение заказа:</span>
     <select
       name="delivery"
-      class="select"
       :value="delivery"
+      class="select"
       @change="changeDelivery"
     >
-      <option v-for="{ id, name } in deliveries" :key="id" :value="id">
+      <option
+        v-for="{ id, name } in deliveries"
+        :key="id"
+        :value="id"
+      >
         {{ name }}
       </option>
     </select>
@@ -32,6 +36,7 @@ export default {
       return [...BASE_DELIVERIES, ...userDeliveries];
     },
   },
+
   created() {
     if (
       this.orderAddress &&
@@ -44,6 +49,7 @@ export default {
       });
     }
   },
+
   methods: {
     ...mapActions("Cart", ["setDelivery"]),
 

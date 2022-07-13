@@ -9,13 +9,13 @@
       class="counter--orange ingredients__counter"
       :quantity="quantity"
       :max="INGREDIENT_MAX_COUNT"
-      @incrementClick="
+      @increment="
         addPizzaIngredient({
           ingredientId: ingredient.ingredientId,
           quantity: quantity + 1,
         })
       "
-      @decrementClick="removePizzaIngredient(ingredient)"
+      @decrement="removePizzaIngredient(ingredient)"
     />
   </li>
 </template>
@@ -36,11 +36,13 @@ export default {
       required: true,
     },
   },
+
   data() {
     return {
       INGREDIENT_MAX_COUNT,
     };
   },
+
   computed: {
     ...mapGetters("Builder", ["ingredientQuantityById"]),
 
@@ -48,6 +50,7 @@ export default {
       return this.ingredientQuantityById(this.ingredient.ingredientId);
     },
   },
+
   methods: {
     ...mapMutations("Builder", {
       addPizzaIngredient: ADD_BUILDER_PIZZA_INGREDIENT,

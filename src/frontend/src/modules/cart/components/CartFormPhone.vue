@@ -1,10 +1,10 @@
 <template>
   <AppInput
-    class="input--big-label"
     label="Контактный телефон:"
     name="phone"
     placeholder="+7 999-999-99-99"
     :value="phone"
+    class="input--big-label"
     @input="setPhone"
   />
 </template>
@@ -18,10 +18,12 @@ export default {
   computed: {
     ...mapState("Cart", ["phone"]),
   },
+
   methods: {
     ...mapMutations("Cart", {
       setCartEntity: SET_CART_ENTITY,
     }),
+
     setPhone(value) {
       this.setCartEntity({ entity: "phone", value });
     },

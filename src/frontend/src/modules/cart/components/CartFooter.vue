@@ -11,12 +11,18 @@
     <p class="footer__text">
       Перейти к конструктору<br />чтоб собрать ещё одну пиццу
     </p>
-    <div class="footer__price" data-test="footer-price">
+    <div
+      class="footer__price"
+      data-test="footer-price"
+    >
       <b>Итого: {{ totalSum }} ₽</b>
     </div>
 
     <div class="footer__submit">
-      <AppButton type="submit" :disabled="isSubmitDisabled">
+      <AppButton
+        type="submit"
+        :disabled="isSubmitDisabled"
+      >
         Оформить заказ
       </AppButton>
     </div>
@@ -32,6 +38,7 @@ export default {
       type: Boolean,
       required: true,
     },
+
     totalSum: {
       type: Number,
       required: true,

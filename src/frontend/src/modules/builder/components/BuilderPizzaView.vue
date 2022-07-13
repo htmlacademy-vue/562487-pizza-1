@@ -62,6 +62,7 @@ export default {
       return `pizza--foundation--${dough}-${sauce}`;
     },
   },
+
   methods: {
     ...mapMutations("Builder", {
       addPizzaIngredient: ADD_BUILDER_PIZZA_INGREDIENT,

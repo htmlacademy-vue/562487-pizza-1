@@ -22,6 +22,7 @@ export default {
     CartFormPhone,
     CartFormAddress,
   },
+
   computed: {
     ...mapState("Cart", ["delivery"]),
 

@@ -61,12 +61,12 @@ describe("OrderCard", () => {
     expect(findOrderSum().text()).toBe(`Сумма заказа: ${totalPrice} ₽`);
   });
 
-  it("emits deleteOrder on delete button click", async () => {
+  it("emits delete on delete button click", async () => {
     createComponent({ localVue, mocks, store, propsData });
     findDeleteBtn().vm.$emit("click");
     await nextTick();
-    expect(wrapper.emitted().deleteOrder).toBeTruthy();
-    expect(wrapper.emitted().deleteOrder[0][0]).toBe(testOrder.id);
+    expect(wrapper.emitted().delete).toBeTruthy();
+    expect(wrapper.emitted().delete[0][0]).toBe(testOrder.id);
   });
 
   it("goes to cart route on repeat button click", async () => {

@@ -4,56 +4,59 @@
       action="/"
       method="post"
       class="address-form address-form--opened sheet"
-      @submit.prevent="$emit('submitForm', address)"
+      @submit.prevent="$emit('save', address)"
     >
-      <div class="address-form__header" data-test="form-title">
+      <div
+        class="address-form__header"
+        data-test="form-title"
+      >
         <b>{{ addressFormTitle }}</b>
       </div>
 
       <div class="address-form__wrapper">
         <div class="address-form__input">
           <AppInput
+            ref="name"
+            v-model="address.name"
             label="Название адреса*"
             name="addr-name"
             placeholder="Введите название адреса"
-            v-model="address.name"
-            ref="name"
             data-test="address-name"
           />
         </div>
         <div class="address-form__input address-form__input--size--normal">
           <AppInput
+            v-model="address.street"
             label="Улица*"
             name="addr-street"
             placeholder="Введите название улицы"
-            v-model="address.street"
             data-test="address-street"
           />
         </div>
         <div class="address-form__input address-form__input--size--small">
           <AppInput
+            v-model="address.building"
             label="Дом*"
             name="addr-house"
             placeholder="Введите номер дома"
-            v-model="address.building"
             data-test="address-building"
           />
         </div>
         <div class="address-form__input address-form__input--size--small">
           <AppInput
+            v-model="address.flat"
             label="Квартира"
             name="addr-apartment"
             placeholder="Введите № квартиры"
-            v-model="address.flat"
             data-test="address-flat"
           />
         </div>
         <div class="address-form__input">
           <AppInput
+            v-model="address.comment"
             label="Комментарий"
             name="addr-comment"
             placeholder="Введите комментарий"
-            v-model="address.comment"
             data-test="address-comment"
           />
         </div>
@@ -62,16 +65,19 @@
       <div class="address-form__buttons">
         <AppButton
           v-if="!isSubmitting"
-          class="button--transparent"
           :disabled="isDeleting"
-          @click="$emit('deleteClick')"
+          class="button--transparent"
           data-test="btn-delete"
+          @click="$emit('delete')"
         >
           Удалить
         </AppButton>
-        <AppButton type="submit" :disabled="isSubmitDisabled || isDeleting"
-          >Сохранить</AppButton
-        >
+        <AppButton
+          type="submit"
+          :disabled="isSubmitDisabled || isDeleting"
+          >
+            Сохранить
+          </AppButton>
       </div>
     </form>
   </div>
@@ -88,20 +94,24 @@ export default {
       type: Boolean,
       default: false,
     },
+
     isDeleting: {
       type: Boolean,
       default: false,
     },
+
     isSubmitting: {
       type: Boolean,
       default: false,
     },
   },
+
   data() {
     return {
       address: null,
     };
   },
+
   computed: {
     ...mapGetters("Auth", ["addressById"]),
 
@@ -118,6 +128,7 @@ export default {
       return this.isEditMode ? "Редактировать адрес" : "Новый адрес";
     },
   },
+
   created() {
     if (this.isEditMode) {
       const id = +this.$route.params.id;
@@ -126,6 +137,7 @@ export default {
       this.address = Address.createNew();
     }
   },
+
   mounted() {
     this.$refs.name.focus();
   },

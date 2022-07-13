@@ -76,7 +76,7 @@ describe("CartPizza", () => {
   });
 
   describe("item counter events", () => {
-    it("calls vuex mutation on ItemCounter incrementClick", async () => {
+    it("calls vuex mutation on ItemCounter increment", async () => {
       mutations = {
         Cart: {
           UPDATE_PIZZA_QUANTITY: jest.fn(),
@@ -86,20 +86,20 @@ describe("CartPizza", () => {
       setLoadData(store);
       setCart(store);
       createComponent({ localVue, store, mocks, propsData });
-      findItemCounter().vm.$emit("incrementClick");
+      findItemCounter().vm.$emit("increment");
       await nextTick();
       expect(mutations.Cart.UPDATE_PIZZA_QUANTITY).toHaveBeenCalled();
     });
 
-    it("adds pizza on ItemCounter incrementClick", async () => {
+    it("adds pizza on ItemCounter increment", async () => {
       createComponent({ localVue, store, mocks, propsData });
       expect(store.state.Cart.orderPizzas[0].quantity).toBe(1);
-      findItemCounter().vm.$emit("incrementClick");
+      findItemCounter().vm.$emit("increment");
       await nextTick();
       expect(store.state.Cart.orderPizzas[0].quantity).toBe(2);
     });
 
-    it("calls vuex mutation on ItemCounter decrementClick", async () => {
+    it("calls vuex mutation on ItemCounter decrement", async () => {
       mutations = {
         Cart: {
           UPDATE_PIZZA_QUANTITY: jest.fn(),
@@ -116,12 +116,12 @@ describe("CartPizza", () => {
           pizza: { ...testCartPizza, quantity: 2 },
         },
       });
-      findItemCounter().vm.$emit("decrementClick");
+      findItemCounter().vm.$emit("decrement");
       await nextTick();
       expect(mutations.Cart.UPDATE_PIZZA_QUANTITY).toHaveBeenCalled();
     });
 
-    it("removes pizza on ItemCounter decrementClick", async () => {
+    it("removes pizza on ItemCounter decrement", async () => {
       createComponent({
         localVue,
         store,
@@ -131,21 +131,21 @@ describe("CartPizza", () => {
         },
       });
       expect(store.state.Cart.orderPizzas[0].quantity).toBe(2);
-      findItemCounter().vm.$emit("decrementClick");
+      findItemCounter().vm.$emit("decrement");
       await nextTick();
       expect(store.state.Cart.orderPizzas[0].quantity).toBe(1);
     });
 
-    it("emits deletePizza on ItemCounter decrementClick when last pizza", async () => {
+    it("emits delete on ItemCounter decrement when last pizza", async () => {
       createComponent({
         localVue,
         store,
         mocks,
         propsData,
       });
-      findItemCounter().vm.$emit("decrementClick");
+      findItemCounter().vm.$emit("decrement");
       await nextTick();
-      expect(wrapper.emitted().deletePizza[0][0]).toBe(testCartPizza.id);
+      expect(wrapper.emitted().delete[0][0]).toBe(testCartPizza.id);
     });
   });
 

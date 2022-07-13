@@ -111,12 +111,12 @@ describe("ProfileAddressForm", () => {
       expect(findCommentInput().element.value).toBe("");
     });
 
-    it("emits submitForm on add form submit", async () => {
+    it("emits save on add form submit", async () => {
       createComponent({ localVue, store, mocks, propsData });
       await fillForm();
       await triggerSubmit();
-      expect(wrapper.emitted().submitForm).toBeTruthy();
-      const submitData = wrapper.emitted().submitForm[0][0];
+      expect(wrapper.emitted().save).toBeTruthy();
+      const submitData = wrapper.emitted().save[0][0];
       expect(submitData.name).toBe(addressData.name);
       expect(submitData.street).toBe(addressData.street);
       expect(submitData.building).toBe(addressData.building);
@@ -140,7 +140,7 @@ describe("ProfileAddressForm", () => {
       expect(findCommentInput().element.value).toBe(testAddress.comment);
     });
 
-    it("emits submitForm on edit form submit", async () => {
+    it("emits save on edit form submit", async () => {
       createComponent({
         localVue,
         store,
@@ -148,7 +148,7 @@ describe("ProfileAddressForm", () => {
         propsData: { ...editPropsData },
       });
       await triggerSubmit();
-      expect(wrapper.emitted().submitForm[0][0]).toEqual(testAddress);
+      expect(wrapper.emitted().save[0][0]).toEqual(testAddress);
     });
   });
 
@@ -227,10 +227,10 @@ describe("ProfileAddressForm", () => {
       expect(findSubmit().element.disabled).toBe(true);
     });
 
-    it("emits deleteClick on delete button click", async () => {
+    it("emits delete on delete button click", async () => {
       createComponent({ localVue, store, mocks, propsData });
       await findDelete().trigger("click");
-      expect(wrapper.emitted().deleteClick).toBeTruthy();
+      expect(wrapper.emitted().delete).toBeTruthy();
     });
   });
 });

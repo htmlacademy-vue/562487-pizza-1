@@ -20,6 +20,7 @@ export default {
   components: {
     CartMiscItem,
   },
+
   computed: {
     ...mapState("Cart", ["misc"]),
   },

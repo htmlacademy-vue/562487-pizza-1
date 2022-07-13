@@ -181,7 +181,7 @@ describe("BuilderForm", () => {
       expect(store.state.Cart.orderPizzas[0].name).toBe(newPizzaName);
     });
 
-    it("emits saveEdit on submit when prop isEditMode", async () => {
+    it("emits save on submit when prop isEditMode", async () => {
       createComponent({
         localVue,
         store,
@@ -189,7 +189,7 @@ describe("BuilderForm", () => {
         propsData: { ...propsData, isEditMode: true },
       });
       await triggerSubmit();
-      expect(wrapper.emitted().saveEdit).toBeTruthy();
+      expect(wrapper.emitted().save).toBeTruthy();
     });
 
     it("calls router push when prop isEditMode", async () => {
