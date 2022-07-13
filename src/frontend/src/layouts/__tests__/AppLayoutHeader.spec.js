@@ -17,7 +17,7 @@ describe("AppLayoutHeader", () => {
     wrapper = shallowMount(AppLayoutHeader, options);
   };
 
-  const findLogo = () => wrapper.findComponent({ name: "Logo" });
+  const findLogo = () => wrapper.findComponent({ name: "AppLogo" });
   const findCartLink = () => wrapper.find("[data-test='link-cart']");
   const findLoginLink = () => wrapper.find("[data-test='link-login']");
   const findProfileLink = () => wrapper.find("[data-test='link-profile']");

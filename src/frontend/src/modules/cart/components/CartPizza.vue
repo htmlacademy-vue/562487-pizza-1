@@ -1,15 +1,21 @@
 <template>
   <li class="cart-list__item">
-    <Product class="cart-list__product" :pizza="pizza" />
-
-    <ItemCounter
-      class="cart-list__counter"
-      :quantity="pizza.quantity"
-      @incrementClick="incrementPizza(pizza)"
-      @decrementClick="decrementPizza(pizza)"
+    <PizzaInfo
+      :pizza="pizza"
+      class="cart-list__product"
     />
 
-    <div class="cart-list__price" data-test="pizza-price">
+    <ItemCounter
+      :quantity="pizza.quantity"
+      class="cart-list__counter"
+      @increment="incrementPizza(pizza)"
+      @decrement="decrementPizza(pizza)"
+    />
+
+    <div
+      class="cart-list__price"
+      data-test="pizza-price"
+    >
       <b>{{ pizzaPrice(pizza) * pizza.quantity }} ₽</b>
     </div>
 
@@ -17,8 +23,8 @@
       <button
         type="button"
         class="cart-list__edit"
-        @click="$router.push({ name: 'IndexHome', params: { id: pizza.id } })"
         data-test="edit-btn"
+        @click="$router.push({ name: 'IndexHome', params: { id: pizza.id } })"
       >
         Изменить
       </button>
@@ -38,9 +44,11 @@ export default {
       required: true,
     },
   },
+
   computed: {
     ...mapGetters("Builder", ["pizzaPrice"]),
   },
+
   methods: {
     ...mapMutations("Cart", {
       updatePizzaQuantity: UPDATE_PIZZA_QUANTITY,
@@ -52,7 +60,7 @@ export default {
 
     decrementPizza({ id, quantity }) {
       if (quantity < 2) {
-        this.$emit("deletePizza", id);
+        this.$emit("delete", id);
         return;
       }
       this.updatePizzaQuantity({ id, quantity: quantity - 1 });

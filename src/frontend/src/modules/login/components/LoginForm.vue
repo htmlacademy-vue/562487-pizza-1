@@ -1,29 +1,36 @@
 <template>
-  <form action="#" method="post" @submit.prevent="submit">
+  <form
+    action="#"
+    method="post"
+    @submit.prevent="submit"
+  >
     <div class="sign-form__input">
       <AppInput
+        ref="email"
+        v-model="userData.email"
         name="email"
         label="E-mail"
         placeholder="example@mail.ru"
-        v-model="userData.email"
         :error="validations.email.error"
-        ref="email"
         data-test="login-email"
       />
     </div>
 
     <div class="sign-form__input">
       <AppInput
+        v-model="userData.password"
         type="password"
         name="password"
         label="Пароль"
         placeholder="***********"
-        v-model="userData.password"
         :error="validations.password.error"
         data-test="login-password"
       />
     </div>
-    <AppButton type="submit" :disabled="isSubmitting">Авторизоваться</AppButton>
+    <AppButton
+      type="submit"
+      :disabled="isSubmitting"
+    >Авторизоваться</AppButton>
   </form>
 </template>
 
@@ -34,12 +41,14 @@ import validator from "@/common/mixins/validator";
 export default {
   name: "LoginForm",
   mixins: [validator],
+
   data() {
     return {
       userData: {
         email: "",
         password: "",
       },
+
       validations: {
         email: {
           error: "",
@@ -50,10 +59,12 @@ export default {
           rules: ["required"],
         },
       },
+
       isFormValid: true,
       isSubmitting: false,
     };
   },
+
   watch: {
     "userData.email": function (value) {
       if (!this.isFormValid) {
@@ -64,6 +75,7 @@ export default {
         this.$clearValidationError("email");
       }
     },
+
     "userData.password": function (value) {
       if (!this.isFormValid) {
         this.$validateField({ name: "password", value }, this.validations);
@@ -74,9 +86,11 @@ export default {
       }
     },
   },
+
   mounted() {
     this.$refs.email.focus();
   },
+
   methods: {
     ...mapActions("Auth", { login: "login" }),
 

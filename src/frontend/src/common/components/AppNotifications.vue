@@ -1,5 +1,8 @@
 <template>
-  <transition name="notifications" appear>
+  <transition
+    name="notifications"
+    appear
+  >
     <div
       v-if="notifications.length"
       class="notification__wrapper"
@@ -31,6 +34,7 @@ export default {
   computed: {
     ...mapState(["notifications"]),
   },
+
   methods: {
     close(id) {
       this.$notifier.close(id);

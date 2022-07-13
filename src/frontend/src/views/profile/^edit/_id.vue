@@ -1,17 +1,17 @@
 <template>
   <div>
     <ProfileAddressForm
-      isEditMode
-      :isDeleting="isDeleting"
-      :isSubmitting="isSubmitting"
-      @deleteClick="isConfirmPopupShowed = true"
-      @submitForm="submit"
+      is-edit-mode
+      :is-deleting="isDeleting"
+      :is-submitting="isSubmitting"
+      @delete="isConfirmPopupShowed = true"
+      @save="submit"
     />
     <PopupTransition>
       <ConfirmPopup
         v-if="isConfirmPopupShowed"
-        :isSubmitting="isDeleting"
-        :addressId="addressId"
+        :is-submitting="isDeleting"
+        :address-id="addressId"
         @confirm="confirmDelete"
         @cancel="isConfirmPopupShowed = false"
       >
@@ -34,6 +34,7 @@ export default {
   components: {
     ProfileAddressForm,
   },
+
   data() {
     return {
       isDeleting: false,
@@ -41,6 +42,7 @@ export default {
       isConfirmPopupShowed: false,
     };
   },
+
   computed: {
     ...mapState("Auth", ["user"]),
 
@@ -48,6 +50,7 @@ export default {
       return +this.$route.params.id;
     },
   },
+
   methods: {
     ...mapActions("Auth", ["updateAddress", "deleteAddress"]),
 

@@ -1,8 +1,11 @@
 <template>
   <li class="order__item">
-    <Product :pizza="pizza" />
+    <PizzaInfo :pizza="pizza" />
 
-    <p class="order__price" data-test="pizza-price">{{ priceText }}</p>
+    <p
+      class="order__price"
+      data-test="pizza-price"
+    >{{ priceText }}</p>
   </li>
 </template>
 
@@ -17,6 +20,7 @@ export default {
       required: true,
     },
   },
+
   computed: {
     ...mapGetters("Builder", ["pizzaPrice"]),
 

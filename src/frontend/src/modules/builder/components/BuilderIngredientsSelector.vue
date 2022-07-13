@@ -10,10 +10,10 @@
             v-for="sauce in sauces"
             :key="sauce.id"
             :item="sauce"
-            :isChecked="sauce.id === pizza.sauceId"
+            :is-checked="sauce.id === pizza.sauceId"
             class="radio ingredients__input"
-            @change="setPizzaEntity({ entity: 'sauceId', value: $event })"
             data-test="sauce"
+            @change="setPizzaEntity({ entity: 'sauceId', value: $event })"
           >
             <span>{{ sauce.name }}</span>
           </RadioButton>
@@ -47,6 +47,7 @@ export default {
   computed: {
     ...mapState("Builder", ["sauces", "ingredients", "pizza"]),
   },
+
   methods: {
     ...mapMutations("Builder", {
       setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,

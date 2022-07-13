@@ -37,6 +37,13 @@ export default {
   }
 }
 
+@keyframes slide-leave {
+  100% {
+    transform: translateX(-10%);
+    opacity: 0;
+  }
+}
+
 @keyframes sidebar-slide {
   0% {
     opacity: 0;
@@ -67,28 +74,6 @@ export default {
   }
   100% {
     opacity: 100%;
-  }
-}
-
-@keyframes slide-up {
-  0% {
-    transform: translate(-50%, -50%) translateY(-10%);
-    opacity: 0;
-  }
-  100% {
-    transform: translate(-50%, -50%) translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes roll-in {
-  0% {
-    transform: scale(0) rotateZ(0deg) translateX(-250px);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1) rotateZ(360deg) translateX(0px);
-    opacity: 1;
   }
 }
 </style>

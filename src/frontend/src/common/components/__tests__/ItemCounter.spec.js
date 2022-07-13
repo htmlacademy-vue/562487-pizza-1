@@ -38,11 +38,11 @@ describe("ItemCounter", () => {
     expect(findMinusBtn().element.disabled).toBe(true);
   });
 
-  it("it emits decrementClick on minus button click", async () => {
+  it("it emits decrement on minus button click", async () => {
     createComponent({ propsData });
     await findMinusBtn().trigger("click");
-    expect(wrapper.emitted().decrementClick).toBeTruthy();
-    expect(wrapper.emitted().decrementClick.length).toBe(1);
+    expect(wrapper.emitted().decrement).toBeTruthy();
+    expect(wrapper.emitted().decrement.length).toBe(1);
   });
 
   it("counter input value is prop quantity", () => {
@@ -60,10 +60,10 @@ describe("ItemCounter", () => {
     expect(findPlusBtn().element.disabled).toBe(true);
   });
 
-  it("it emits incrementClick on plus button click", async () => {
+  it("it emits increment on plus button click", async () => {
     createComponent({ propsData });
     await findPlusBtn().trigger("click");
-    expect(wrapper.emitted().incrementClick).toBeTruthy();
-    expect(wrapper.emitted().incrementClick.length).toBe(1);
+    expect(wrapper.emitted().increment).toBeTruthy();
+    expect(wrapper.emitted().increment.length).toBe(1);
   });
 });

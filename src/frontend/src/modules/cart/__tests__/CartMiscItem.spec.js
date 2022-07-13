@@ -79,7 +79,7 @@ describe("CartMiscItem", () => {
   });
 
   describe("item counter events", () => {
-    it("calls vuex mutation when item counter emits incrementClick", async () => {
+    it("calls vuex mutation when item counter emits increment", async () => {
       mutations = {
         Cart: {
           UPDATE_CART_ORDER_MISC: jest.fn(),
@@ -89,22 +89,22 @@ describe("CartMiscItem", () => {
       setMisc(store);
       setCart(store);
       createComponent({ localVue, store, propsData });
-      findItemCounter().vm.$emit("incrementClick");
+      findItemCounter().vm.$emit("increment");
       await nextTick();
       expect(mutations.Cart.UPDATE_CART_ORDER_MISC).toHaveBeenCalled();
     });
 
-    it("adds misc item when item counter emits incrementClick", async () => {
+    it("adds misc item when item counter emits increment", async () => {
       createComponent({ localVue, store, propsData });
       expect(store.state.Cart.orderMisc[0].miscId).toBe(propsData.item.miscId);
       expect(store.state.Cart.orderMisc[0].quantity).toBe(1);
-      findItemCounter().vm.$emit("incrementClick");
+      findItemCounter().vm.$emit("increment");
       await nextTick();
       expect(store.state.Cart.orderMisc[0].miscId).toBe(propsData.item.miscId);
       expect(store.state.Cart.orderMisc[0].quantity).toBe(2);
     });
 
-    it("calls vuex mutation when item counter emits decrementClick", async () => {
+    it("calls vuex mutation when item counter emits decrement", async () => {
       mutations = {
         Cart: {
           UPDATE_CART_ORDER_MISC: jest.fn(),
@@ -114,16 +114,16 @@ describe("CartMiscItem", () => {
       setMisc(store);
       setCart(store);
       createComponent({ localVue, store, propsData });
-      findItemCounter().vm.$emit("decrementClick");
+      findItemCounter().vm.$emit("decrement");
       await nextTick();
       expect(mutations.Cart.UPDATE_CART_ORDER_MISC).toHaveBeenCalled();
     });
 
-    it("removes misc item when item counter emits decrementClick", async () => {
+    it("removes misc item when item counter emits decrement", async () => {
       createComponent({ localVue, store, propsData });
       expect(store.state.Cart.orderMisc[0].miscId).toBe(propsData.item.miscId);
       expect(store.state.Cart.orderMisc[0].quantity).toBe(1);
-      findItemCounter().vm.$emit("decrementClick");
+      findItemCounter().vm.$emit("decrement");
       await nextTick();
       expect(store.state.Cart.orderMisc.length).toBe(0);
     });

@@ -11,14 +11,17 @@
         :address="address"
       />
     </SlideTransitionGroup>
-    <transition name="form" mode="out-in">
+    <transition
+      name="form"
+      mode="out-in"
+    >
       <router-view />
     </transition>
     <div class="layout__button">
       <AppButton
         class="button--border"
-        @click="toggleForm"
         data-test="button-open"
+        @click="toggleForm"
         >{{ buttonText }}</AppButton
       >
     </div>
@@ -36,11 +39,13 @@ export default {
   name: "Profile",
   layout: "AppLayoutMain",
   middlewares: [auth],
+
   components: {
     AppLayoutContent,
     ProfileUser,
     ProfileAddressCard,
   },
+
   computed: {
     ...mapState("Auth", ["user", "addresses"]),
 
@@ -52,9 +57,11 @@ export default {
       return this.isCreateRoute ? "Закрыть форму" : "Добавить новый адрес";
     },
   },
+
   async created() {
     await this.queryAddresses();
   },
+
   methods: {
     ...mapActions("Auth", ["queryAddresses"]),
 

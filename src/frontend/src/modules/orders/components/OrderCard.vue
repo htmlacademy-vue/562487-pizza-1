@@ -1,27 +1,36 @@
 <template>
   <section class="sheet order">
     <div class="order__wrapper">
-      <div class="order__number" data-test="order-number">
+      <div
+        class="order__number"
+        data-test="order-number"
+      >
         <b>Заказ #{{ order.id }}</b>
       </div>
 
-      <div class="order__sum" data-test="order-sum">
+      <div
+        class="order__sum"
+        data-test="order-sum"
+      >
         <span>Сумма заказа: {{ totalPrice(order) }} ₽</span>
       </div>
 
       <div class="order__button">
         <AppButton
           class="button--border"
-          @click="$emit('deleteOrder', order.id)"
           data-test="button-delete"
+          @click="$emit('delete', order.id)"
         >
           Удалить
         </AppButton>
       </div>
       <div class="order__button">
-        <AppButton @click="handleRepeat" data-test="button-repeat"
-          >Повторить</AppButton
+        <AppButton
+          data-test="button-repeat"
+          @click="handleRepeat"
         >
+          Повторить
+        </AppButton>
       </div>
     </div>
 
@@ -33,11 +42,14 @@
       />
     </ul>
 
-    <ul v-if="order.orderMisc.length" class="order__additional">
+    <ul
+      v-if="order.orderMisc.length"
+      class="order__additional"
+    >
       <OrderMisc
         v-for="orderMisc in order.orderMisc"
         :key="orderMisc.miscId"
-        :orderMisc="orderMisc"
+        :order-misc="orderMisc"
       />
     </ul>
 
@@ -65,10 +77,13 @@ export default {
       required: true,
     },
   },
+
   computed: {
     ...mapState("Cart", ["misc"]),
+
     ...mapGetters("Orders", ["totalPrice"]),
   },
+
   methods: {
     handleRepeat() {
       this.$router.push({ name: "Cart", params: { id: this.order.id } });

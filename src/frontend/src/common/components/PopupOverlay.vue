@@ -1,5 +1,8 @@
 <template>
-  <div class="overlay" v-on="$listeners">
+  <div
+    class="overlay"
+    v-on="$listeners"
+  >
     <slot />
   </div>
 </template>

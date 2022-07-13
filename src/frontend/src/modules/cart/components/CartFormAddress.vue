@@ -8,8 +8,8 @@
         name="street"
         :value="orderAddress.street"
         :readonly="isReadOnly"
-        @input="updateAddress({ entity: 'street', value: $event })"
         data-test="input-street"
+        @input="updateAddress({ entity: 'street', value: $event })"
       />
     </div>
 
@@ -19,8 +19,8 @@
         name="building"
         :value="orderAddress.building"
         :readonly="isReadOnly"
-        @input="updateAddress({ entity: 'building', value: $event })"
         data-test="input-building"
+        @input="updateAddress({ entity: 'building', value: $event })"
       />
     </div>
 
@@ -30,8 +30,8 @@
         name="flat"
         :value="orderAddress.flat"
         :readonly="isReadOnly"
-        @input="updateAddress({ entity: 'flat', value: $event })"
         data-test="input-flat"
+        @input="updateAddress({ entity: 'flat', value: $event })"
       />
     </div>
   </div>
@@ -54,6 +54,7 @@ export default {
       return false;
     },
   },
+
   methods: {
     ...mapMutations("Cart", {
       updateAddress: SET_CART_ORDER_ADDRESS_ENTITY,

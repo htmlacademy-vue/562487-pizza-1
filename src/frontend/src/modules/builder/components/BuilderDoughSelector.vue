@@ -7,7 +7,7 @@
           v-for="dough in doughs"
           :key="dough.id"
           :item="dough"
-          :isChecked="dough.id === pizza.doughId"
+          :is-checked="dough.id === pizza.doughId"
           @change="setPizzaEntity({ entity: 'doughId', value: $event })"
         >
           <b>{{ dough.name }}</b>
@@ -27,6 +27,7 @@ export default {
   computed: {
     ...mapState("Builder", ["doughs", "pizza"]),
   },
+
   methods: {
     ...mapMutations("Builder", {
       setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,

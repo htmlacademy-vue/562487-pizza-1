@@ -1,10 +1,20 @@
 <template>
-  <PopupOverlay @click.self="closeLogin" @keydown.esc="closeLogin">
+  <PopupOverlay
+    @click.self="closeLogin"
+    @keydown.esc="closeLogin"
+  >
     <div class="sign-form">
-      <router-link to="/" class="close close--white" data-test="login-close">
+      <router-link
+        to="/"
+        class="close close--white"
+        data-test="login-close"
+      >
         <span class="visually-hidden">Закрыть форму авторизации</span>
       </router-link>
-      <div class="sign-form__title" data-test="login-title">
+      <div
+        class="sign-form__title"
+        data-test="login-title"
+      >
         <h1 class="title title--small">Авторизуйтесь на сайте</h1>
       </div>
       <LoginForm @close="closeLogin" />
@@ -20,6 +30,7 @@ export default {
   name: "Login",
   middlewares: [isLoggedIn],
   components: { LoginForm },
+
   methods: {
     closeLogin() {
       this.$router.push("/");

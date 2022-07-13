@@ -27,7 +27,7 @@ describe("Index", () => {
     wrapper = shallowMount(Index, options);
   };
 
-  const findBuilder = () => wrapper.findComponent({ name: "Builder" });
+  const findBuilderForm = () => wrapper.findComponent({ name: "BuilderForm" });
   const findBuilderPopup = () =>
     wrapper.findComponent({ name: "BuilderPopup" });
 
@@ -60,7 +60,7 @@ describe("Index", () => {
 
     it("renders out builder", () => {
       createComponent({ localVue, store, stubs, mocks });
-      const builder = findBuilder();
+      const builder = findBuilderForm();
       expect(builder.exists()).toBe(true);
       expect(builder.props().isEditMode).toBe(false);
     });
@@ -69,18 +69,18 @@ describe("Index", () => {
       mocks.$route.params.id = testCartPizza.id;
       setCartPizzas(store, [testCartPizza]);
       createComponent({ localVue, store, stubs, mocks });
-      const builder = findBuilder();
+      const builder = findBuilderForm();
       expect(builder.exists()).toBe(true);
       expect(builder.props().isEditMode).toBe(true);
     });
 
-    it("switches off edit mode when builder emits saveEdit", async () => {
+    it("switches off edit mode when builder emits save", async () => {
       mocks.$route.params.id = testCartPizza.id;
       setCartPizzas(store, [testCartPizza]);
       createComponent({ localVue, store, stubs, mocks });
-      const builder = findBuilder();
+      const builder = findBuilderForm();
       expect(builder.props().isEditMode).toBe(true);
-      builder.vm.$emit("saveEdit");
+      builder.vm.$emit("save");
       await nextTick();
       expect(builder.props().isEditMode).toBe(false);
     });

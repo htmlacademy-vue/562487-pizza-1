@@ -8,13 +8,13 @@
         v-for="order in orders"
         :key="order.id"
         :order="order"
-        @deleteOrder="startOrderDelete"
+        @delete="startOrderDelete"
       />
     </SlideTransitionGroup>
     <PopupTransition>
       <ConfirmPopup
         v-if="isConfirmPopupShowed"
-        :isSubmitting="isSubmitting"
+        :is-submitting="isSubmitting"
         @confirm="confirmDeleteOrder"
         @cancel="closeConfirmPopup"
       >
@@ -28,7 +28,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import AppLayoutContent from "@/layouts/AppLayoutContent";
-import OrderCard from "@/modules/order/components/OrderCard";
+import OrderCard from "@/modules/orders/components/OrderCard";
 import { auth } from "@/middlewares";
 
 export default {
@@ -36,6 +36,7 @@ export default {
   layout: "AppLayoutMain",
   middlewares: [auth],
   components: { AppLayoutContent, OrderCard },
+
   data() {
     return {
       isConfirmPopupShowed: false,
@@ -43,12 +44,15 @@ export default {
       orderIdToDelete: null,
     };
   },
+
   computed: {
     ...mapState("Orders", ["orders"]),
   },
+
   async created() {
     await this.queryOrders();
   },
+
   methods: {
     ...mapActions("Orders", ["queryOrders", "deleteOrder"]),
 

@@ -4,13 +4,16 @@
       <h2 class="title">Сохранить изменения?</h2>
       <p>Вы редактировали пиццу.</p>
     </div>
-    <PopupButton @click.prevent="$emit('save')" ref="save" data-test="save-btn"
+    <PopupButton
+      ref="save"
+      data-test="save-btn"
+      @click.prevent="$emit('save')"
       >Сохранить</PopupButton
     >
     <PopupButton
       class="popup__button--danger"
-      @click.prevent="$emit('cancel')"
       data-test="cancel-btn"
+      @click.prevent="$emit('cancel')"
       >Продолжить без сохранения</PopupButton
     >
   </PopupLayout>

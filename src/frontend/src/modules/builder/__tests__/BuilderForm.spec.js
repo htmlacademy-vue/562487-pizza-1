@@ -2,7 +2,7 @@ import { createLocalVue, shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { nextTick } from "vue";
 import { generateMockStore } from "@/store/mocks";
-import Builder from "../components/Builder";
+import BuilderForm from "../components/BuilderForm";
 import { testPizza, setPizza, setCartPizzas } from "@/store/mocks/setters";
 import { setUIComponents } from "@/plugins/ui";
 import { Pizza } from "@/common/models";
@@ -11,7 +11,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 setUIComponents(localVue);
 
-describe("Builder", () => {
+describe("BuilderForm", () => {
   const propsData = {
     isEditMode: false,
   };
@@ -27,7 +27,7 @@ describe("Builder", () => {
   let store;
   let wrapper;
   const createComponent = (options) => {
-    wrapper = shallowMount(Builder, options);
+    wrapper = shallowMount(BuilderForm, options);
   };
 
   const findForm = () => wrapper.find("form");
@@ -59,7 +59,7 @@ describe("Builder", () => {
     wrapper.destroy();
   });
 
-  describe("builder", () => {
+  describe("builder form", () => {
     it("renders out builder form", () => {
       createComponent({ localVue, store, propsData });
       expect(findForm().exists()).toBe(true);
@@ -181,7 +181,7 @@ describe("Builder", () => {
       expect(store.state.Cart.orderPizzas[0].name).toBe(newPizzaName);
     });
 
-    it("emits saveEdit on submit when prop isEditMode", async () => {
+    it("emits save on submit when prop isEditMode", async () => {
       createComponent({
         localVue,
         store,
@@ -189,7 +189,7 @@ describe("Builder", () => {
         propsData: { ...propsData, isEditMode: true },
       });
       await triggerSubmit();
-      expect(wrapper.emitted().saveEdit).toBeTruthy();
+      expect(wrapper.emitted().save).toBeTruthy();
     });
 
     it("calls router push when prop isEditMode", async () => {

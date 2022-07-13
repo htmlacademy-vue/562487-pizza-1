@@ -21,6 +21,7 @@ export default {
       default: false,
     },
   },
+
   methods: {
     animatePopupEnter(el, done) {
       const firstChildEl = el.firstElementChild;
@@ -44,7 +45,7 @@ export default {
 
 <style lang="scss" scoped>
 .popup-enter-active {
-  animation: fade-in 0.5s;
+  animation: fade-in 0.1s;
 }
 
 .popup-leave-active {

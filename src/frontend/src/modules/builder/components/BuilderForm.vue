@@ -1,5 +1,9 @@
 <template>
-  <form action="#" method="post" @submit.prevent="submit">
+  <form
+    action="#"
+    method="post"
+    @submit.prevent="submit"
+  >
     <div class="content__wrapper">
       <h1 class="title title--big">Конструктор пиццы</h1>
       <BuilderDoughSelector />
@@ -9,11 +13,11 @@
         <AppInput
           name="pizza_name"
           label="Название пиццы"
-          labelIsHidden
+          label-is-hidden
           placeholder="Введите название пиццы"
           :value="pizza.name"
-          @input="setName"
           data-test="pizza-name"
+          @input="setName"
         />
         <BuilderPizzaView />
         <BuilderPizzaResult />
@@ -38,7 +42,7 @@ import {
 } from "@/store/mutations-types";
 
 export default {
-  name: "Builder",
+  name: "BuilderForm",
   components: {
     BuilderDoughSelector,
     BuilderSizeSelector,
@@ -46,20 +50,24 @@ export default {
     BuilderPizzaView,
     BuilderPizzaResult,
   },
+
   props: {
     isEditMode: {
       type: Boolean,
       required: true,
     },
   },
+
   computed: {
     ...mapState("Builder", ["pizza"]),
   },
+
   methods: {
     ...mapMutations("Builder", {
       setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
       resetPizza: RESET_BUILDER_PIZZA,
     }),
+
     ...mapMutations("Cart", {
       addPizza: ADD_PIZZA,
       updatePizza: UPDATE_PIZZA,
@@ -75,7 +83,7 @@ export default {
     submit() {
       if (this.isEditMode) {
         this.updatePizza(this.pizza);
-        this.$emit("saveEdit");
+        this.$emit("save");
         this.$router.push("/cart");
       } else {
         this.addPizza(this.pizza);

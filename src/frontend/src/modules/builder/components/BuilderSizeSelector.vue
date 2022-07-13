@@ -8,7 +8,7 @@
           v-for="size in sizes"
           :key="size.id"
           :item="size"
-          :isChecked="size.id === pizza.sizeId"
+          :is-checked="size.id === pizza.sizeId"
           @change="setPizzaEntity({ entity: 'sizeId', value: $event })"
         >
           <span>{{ size.name }}</span>
@@ -27,6 +27,7 @@ export default {
   computed: {
     ...mapState("Builder", ["sizes", "pizza"]),
   },
+
   methods: {
     ...mapMutations("Builder", {
       setPizzaEntity: SET_BUILDER_PIZZA_ENTITY,
